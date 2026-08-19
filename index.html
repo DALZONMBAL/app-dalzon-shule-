@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07111f">
+
+  <title>DALZON SHULE — Application</title>
+
+  <meta name="description"
+        content="Dalzon Shule — Connecter l'École à la Maison. Application scolaire en développement.">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blue: #1473ff;
+      --blue-light: #45a3ff;
+      --dark: #050b14;
+      --dark-2: #081321;
+      --white: #ffffff;
+      --muted: #a9b7c9;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(20,115,255,.25), transparent 35%),
+        radial-gradient(circle at 80% 80%, rgba(69,163,255,.10), transparent 30%),
+        linear-gradient(145deg, #030812, #071321 55%, #040912);
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    /* BACKGROUND */
+    .background {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: .35;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .orb.one {
+      width: 240px;
+      height: 240px;
+      background: #1473ff;
+      top: -80px;
+      left: -60px;
+    }
+
+    .orb.two {
+      width: 180px;
+      height: 180px;
+      background: #006eff;
+      right: -50px;
+      top: 35%;
+      animation-delay: 2s;
+    }
+
+    .orb.three {
+      width: 200px;
+      height: 200px;
+      background: #28a9ff;
+      bottom: -100px;
+      left: 35%;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+      0%,100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-25px) scale(1.08);
+      }
+    }
+
+    /* PARTICLES */
+    .particles {
+      position: absolute;
+      inset: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: rgba(255,255,255,.7);
+      border-radius: 50%;
+      animation: particleMove linear infinite;
+    }
+
+    .particle:nth-child(1) {
+      left: 10%;
+      top: 20%;
+      animation-duration: 7s;
+    }
+
+    .particle:nth-child(2) {
+      left: 25%;
+      top: 70%;
+      animation-duration: 9s;
+    }
+
+    .particle:nth-child(3) {
+      left: 55%;
+      top: 15%;
+      animation-duration: 8s;
+    }
+
+    .particle:nth-child(4) {
+      left: 80%;
+      top: 25%;
+      animation-duration: 10s;
+    }
+
+    .particle:nth-child(5) {
+      left: 90%;
+      top: 75%;
+      animation-duration: 6s;
+    }
+
+    .particle:nth-child(6) {
+      left: 40%;
+      top: 85%;
+      animation-duration: 11s;
+    }
+
+    @keyframes particleMove {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px);
+      }
+    }
+
+    /* MAIN */
+    .app {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      width: 100%;
+      padding: 28px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1473ff, #48a9ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow:
+        0 10px 30px rgba(20,115,255,.35),
+        inset 0 1px 1px rgba(255,255,255,.4);
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .brand-sub {
+      display: block;
+      color: #7f91a8;
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 3px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #9aacbf;
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #38e58b;
+      box-shadow: 0 0 12px #38e58b;
+    }
+
+    /* HERO */
+    .hero {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 700px;
+      animation: appear 1.2s ease forwards;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      border: 1px solid rgba(69,163,255,.25);
+      border-radius: 100px;
+      background: rgba(20,115,255,.08);
+      color: #8fc7ff;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      backdrop-filter: blur(12px);
+    }
+
+    .badge span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #45a3ff;
+      box-shadow: 0 0 10px #45a3ff;
+    }
+
+    h1 {
+      font-size: clamp(48px, 12vw, 92px);
+      line-height: .95;
+      letter-spacing: -4px;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(
+        120deg,
+        #ffffff 20%,
+        #8bc9ff 50%,
+        #ffffff 80%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: shine 5s linear infinite;
+    }
+
+    @keyframes shine {
+      to {
+        background-position: 200% center;
+      }
+    }
+
+    .tagline {
+      font-size: clamp(18px, 4vw, 25px);
+      color: #d7e4f2;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .description {
+      max-width: 500px;
+      margin: 0 auto 38px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* BUTTON */
+    .login-btn {
+      position: relative;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 17px 42px;
+      min-width: 190px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1473ff, #3198ff);
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      box-shadow:
+        0 15px 40px rgba(20,115,255,.35),
+        inset 0 1px rgba(255,255,255,.35);
+      transition: .3s ease;
+      overflow: hidden;
+    }
+
+    .login-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 70%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.35),
+        transparent
+      );
+      transform: skewX(-20deg);
+      animation: buttonShine 3s infinite;
+    }
+
+    @keyframes buttonShine {
+      0% {
+        left: -100%;
+      }
+      45%,100% {
+        left: 140%;
+      }
+    }
+
+    .login-btn:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 20px 50px rgba(20,115,255,.5),
+        inset 0 1px rgba(255,255,255,.4);
+    }
+
+    .login-btn:active {
+      transform: scale(.97);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 22px;
+      color: #65778e;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+      background: rgba(1,5,12,.75);
+      backdrop-filter: blur(14px);
+    }
+
+    .modal.active {
+      display: flex;
+      animation: modalBg .35s ease;
+    }
+
+    @keyframes modalBg {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 420px;
+      padding: 38px 28px;
+      text-align: center;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.1);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(16,31,51,.98),
+          rgba(5,13,24,.98)
+        );
+      box-shadow:
+        0 30px 100px rgba(0,0,0,.6),
+        inset 0 1px rgba(255,255,255,.08);
+      transform: scale(.8);
+      animation: modalBox .4s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    @keyframes modalBox {
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .modal-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+      font-size: 31px;
+      background: rgba(20,115,255,.12);
+      border: 1px solid rgba(69,163,255,.2);
+      box-shadow: 0 15px 35px rgba(20,115,255,.15);
+    }
+
+    .modal h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .modal p {
+      color: #9fafc1;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 26px;
+    }
+
+    .close-btn {
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.05);
+      color: white;
+      padding: 13px 30px;
+      border-radius: 13px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .25s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255,255,255,.1);
+    }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+
+      header {
+        padding: 22px 20px;
+      }
+
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .brand-name {
+        font-size: 16px;
+      }
+
+      .status {
+        font-size: 9px;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .description {
+        font-size: 13px;
+        max-width: 330px;
+      }
+
+      .login-btn {
+        width: 100%;
+        max-width: 280px;
+      }
+
+      footer {
+        padding-bottom: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="background">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </div>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header>
+
+      <div class="brand">
+        <div class="brand-icon">DS</div>
+
+        <div>
+          <div class="brand-name">DALZON SHULE</div>
+          <span class="brand-sub">CONNECTER L'ÉCOLE À LA MAISON</span>
+        </div>
+      </div>
+
+      <div class="status">
+        <span class="status-dot"></span>
+        Plateforme
+      </div>
+
+    </header>
+
+    <!-- HERO -->
+    <main class="hero">
+
+      <div class="hero-content">
+
+        <div class="badge">
+          <span></span>
+          Nouvelle génération éducative
+        </div>
+
+        <h1>DALZON<br>SHULE</h1>
+
+        <p class="tagline">
+          L'école, partout avec vous.
+        </p>
+
+        <p class="description">
+          Une nouvelle expérience numérique conçue pour rapprocher
+          l'école, les élèves et les familles.
+        </p>
+
+        <button class="login-btn" id="loginBtn">
+          Se connecter
+        </button>
+
+      </div>
+
+    </main>
+
+    <footer>
+      © 2026 DALZON SHULE — Une initiative de DALZON ENTREPRISE
+    </footer>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+
+    <div class="modal-box">
+
+      <div class="modal-icon">
+        🚧
+      </div>
+
+      <h2>Application en développement</h2>
+
+      <p>
+        Dalzon Shule est actuellement en cours de développement.
+        L'application sera bientôt disponible.
+        <br><br>
+        Merci pour votre patience.
+      </p>
+
+      <button class="close-btn" id="closeBtn">
+        Compris
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const loginBtn = document.getElementById("loginBtn");
+    const modal = document.getElementById("modal");
+    const closeBtn = document.getElementById("closeBtn");
+
+    // Ouverture du message
+    loginBtn.addEventListener("click", () => {
+      modal.classList.add("active");
+    });
+
+    // Fermeture du message
+    closeBtn.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+
+    // Fermeture en cliquant à l'extérieur
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.classList.remove("active");
+      }
+    });
+
+    // Fermeture avec la touche Échap
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        modal.classList.remove("active");
+      }
+    });
+
+  </script>
+
+</body>
+</html>
