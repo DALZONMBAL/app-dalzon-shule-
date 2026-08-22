@@ -1,649 +1,2262 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#07111f">
 
-  <title>DALZON SHULE — Application</title>
+    <meta charset="UTF-8">
 
-  <meta name="description"
-        content="Dalzon Shule — Connecter l'École à la Maison. Application scolaire en développement.">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    <meta name="description"
+          content="DALZON SHULE — Application éducative pour connecter l'école à la maison.">
+
+    <meta name="theme-color"
+          content="#07111f"
+          id="themeColor">
+
+    <link rel="icon"
+          type="image/png"
+          href="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png">
+
+    <link rel="apple-touch-icon"
+          href="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png">
+
+    <meta property="og:title"
+          content="DALZON SHULE — Application">
+
+    <meta property="og:description"
+          content="Connecter l'école à la maison.">
+
+    <meta property="og:image"
+          content="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png">
+
+    <meta property="og:type"
+          content="website">
+
+    <title>DALZON SHULE — Application</title>
+
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background: #07111f;
+    color: #ffffff;
+
+    overflow-x: hidden;
+
+    transition:
+        background .35s ease,
+        color .35s ease;
+}
+
+body.light {
+    background: #f4f8fc;
+    color: #081521;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+
+    z-index: -10;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+.grid {
+    position: absolute;
+    inset: 0;
+
+    opacity: .045;
+
+    background-image:
+        linear-gradient(
+            rgba(90,190,255,.7) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(90,190,255,.7) 1px,
+            transparent 1px
+        );
+
+    background-size: 65px 65px;
+}
+
+.orb {
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    filter: blur(110px);
+
+    opacity: .18;
+}
+
+.orb.one {
+    top: -220px;
+    left: -180px;
+
+    background: #087cff;
+}
+
+.orb.two {
+    right: -200px;
+    bottom: -150px;
+
+    background: #00bfff;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 100;
+
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+
+    background:
+        rgba(7,17,31,.58);
+
+    backdrop-filter:
+        blur(18px);
+}
+
+body.light .header {
+    background:
+        rgba(244,248,252,.78);
+
+    border-color:
+        rgba(8,21,33,.08);
+}
+
+.header-inner {
+    width:
+        min(1120px, calc(100% - 32px));
+
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+.logo {
+    width: 43px;
+    height: 43px;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+
+    transition:
+        transform .25s ease;
+}
+
+.brand:hover .logo {
+    transform: scale(1.05);
+}
+
+.brand-name {
+    font-size: 14px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.3px;
+}
+
+.brand-subtitle {
+    margin-top: 2px;
+
+    color: #8fa5ba;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.4px;
+}
+
+.theme-button {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.05);
+
+    color: currentColor;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+.theme-button:hover {
+    transform: translateY(-2px);
+}
+
+.theme-button svg {
+    width: 18px;
+    height: 18px;
+
+    fill: currentColor;
+}
+
+body.light .theme-button {
+    border-color:
+        rgba(8,21,33,.10);
+
+    background:
+        rgba(255,255,255,.7);
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main {
+    min-height: 100vh;
+
+    padding:
+        130px 16px 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page {
+    width:
+        min(1050px, 100%);
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 430px;
+
+    gap: 60px;
+
+    align-items: center;
+}
+
+
+/* =========================================================
+   PRESENTATION
+========================================================= */
+
+.presentation {
+    max-width: 590px;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        8px 13px;
+
+    border:
+        1px solid rgba(67,194,255,.18);
+
+    border-radius: 100px;
+
+    background:
+        rgba(22,119,255,.07);
+
+    color: #91d9ff;
+
+    font-size: 8px;
+
+    font-weight: 850;
+
+    letter-spacing: 1.6px;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #42d996;
+
+    box-shadow:
+        0 0 12px rgba(66,217,150,.8);
+}
+
+.presentation h1 {
+    margin-top: 25px;
+
+    font-size:
+        clamp(50px, 7vw, 88px);
+
+    line-height: .92;
+
+    letter-spacing: -4px;
+
+    font-weight: 950;
+}
+
+.gradient-text {
+    background:
+        linear-gradient(
+            110deg,
+            #ffffff,
+            #42bfff,
+            #ffffff
+        );
+
+    background-size: 200% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    animation:
+        shine 6s linear infinite;
+}
+
+body.light .gradient-text {
+    background:
+        linear-gradient(
+            110deg,
+            #07111f,
+            #087cff,
+            #07111f
+        );
+
+    background-size: 200% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+@keyframes shine {
+
+    to {
+        background-position: 200% center;
     }
 
-    :root {
-      --blue: #1473ff;
-      --blue-light: #45a3ff;
-      --dark: #050b14;
-      --dark-2: #081321;
-      --white: #ffffff;
-      --muted: #a9b7c9;
-    }
+}
 
-    body {
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(20,115,255,.25), transparent 35%),
-        radial-gradient(circle at 80% 80%, rgba(69,163,255,.10), transparent 30%),
-        linear-gradient(145deg, #030812, #071321 55%, #040912);
-      color: var(--white);
-      overflow: hidden;
-    }
+.presentation p {
+    max-width: 550px;
 
-    /* BACKGROUND */
-    .background {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
+    margin-top: 25px;
 
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: .35;
-      animation: float 8s ease-in-out infinite;
-    }
+    color: #9eb0c2;
 
-    .orb.one {
-      width: 240px;
-      height: 240px;
-      background: #1473ff;
-      top: -80px;
-      left: -60px;
-    }
+    font-size: 15px;
 
-    .orb.two {
-      width: 180px;
-      height: 180px;
-      background: #006eff;
-      right: -50px;
-      top: 35%;
-      animation-delay: 2s;
-    }
+    line-height: 1.8;
+}
 
-    .orb.three {
-      width: 200px;
-      height: 200px;
-      background: #28a9ff;
-      bottom: -100px;
-      left: 35%;
-      animation-delay: 4s;
-    }
+body.light .presentation p {
+    color: #5e7184;
+}
 
-    @keyframes float {
-      0%,100% {
-        transform: translateY(0) scale(1);
-      }
-      50% {
-        transform: translateY(-25px) scale(1.08);
-      }
-    }
 
-    /* PARTICLES */
-    .particles {
-      position: absolute;
-      inset: 0;
-    }
+/* =========================================================
+   LOGIN CARD
+========================================================= */
 
-    .particle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: rgba(255,255,255,.7);
-      border-radius: 50%;
-      animation: particleMove linear infinite;
-    }
+.login-card {
+    width: 100%;
 
-    .particle:nth-child(1) {
-      left: 10%;
-      top: 20%;
-      animation-duration: 7s;
-    }
+    padding: 34px;
 
-    .particle:nth-child(2) {
-      left: 25%;
-      top: 70%;
-      animation-duration: 9s;
-    }
+    border:
+        1px solid rgba(255,255,255,.10);
 
-    .particle:nth-child(3) {
-      left: 55%;
-      top: 15%;
-      animation-duration: 8s;
-    }
+    border-radius: 25px;
 
-    .particle:nth-child(4) {
-      left: 80%;
-      top: 25%;
-      animation-duration: 10s;
-    }
+    background:
+        rgba(12,29,47,.76);
 
-    .particle:nth-child(5) {
-      left: 90%;
-      top: 75%;
-      animation-duration: 6s;
-    }
+    backdrop-filter:
+        blur(22px);
 
-    .particle:nth-child(6) {
-      left: 40%;
-      top: 85%;
-      animation-duration: 11s;
-    }
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.24);
+}
 
-    @keyframes particleMove {
-      0% {
+body.light .login-card {
+    background:
+        rgba(255,255,255,.88);
+
+    border-color:
+        rgba(8,21,33,.09);
+
+    box-shadow:
+        0 30px 80px rgba(30,60,90,.12);
+}
+
+.card-logo {
+    width: 70px;
+    height: 70px;
+
+    object-fit: contain;
+
+    margin-bottom: 20px;
+
+    border-radius: 18px;
+}
+
+.login-card h2 {
+    font-size: 27px;
+
+    font-weight: 900;
+}
+
+.login-card-intro {
+    margin-top: 7px;
+
+    color: #91a5b9;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+body.light .login-card-intro {
+    color: #63778b;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form {
+    margin-top: 27px;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field-label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #b8c8d8;
+
+    font-size: 10px;
+
+    font-weight: 750;
+}
+
+body.light .field-label {
+    color: #42586c;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+
+    left: 14px;
+    top: 50%;
+
+    width: 17px;
+    height: 17px;
+
+    transform:
+        translateY(-50%);
+
+    fill: #71879b;
+
+    pointer-events: none;
+}
+
+.input {
+    width: 100%;
+
+    height: 52px;
+
+    padding:
+        0 44px;
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    border-radius: 13px;
+
+    outline: none;
+
+    background:
+        rgba(255,255,255,.045);
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.input::placeholder {
+    color: #6f8295;
+}
+
+.input:focus {
+    border-color:
+        rgba(67,194,255,.65);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(22,119,255,.10);
+}
+
+body.light .input {
+    background:
+        #f5f8fb;
+
+    border-color:
+        rgba(8,21,33,.10);
+
+    color: #081521;
+}
+
+.password-toggle {
+    position: absolute;
+
+    right: 12px;
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    width: 30px;
+    height: 30px;
+
+    display: grid;
+    place-items: center;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #71879b;
+}
+
+.password-toggle svg {
+    width: 17px;
+    height: 17px;
+
+    fill: currentColor;
+}
+
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.forgot {
+    margin-top: 4px;
+
+    color: #8499ad;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+.forgot strong {
+    color: #a9bfd2;
+
+    font-weight: 750;
+}
+
+body.light .forgot {
+    color: #64788b;
+}
+
+body.light .forgot strong {
+    color: #40566b;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.login-submit {
+    width: 100%;
+
+    height: 53px;
+
+    margin-top: 22px;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087cff,
+            #38b9ff
+        );
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    box-shadow:
+        0 14px 35px
+        rgba(22,119,255,.22);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.login-submit:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 18px 42px
+        rgba(22,119,255,.30);
+}
+
+.login-submit:disabled {
+    opacity: .65;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   DEMO NOTICE
+========================================================= */
+
+.demo-notice {
+    margin-top: 18px;
+
+    padding:
+        11px 12px;
+
+    border:
+        1px solid rgba(67,194,255,.12);
+
+    border-radius: 11px;
+
+    background:
+        rgba(22,119,255,.045);
+
+    color: #8196aa;
+
+    font-size: 8px;
+
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   WELCOME PAGE
+========================================================= */
+
+.welcome-page {
+    display: none;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    padding:
+        120px 20px 60px;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-page.active {
+    display: flex;
+}
+
+.login-page.hidden {
+    display: none;
+}
+
+.welcome-box {
+    width:
+        min(780px, 100%);
+
+    text-align: center;
+
+    padding: 55px 35px;
+}
+
+.welcome-logo {
+    width: 100px;
+    height: 100px;
+
+    object-fit: contain;
+
+    margin:
+        0 auto 28px;
+
+    border-radius: 24px;
+
+    animation:
+        logoAppear .7s ease;
+}
+
+@keyframes logoAppear {
+
+    from {
         opacity: 0;
-        transform: translateY(30px);
-      }
-      50% {
+        transform: scale(.75);
+    }
+
+    to {
         opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-100px);
-      }
+        transform: scale(1);
     }
 
-    /* MAIN */
-    .app {
-      position: relative;
-      z-index: 2;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+}
+
+.welcome-label {
+    color: #48c2ff;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+}
+
+.welcome-title {
+    margin-top: 14px;
+
+    font-size:
+        clamp(38px, 6vw, 65px);
+
+    line-height: 1;
+
+    letter-spacing: -3px;
+
+    font-weight: 950;
+}
+
+.welcome-text {
+    max-width: 620px;
+
+    margin:
+        20px auto 0;
+
+    color: #94a9bc;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+}
+
+body.light .welcome-text {
+    color: #607487;
+}
+
+
+/* =========================================================
+   DOWNLOAD BUTTONS
+========================================================= */
+
+.downloads {
+    margin-top: 35px;
+
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+.store-button {
+    min-width: 195px;
+
+    min-height: 59px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        0 16px;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    border-radius: 14px;
+
+    background:
+        #03080e;
+
+    color: #ffffff;
+
+    transition:
+        transform .25s ease,
+        border-color .25s ease;
+}
+
+.store-button:hover {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(67,194,255,.65);
+}
+
+.store-icon {
+    width: 29px;
+    height: 29px;
+
+    flex-shrink: 0;
+
+    fill: currentColor;
+}
+
+.store-copy {
+    text-align: left;
+}
+
+.store-small {
+    display: block;
+
+    color: #92a5b7;
+
+    font-size: 8px;
+}
+
+.store-name {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 14px;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 32px;
+
+    padding:
+        11px 16px;
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.05);
+
+    color: #a9bac9;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+body.light .back-button {
+    border-color:
+        rgba(8,21,33,.10);
+
+    background:
+        rgba(255,255,255,.7);
+
+    color: #506579;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-box {
+    width:
+        min(410px, 100%);
+
+    padding: 32px;
+
+    border-radius: 23px;
+
+    background: #0b1929;
+
+    border:
+        1px solid rgba(255,255,255,.11);
+
+    text-align: center;
+}
+
+body.light .modal-box {
+    background: #ffffff;
+
+    border-color:
+        rgba(8,21,33,.09);
+}
+
+.modal-logo {
+    width: 60px;
+    height: 60px;
+
+    object-fit: contain;
+
+    margin:
+        0 auto 18px;
+}
+
+.modal-title {
+    font-size: 22px;
+
+    font-weight: 900;
+}
+
+.modal-text {
+    margin-top: 10px;
+
+    color: #8fa3b6;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+}
+
+.modal-close {
+    width: 100%;
+
+    height: 45px;
+
+    margin-top: 22px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    background: #087cff;
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    font-weight: 850;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+    position: fixed;
+
+    bottom: 18px;
+
+    left: 0;
+    right: 0;
+
+    text-align: center;
+
+    color: #65798d;
+
+    font-size: 8px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .page {
+        grid-template-columns: 1fr;
+
+        gap: 40px;
+
+        max-width: 540px;
     }
 
-    /* HEADER */
-    header {
-      width: 100%;
-      padding: 28px 7%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .presentation {
+        text-align: center;
+
+        margin: auto;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #1473ff, #48a9ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 18px;
-      box-shadow:
-        0 10px 30px rgba(20,115,255,.35),
-        inset 0 1px 1px rgba(255,255,255,.4);
-    }
-
-    .brand-name {
-      font-size: 19px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-    }
-
-    .brand-sub {
-      display: block;
-      color: #7f91a8;
-      font-size: 10px;
-      letter-spacing: 2px;
-      margin-top: 3px;
+    .presentation p {
+        margin-inline: auto;
     }
 
     .status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #9aacbf;
-      font-size: 11px;
+        justify-content: center;
     }
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #38e58b;
-      box-shadow: 0 0 12px #38e58b;
+    .login-card {
+        max-width: 470px;
+
+        margin: auto;
     }
 
-    /* HERO */
-    .hero {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
+}
+
+@media (max-width: 560px) {
+
+    .header {
+        height: 68px;
     }
 
-    .hero-content {
-      width: 100%;
-      max-width: 700px;
-      animation: appear 1.2s ease forwards;
+    .logo {
+        width: 38px;
+        height: 38px;
     }
 
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .brand-name {
+        font-size: 12px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 15px;
-      border: 1px solid rgba(69,163,255,.25);
-      border-radius: 100px;
-      background: rgba(20,115,255,.08);
-      color: #8fc7ff;
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 28px;
-      backdrop-filter: blur(12px);
+    .brand-subtitle {
+        display: none;
     }
 
-    .badge span {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #45a3ff;
-      box-shadow: 0 0 10px #45a3ff;
+    main {
+        padding-top: 100px;
+        padding-bottom: 65px;
     }
 
-    h1 {
-      font-size: clamp(48px, 12vw, 92px);
-      line-height: .95;
-      letter-spacing: -4px;
-      font-weight: 900;
-      margin-bottom: 20px;
-      background: linear-gradient(
-        120deg,
-        #ffffff 20%,
-        #8bc9ff 50%,
-        #ffffff 80%
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-size: 200% auto;
-      animation: shine 5s linear infinite;
+    .presentation h1 {
+        font-size: 53px;
+
+        letter-spacing: -3px;
     }
 
-    @keyframes shine {
-      to {
-        background-position: 200% center;
-      }
-    }
-
-    .tagline {
-      font-size: clamp(18px, 4vw, 25px);
-      color: #d7e4f2;
-      font-weight: 500;
-      margin-bottom: 12px;
-    }
-
-    .description {
-      max-width: 500px;
-      margin: 0 auto 38px;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    /* BUTTON */
-    .login-btn {
-      position: relative;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 17px 42px;
-      min-width: 190px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #1473ff, #3198ff);
-      color: white;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: .4px;
-      box-shadow:
-        0 15px 40px rgba(20,115,255,.35),
-        inset 0 1px rgba(255,255,255,.35);
-      transition: .3s ease;
-      overflow: hidden;
-    }
-
-    .login-btn::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 70%;
-      height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.35),
-        transparent
-      );
-      transform: skewX(-20deg);
-      animation: buttonShine 3s infinite;
-    }
-
-    @keyframes buttonShine {
-      0% {
-        left: -100%;
-      }
-      45%,100% {
-        left: 140%;
-      }
-    }
-
-    .login-btn:hover {
-      transform: translateY(-4px);
-      box-shadow:
-        0 20px 50px rgba(20,115,255,.5),
-        inset 0 1px rgba(255,255,255,.4);
-    }
-
-    .login-btn:active {
-      transform: scale(.97);
-    }
-
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 22px;
-      color: #65778e;
-      font-size: 10px;
-      letter-spacing: 1px;
-    }
-
-    /* MODAL */
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 25px;
-      background: rgba(1,5,12,.75);
-      backdrop-filter: blur(14px);
-    }
-
-    .modal.active {
-      display: flex;
-      animation: modalBg .35s ease;
-    }
-
-    @keyframes modalBg {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    .modal-box {
-      width: 100%;
-      max-width: 420px;
-      padding: 38px 28px;
-      text-align: center;
-      border-radius: 28px;
-      border: 1px solid rgba(255,255,255,.1);
-      background:
-        linear-gradient(
-          145deg,
-          rgba(16,31,51,.98),
-          rgba(5,13,24,.98)
-        );
-      box-shadow:
-        0 30px 100px rgba(0,0,0,.6),
-        inset 0 1px rgba(255,255,255,.08);
-      transform: scale(.8);
-      animation: modalBox .4s cubic-bezier(.2,.8,.2,1) forwards;
-    }
-
-    @keyframes modalBox {
-      to {
-        transform: scale(1);
-      }
-    }
-
-    .modal-icon {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 22px;
-      font-size: 31px;
-      background: rgba(20,115,255,.12);
-      border: 1px solid rgba(69,163,255,.2);
-      box-shadow: 0 15px 35px rgba(20,115,255,.15);
-    }
-
-    .modal h2 {
-      font-size: 24px;
-      margin-bottom: 12px;
-    }
-
-    .modal p {
-      color: #9fafc1;
-      font-size: 14px;
-      line-height: 1.7;
-      margin-bottom: 26px;
-    }
-
-    .close-btn {
-      border: 1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.05);
-      color: white;
-      padding: 13px 30px;
-      border-radius: 13px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: .25s;
-    }
-
-    .close-btn:hover {
-      background: rgba(255,255,255,.1);
-    }
-
-    /* MOBILE */
-    @media (max-width: 600px) {
-
-      header {
-        padding: 22px 20px;
-      }
-
-      .brand-icon {
-        width: 40px;
-        height: 40px;
-      }
-
-      .brand-name {
-        font-size: 16px;
-      }
-
-      .status {
-        font-size: 9px;
-      }
-
-      h1 {
-        letter-spacing: -2px;
-      }
-
-      .description {
+    .presentation p {
         font-size: 13px;
-        max-width: 330px;
-      }
-
-      .login-btn {
-        width: 100%;
-        max-width: 280px;
-      }
-
-      footer {
-        padding-bottom: 18px;
-      }
     }
-  </style>
+
+    .login-card {
+        padding: 25px 20px;
+
+        border-radius: 21px;
+    }
+
+    .welcome-box {
+        padding:
+            35px 10px;
+    }
+
+    .welcome-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .downloads {
+        flex-direction: column;
+    }
+
+    .store-button {
+        width: 100%;
+    }
+
+    .footer {
+        position: static;
+
+        padding:
+            0 20px 20px;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation: none !important;
+
+        transition: none !important;
+
+        scroll-behavior: auto !important;
+
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-  <div class="background">
+
+<!-- =======================================================
+     BACKGROUND
+======================================================= -->
+
+<div class="background">
+
+    <div class="grid"></div>
+
     <div class="orb one"></div>
+
     <div class="orb two"></div>
-    <div class="orb three"></div>
 
-    <div class="particles">
-      <div class="particle"></div>
-      <div class="particle"></div>
-      <div class="particle"></div>
-      <div class="particle"></div>
-      <div class="particle"></div>
-      <div class="particle"></div>
-    </div>
-  </div>
+</div>
 
-  <div class="app">
 
-    <!-- HEADER -->
-    <header>
+<!-- =======================================================
+     HEADER
+======================================================= -->
 
-      <div class="brand">
-        <div class="brand-icon">DS</div>
+<header class="header">
 
-        <div>
-          <div class="brand-name">DALZON SHULE</div>
-          <span class="brand-sub">CONNECTER L'ÉCOLE À LA MAISON</span>
-        </div>
-      </div>
+    <div class="header-inner">
 
-      <div class="status">
-        <span class="status-dot"></span>
-        Plateforme
-      </div>
+        <a
+            href="#"
+            class="brand"
+            aria-label="DALZON SHULE"
+        >
 
-    </header>
+            <img
+                src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
+                alt="Logo DALZON SHULE"
+                class="logo"
+            >
 
-    <!-- HERO -->
-    <main class="hero">
+            <div>
 
-      <div class="hero-content">
+                <div class="brand-name">
+                    DALZON SHULE
+                </div>
 
-        <div class="badge">
-          <span></span>
-          Nouvelle génération éducative
-        </div>
+                <div class="brand-subtitle">
+                    CONNECTER L'ÉCOLE À LA MAISON
+                </div>
 
-        <h1>DALZON<br>SHULE</h1>
+            </div>
 
-        <p class="tagline">
-          L'école, partout avec vous.
-        </p>
+        </a>
 
-        <p class="description">
-          Une nouvelle expérience numérique conçue pour rapprocher
-          l'école, les élèves et les familles.
-        </p>
 
-        <button class="login-btn" id="loginBtn">
-          Se connecter
+        <button
+            type="button"
+            class="theme-button"
+            id="themeButton"
+            aria-label="Changer le thème"
+        >
+
+            <svg
+                id="themeIcon"
+                viewBox="0 0 24 24"
+            >
+
+                <path d="
+                    M12 18a6 6 0 1 0 0-12
+                    6 6 0 0 0 0 12z
+                "/>
+
+            </svg>
+
         </button>
 
-      </div>
+    </div>
 
-    </main>
+</header>
 
-    <footer>
-      © 2026 DALZON SHULE — Une initiative de DALZON ENTREPRISE
-    </footer>
 
-  </div>
+<!-- =======================================================
+     PAGE DE CONNEXION
+======================================================= -->
 
-  <!-- MODAL -->
-  <div class="modal" id="modal">
+<main
+    class="login-page"
+    id="loginPage"
+>
+
+    <div class="page">
+
+
+        <!-- =================================================
+             PRÉSENTATION
+        ================================================= -->
+
+        <section class="presentation">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                ESPACE ÉCOLE
+
+            </div>
+
+
+            <h1>
+
+                Votre école,
+
+                <br>
+
+                <span class="gradient-text">
+                    connectée.
+                </span>
+
+            </h1>
+
+
+            <p>
+
+                Accédez à votre espace DALZON SHULE
+                avec votre adresse e-mail ou votre
+                identifiant matricule.
+
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             CARTE DE CONNEXION
+        ================================================= -->
+
+        <section class="login-card">
+
+            <img
+                src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
+                alt="Logo DALZON SHULE"
+                class="card-logo"
+            >
+
+
+            <h2>
+                Se connecter
+            </h2>
+
+
+            <p class="login-card-intro">
+
+                Entrez vos informations pour accéder
+                à votre espace.
+
+            </p>
+
+
+            <form
+                class="form"
+                id="loginForm"
+                novalidate
+            >
+
+
+                <!-- IDENTIFIANT -->
+
+                <div class="field">
+
+                    <label
+                        class="field-label"
+                        for="identifier"
+                    >
+                        Adresse e-mail ou ID matricule
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+                        <svg
+                            class="input-icon"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path d="
+                                M12 12a5 5 0 1 0 0-10
+                                5 5 0 0 0 0 10zm0 2
+                                a8 8 0 0 0-8 8h16a8 8
+                                0 0 0-8-8z
+                            "/>
+
+                        </svg>
+
+
+                        <input
+                            class="input"
+                            id="identifier"
+                            name="identifier"
+                            type="text"
+                            autocomplete="username"
+                            placeholder="Ex. eleve@email.com ou DS-2026-001"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- MOT DE PASSE -->
+
+                <div class="field">
+
+                    <label
+                        class="field-label"
+                        for="password"
+                    >
+                        Mot de passe
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+                        <svg
+                            class="input-icon"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path d="
+                                M17 8h-1V6a4 4 0 0 0-8
+                                0v2H7a2 2 0 0 0-2 2v9
+                                a2 2 0 0 0 2 2h10a2 2
+                                0 0 0 2-2v-9a2 2 0
+                                0 0 0-2-2zm-7-2a2 2
+                                0 0 1 4 0v2h-4V6z
+                            "/>
+
+                        </svg>
+
+
+                        <input
+                            class="input"
+                            id="password"
+                            name="password"
+                            type="password"
+                            autocomplete="current-password"
+                            placeholder="Votre mot de passe"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="passwordToggle"
+                            aria-label="Afficher le mot de passe"
+                        >
+
+                            <svg
+                                id="eyeIcon"
+                                viewBox="0 0 24 24"
+                            >
+
+                                <path d="
+                                    M12 5c-5 0-9 3-11 7
+                                    2 4 6 7 11 7s9-3
+                                    11-7c-2-4-6-7-11-7zm0
+                                    12a5 5 0 1 1 0-10
+                                    5 5 0 0 1 0 10z
+                                "/>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OUBLI MOT DE PASSE -->
+
+                <div class="forgot">
+
+                    Si vous avez oublié votre mot de passe,
+                    <strong>
+                        contactez le secrétariat de votre école.
+                    </strong>
+
+                </div>
+
+
+                <!-- CONNEXION -->
+
+                <button
+                    type="submit"
+                    class="login-submit"
+                    id="loginSubmit"
+                >
+                    Se connecter
+                </button>
+
+
+                <div class="demo-notice">
+
+                    L'accès réel aux comptes sera activé
+                    lorsque le système d'authentification
+                    de DALZON SHULE sera connecté au serveur.
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<!-- =======================================================
+     PAGE BON RETOUR
+======================================================= -->
+
+<section
+    class="welcome-page"
+    id="welcomePage"
+>
+
+    <div class="welcome-box">
+
+
+        <img
+            src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
+            alt="Logo DALZON SHULE"
+            class="welcome-logo"
+        >
+
+
+        <div class="welcome-label">
+            CONNEXION RÉUSSIE
+        </div>
+
+
+        <h1 class="welcome-title">
+            Bon retour à
+            <span class="gradient-text">
+                DALZON SHULE
+            </span>
+        </h1>
+
+
+        <p class="welcome-text">
+
+            Votre session est prête.
+            La prochaine étape sera l'accès
+            complet à l'application DALZON SHULE.
+
+        </p>
+
+
+        <div class="downloads">
+
+
+            <!-- =================================================
+                 APP STORE — VRAI LOGO
+            ================================================= -->
+
+            <button
+                type="button"
+                class="store-button"
+                data-store="App Store"
+            >
+
+                <svg
+                    class="store-icon"
+                    viewBox="0 0 24 24"
+                >
+
+                    <path d="
+                        M16.77 12.65c-.02-2.06
+                        1.68-3.06 1.76-3.11
+                        -.96-1.4-2.46-1.59
+                        -2.99-1.61-1.27-.13
+                        -2.5.75-3.15.75
+                        -.66 0-1.68-.73
+                        -2.75-.71-1.41.02
+                        -2.71.82-3.43 2.08
+                        -1.48 2.57-.38 6.35
+                        1.06 8.42.72 1.01
+                        1.56 2.14 2.67 2.1
+                        1.07-.04 1.48-.68
+                        2.78-.68 1.3 0
+                        1.67.68 2.8.65
+                        1.16-.02 1.88-1.02
+                        2.58-2.04.81-1.18
+                        1.15-2.32 1.17-2.38
+                        -.03-.01-2.25-.86
+                        -2.27-3.47Z
+                    "/>
+
+                </svg>
+
+
+                <span class="store-copy">
+
+                    <span class="store-small">
+                        Télécharger sur
+                    </span>
+
+                    <span class="store-name">
+                        App Store
+                    </span>
+
+                </span>
+
+            </button>
+
+
+            <!-- =================================================
+                 GOOGLE PLAY — VRAI LOGO
+            ================================================= -->
+
+            <button
+                type="button"
+                class="store-button"
+                data-store="Google Play"
+            >
+
+                <svg
+                    class="store-icon"
+                    viewBox="0 0 24 24"
+                >
+
+                    <path d="
+                        M3.3 2.6c-.2.35-.3.78-.3
+                        1.28v16.24c0 .5.1.93.3
+                        1.28L12.2 12 3.3 2.6Zm10.08
+                        8.42L4.58 1.96c.23-.13
+                        .5-.2.79-.2.36 0
+                        .69.1.98.27l10.36
+                        5.9-3.33 3.09Zm0
+                        1.96 3.33 3.09-10.36
+                        5.9c-.29.17-.62.27-.98
+                        .27-.29 0-.56-.07-.79-.2
+                        l8.8-9.06Zm1.01-.98
+                        3.72-3.46 1.34.76
+                        c.75.43 1.2 1.04
+                        1.2 1.71s-.45 1.28
+                        -1.2 1.71l-1.34.76
+                        -3.72-3.48Z
+                    "/>
+
+                </svg>
+
+
+                <span class="store-copy">
+
+                    <span class="store-small">
+                        Disponible bientôt sur
+                    </span>
+
+                    <span class="store-name">
+                        Google Play
+                    </span>
+
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="back-button"
+            id="backButton"
+        >
+            ← Retour à la connexion
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     MODAL STORE
+======================================================= -->
+
+<div
+    class="modal"
+    id="storeModal"
+    aria-hidden="true"
+>
 
     <div class="modal-box">
 
-      <div class="modal-icon">
-        🚧
-      </div>
+        <img
+            src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
+            alt="Logo DALZON SHULE"
+            class="modal-logo"
+        >
 
-      <h2>Application en développement</h2>
+        <h2 class="modal-title">
+            Bientôt disponible
+        </h2>
 
-      <p>
-        Dalzon Shule est actuellement en cours de développement.
-        L'application sera bientôt disponible.
-        <br><br>
-        Merci pour votre patience.
-      </p>
+        <p
+            class="modal-text"
+            id="storeModalText"
+        >
+            L'application DALZON SHULE sera
+            prochainement disponible.
+        </p>
 
-      <button class="close-btn" id="closeBtn">
-        Compris
-      </button>
+        <button
+            type="button"
+            class="modal-close"
+            id="modalClose"
+        >
+            Compris
+        </button>
 
     </div>
 
-  </div>
+</div>
 
-  <script>
 
-    const loginBtn = document.getElementById("loginBtn");
-    const modal = document.getElementById("modal");
-    const closeBtn = document.getElementById("closeBtn");
+<!-- =======================================================
+     FOOTER
+======================================================= -->
 
-    // Ouverture du message
-    loginBtn.addEventListener("click", () => {
-      modal.classList.add("active");
-    });
+<footer class="footer">
 
-    // Fermeture du message
-    closeBtn.addEventListener("click", () => {
-      modal.classList.remove("active");
-    });
+    © 2026 DALZON SHULE — Une initiative de DALZON ENTREPRISE
 
-    // Fermeture en cliquant à l'extérieur
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        modal.classList.remove("active");
-      }
-    });
+</footer>
 
-    // Fermeture avec la touche Échap
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        modal.classList.remove("active");
-      }
-    });
 
-  </script>
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const body =
+    document.body;
+
+const themeButton =
+    document.getElementById(
+        "themeButton"
+    );
+
+const themeIcon =
+    document.getElementById(
+        "themeIcon"
+    );
+
+const themeColor =
+    document.getElementById(
+        "themeColor"
+    );
+
+const loginForm =
+    document.getElementById(
+        "loginForm"
+    );
+
+const loginPage =
+    document.getElementById(
+        "loginPage"
+    );
+
+const welcomePage =
+    document.getElementById(
+        "welcomePage"
+    );
+
+const identifier =
+    document.getElementById(
+        "identifier"
+    );
+
+const password =
+    document.getElementById(
+        "password"
+    );
+
+const passwordToggle =
+    document.getElementById(
+        "passwordToggle"
+    );
+
+const eyeIcon =
+    document.getElementById(
+        "eyeIcon"
+    );
+
+const loginSubmit =
+    document.getElementById(
+        "loginSubmit"
+    );
+
+const backButton =
+    document.getElementById(
+        "backButton"
+    );
+
+const storeModal =
+    document.getElementById(
+        "storeModal"
+    );
+
+const storeModalText =
+    document.getElementById(
+        "storeModalText"
+    );
+
+const modalClose =
+    document.getElementById(
+        "modalClose"
+    );
+
+
+/* =========================================================
+   THÈME
+========================================================= */
+
+const THEME_KEY =
+    "dalzon-shule-theme";
+
+
+function updateThemeIcon(
+    light
+) {
+
+    if (light) {
+
+        themeIcon.innerHTML = `
+            <path d="
+                M20.5 14.2
+                A8.5 8.5 0 1 1
+                9.8 3.5
+                A7 7 0 1 0
+                20.5 14.2Z
+            "/>
+        `;
+
+        themeButton.setAttribute(
+            "title",
+            "Mode sombre"
+        );
+
+    } else {
+
+        themeIcon.innerHTML = `
+            <path d="
+                M12 18a6 6 0 1 0 0-12
+                6 6 0 0 0 0 12z
+                M12 2a1 1 0 0 1 1 1v1
+                a1 1 0 1 1-2 0V3
+                a1 1 0 0 1 1-1z
+            "/>
+        `;
+
+        themeButton.setAttribute(
+            "title",
+            "Mode clair"
+        );
+
+    }
+
+}
+
+
+function setTheme(
+    theme
+) {
+
+    const light =
+        theme === "light";
+
+    body.classList.toggle(
+        "light",
+        light
+    );
+
+    localStorage.setItem(
+        THEME_KEY,
+        theme
+    );
+
+    themeColor.setAttribute(
+        "content",
+        light
+            ? "#f4f8fc"
+            : "#07111f"
+    );
+
+    updateThemeIcon(
+        light
+    );
+
+}
+
+
+const savedTheme =
+    localStorage.getItem(
+        THEME_KEY
+    );
+
+
+setTheme(
+    savedTheme === "light"
+        ? "light"
+        : "dark"
+);
+
+
+themeButton.addEventListener(
+    "click",
+    function () {
+
+        setTheme(
+            body.classList.contains(
+                "light"
+            )
+                ? "dark"
+                : "light"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   AFFICHER / CACHER MOT DE PASSE
+========================================================= */
+
+passwordToggle.addEventListener(
+    "click",
+    function () {
+
+        const visible =
+            password.type === "text";
+
+        password.type =
+            visible
+                ? "password"
+                : "text";
+
+        if (visible) {
+
+            eyeIcon.innerHTML = `
+                <path d="
+                    M12 5c-5 0-9 3-11 7
+                    2 4 6 7 11 7s9-3
+                    11-7c-2-4-6-7-11-7zm0
+                    12a5 5 0 1 1 0-10
+                    5 5 0 0 1 0 10z
+                "/>
+            `;
+
+        } else {
+
+            eyeIcon.innerHTML = `
+                <path d="
+                    M2 5.27 3.28 4 20 20.72
+                    18.73 22l-2.24-2.24
+                    A10.7 10.7 0 0 1 12 21
+                    C7 21 2.73 18.11 1
+                    12a17.4 17.4 0 0 1
+                    3.55-5.06L2 5.27z
+                    M12 7c-2.76 0-5 2.24-5
+                    5 0 .69.14 1.35.4 1.94
+                    l1.67 1.67A5 5 0 0 1
+                    12 10c1.1 0 2.1.36
+                    2.91.97l1.43 1.43
+                    A5 5 0 0 0 12 7zm8.94
+                    3.11A17.42 17.42 0 0 0
+                    12 3C7 3 2.73 5.89
+                    1 12c.54 1.9 1.5 3.48
+                    2.71 4.9l1.42-1.42
+                    A15.4 15.4 0 0 1
+                    3.1 12 15.2 15.2 0 0 1
+                    12 5c4.08 0 7.63
+                    2.19 8.9 7a15.3 15.3 0 0 1
+                    -1.52 3.07l1.43 1.43A17.4
+                    17.4 0 0 0 22.9 12
+                    c-.48-1.69-1.13-3-1.96-4.02z
+                "/>
+            `;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CONNEXION
+========================================================= */
+
+loginForm.addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+
+        const user =
+            identifier.value.trim();
+
+        const pass =
+            password.value.trim();
+
+
+        if (!user) {
+
+            identifier.focus();
+
+            identifier.style.borderColor =
+                "#ff6b6b";
+
+            setTimeout(
+                function () {
+                    identifier.style.borderColor = "";
+                },
+                1800
+            );
+
+            return;
+
+        }
+
+
+        if (!pass) {
+
+            password.focus();
+
+            password.style.borderColor =
+                "#ff6b6b";
+
+            setTimeout(
+                function () {
+                    password.style.borderColor = "";
+                },
+                1800
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * IMPORTANT :
+         * Cette partie simule uniquement la navigation.
+         *
+         * Pour une vraie authentification,
+         * cette fonction devra appeler ton API.
+         */
+
+
+        loginSubmit.disabled = true;
+
+        loginSubmit.textContent =
+            "Connexion en cours...";
+
+
+        setTimeout(
+            function () {
+
+                loginPage.classList.add(
+                    "hidden"
+                );
+
+                welcomePage.classList.add(
+                    "active"
+                );
+
+                loginSubmit.disabled =
+                    false;
+
+                loginSubmit.textContent =
+                    "Se connecter";
+
+                window.scrollTo(
+                    0,
+                    0
+                );
+
+            },
+            850
+        );
+
+    }
+);
+
+
+/* =========================================================
+   RETOUR
+========================================================= */
+
+backButton.addEventListener(
+    "click",
+    function () {
+
+        welcomePage.classList.remove(
+            "active"
+        );
+
+        loginPage.classList.remove(
+            "hidden"
+        );
+
+        password.value = "";
+
+        window.scrollTo(
+            0,
+            0
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BOUTONS STORES
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".store-button"
+    )
+    .forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const store =
+                        button.dataset.store;
+
+                    storeModalText.textContent =
+                        "La version " +
+                        store +
+                        " de DALZON SHULE sera disponible " +
+                        "lorsque l'application sera officiellement publiée.";
+
+                    storeModal.classList.add(
+                        "active"
+                    );
+
+                    storeModal.setAttribute(
+                        "aria-hidden",
+                        "false"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function closeModal() {
+
+    storeModal.classList.remove(
+        "active"
+    );
+
+    storeModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+}
+
+
+modalClose.addEventListener(
+    "click",
+    closeModal
+);
+
+
+storeModal.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target ===
+            storeModal
+        ) {
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModal();
+
+        }
+
+    }
+);
+
+</script>
 
 </body>
 </html>
