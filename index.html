@@ -6,7 +6,7 @@
 
 <title>DALZON SHULE — Connexion</title>
 
-<meta name="description" content="Connexion à DALZON SHULE">
+<meta name="description" content="Connexion sécurisée à DALZON SHULE">
 
 <link rel="icon"
       type="image/png"
@@ -17,9 +17,9 @@
 
 <style>
 
-/* =========================
+/* =========================================================
    BASE
-========================= */
+========================================================= */
 
 *{
     margin:0;
@@ -35,6 +35,8 @@
     --border:rgba(255,255,255,.10);
     --blue:#1687ff;
     --cyan:#42c4ff;
+    --danger:#ff5570;
+    --success:#32d583;
 }
 
 html,
@@ -73,9 +75,9 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    BACKGROUND
-========================= */
+========================================================= */
 
 .background{
     position:fixed;
@@ -130,12 +132,19 @@ body{
             black,
             transparent
         );
+
+    -webkit-mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent
+        );
 }
 
 
-/* =========================
+/* =========================================================
    LOGO
-========================= */
+========================================================= */
 
 .logo{
     width:82px;
@@ -169,9 +178,9 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    SCREENS
-========================= */
+========================================================= */
 
 .screen{
     position:fixed;
@@ -195,6 +204,8 @@ body{
         opacity .5s ease,
         transform .5s ease,
         visibility .5s ease;
+
+    overflow-y:auto;
 }
 
 .screen.active{
@@ -207,13 +218,12 @@ body{
 }
 
 
-/* =========================
-   LOGIN
-========================= */
+/* =========================================================
+   LOGIN CARD
+========================================================= */
 
 .login-card{
-    width:
-        min(430px,100%);
+    width:min(430px,100%);
 
     padding:42px 35px;
 
@@ -222,14 +232,11 @@ body{
 
     border-radius:30px;
 
-    background:
-        var(--card);
+    background:var(--card);
 
-    backdrop-filter:
-        blur(25px);
+    backdrop-filter:blur(25px);
 
-    -webkit-backdrop-filter:
-        blur(25px);
+    -webkit-backdrop-filter:blur(25px);
 
     box-shadow:
         0 35px 100px
@@ -257,9 +264,9 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    FORM
-========================= */
+========================================================= */
 
 .form{
     margin-top:28px;
@@ -352,6 +359,58 @@ body{
     cursor:pointer;
 }
 
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.login-message{
+    display:none;
+
+    margin-top:14px;
+
+    padding:11px 13px;
+
+    border-radius:12px;
+
+    font-size:10px;
+
+    line-height:1.5;
+
+    text-align:center;
+}
+
+.login-message.error{
+    display:block;
+
+    color:#ff9aaa;
+
+    background:
+        rgba(255,85,112,.08);
+
+    border:
+        1px solid
+        rgba(255,85,112,.18);
+}
+
+.login-message.success{
+    display:block;
+
+    color:#82efb5;
+
+    background:
+        rgba(50,213,131,.08);
+
+    border:
+        1px solid
+        rgba(50,213,131,.18);
+}
+
+
+/* =========================================================
+   FORGOT
+========================================================= */
+
 .forgot{
     margin-top:4px;
 
@@ -363,6 +422,11 @@ body{
 
     text-align:center;
 }
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
 
 .login-button{
     width:100%;
@@ -419,15 +483,14 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    WELCOME
-========================= */
+========================================================= */
 
 .welcome{
     text-align:center;
 
-    width:
-        min(600px,100%);
+    width:min(600px,100%);
 }
 
 .welcome h1{
@@ -458,6 +521,53 @@ body{
 
     line-height:1.7;
 }
+
+
+/* =========================================================
+   USER INFO
+========================================================= */
+
+.user-info{
+    margin:22px auto 0;
+
+    width:min(360px,100%);
+
+    padding:14px 18px;
+
+    border:
+        1px solid
+        rgba(66,196,255,.15);
+
+    border-radius:15px;
+
+    background:
+        rgba(22,135,255,.06);
+}
+
+.user-name{
+    font-size:14px;
+
+    font-weight:800;
+}
+
+.user-role{
+    margin-top:5px;
+
+    color:var(--cyan);
+
+    font-size:10px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.7px;
+}
+
+
+/* =========================================================
+   DOWNLOAD BUTTON
+========================================================= */
 
 .download-button{
     display:inline-flex;
@@ -508,13 +618,12 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    DOWNLOAD
-========================= */
+========================================================= */
 
 .download{
-    width:
-        min(760px,100%);
+    width:min(760px,100%);
 
     text-align:center;
 }
@@ -557,9 +666,9 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    STORE BUTTONS
-========================= */
+========================================================= */
 
 .store{
     width:210px;
@@ -644,9 +753,9 @@ body{
 }
 
 
-/* =========================
+/* =========================================================
    MODAL
-========================= */
+========================================================= */
 
 .modal{
     position:fixed;
@@ -667,6 +776,8 @@ body{
 
     backdrop-filter:blur(10px);
 
+    -webkit-backdrop-filter:blur(10px);
+
     opacity:0;
     visibility:hidden;
 
@@ -679,8 +790,7 @@ body{
 }
 
 .modal-box{
-    width:
-        min(390px,100%);
+    width:min(390px,100%);
 
     padding:30px;
 
@@ -745,17 +855,20 @@ body{
     font-size:10px;
 
     font-weight:900;
+
+    cursor:pointer;
 }
 
 
-/* =========================
+/* =========================================================
    RESPONSIVE
-========================= */
+========================================================= */
 
 @media(max-width:500px){
 
     .login-card{
         padding:34px 22px;
+
         border-radius:25px;
     }
 
@@ -765,11 +878,13 @@ body{
 
     .stores{
         flex-direction:column;
+
         align-items:center;
     }
 
     .store{
         width:100%;
+
         max-width:300px;
     }
 
@@ -782,12 +897,13 @@ body{
 </style>
 </head>
 
+
 <body>
 
 
-<!-- =========================
+<!-- =========================================================
      BACKGROUND
-========================= -->
+========================================================= -->
 
 <div class="background">
 
@@ -800,9 +916,9 @@ body{
 </div>
 
 
-<!-- =========================
-     LOGIN SCREEN
-========================= -->
+<!-- =========================================================
+     LOGIN
+========================================================= -->
 
 <section
     class="screen active"
@@ -826,13 +942,16 @@ body{
 
         <form
             class="form"
-            id="loginForm">
+            id="loginForm"
+            autocomplete="off">
 
+
+            <!-- EMAIL -->
 
             <div class="field">
 
                 <label for="identifier">
-                    Adresse mail ou ID matricule
+                    Adresse mail DALZON SHULE
                 </label>
 
                 <div class="input-box">
@@ -840,9 +959,11 @@ body{
                     <input
                         class="input"
                         id="identifier"
-                        type="text"
-                        placeholder="Adresse mail ou ID matricule"
-                        autocomplete="username"
+                        type="email"
+                        placeholder="nom@dalzonshule.com"
+                        autocomplete="off"
+                        autocapitalize="none"
+                        spellcheck="false"
                         required>
 
                 </div>
@@ -850,10 +971,12 @@ body{
             </div>
 
 
+            <!-- CODE -->
+
             <div class="field">
 
                 <label for="password">
-                    Mot de passe
+                    Code d'accès
                 </label>
 
                 <div class="input-box">
@@ -862,8 +985,8 @@ body{
                         class="input"
                         id="password"
                         type="password"
-                        placeholder="Mot de passe"
-                        autocomplete="current-password"
+                        placeholder="Votre code d'accès"
+                        autocomplete="new-password"
                         required>
 
                     <button
@@ -882,11 +1005,21 @@ body{
 
             <div class="forgot">
 
-                Si vous avez oublié votre mot de passe,
-                contactez le secrétariat de l'école.
+                Utilisez l'adresse et le code
+                qui vous ont été attribués par DALZON SHULE.
 
             </div>
 
+
+            <!-- MESSAGE -->
+
+            <div
+                class="login-message"
+                id="loginMessage">
+            </div>
+
+
+            <!-- BUTTON -->
 
             <button
                 type="submit"
@@ -904,9 +1037,9 @@ body{
 </section>
 
 
-<!-- =========================
-     WELCOME SCREEN
-========================= -->
+<!-- =========================================================
+     WELCOME
+========================================================= -->
 
 <section
     class="screen"
@@ -931,19 +1064,33 @@ body{
 
         </h1>
 
+
         <p>
-
-            Téléchargez l'application DALZON SHULE
-            pour continuer.
-
+            Heureux de vous retrouver sur
+            l'espace DALZON SHULE.
         </p>
+
+
+        <div class="user-info">
+
+            <div
+                class="user-name"
+                id="welcomeName">
+            </div>
+
+            <div
+                class="user-role"
+                id="welcomeRole">
+            </div>
+
+        </div>
 
 
         <button
             class="download-button"
             id="goDownload">
 
-            Télécharger l'application
+            Continuer sur l'application
 
         </button>
 
@@ -952,9 +1099,9 @@ body{
 </section>
 
 
-<!-- =========================
-     DOWNLOAD SCREEN
-========================= -->
+<!-- =========================================================
+     DOWNLOAD
+========================================================= -->
 
 <section
     class="screen"
@@ -1093,9 +1240,9 @@ body{
 </section>
 
 
-<!-- =========================
+<!-- =========================================================
      MODAL
-========================= -->
+========================================================= -->
 
 <div
     class="modal"
@@ -1133,9 +1280,131 @@ body{
 
 <script>
 
-/* =========================
+/* =========================================================
+   COMPTES DALZON SHULE
+   =========================================================
+
+   IMPORTANT :
+   Ceci est uniquement pour la démonstration.
+
+   Dans la vraie version, les comptes doivent être
+   vérifiés par une API côté serveur.
+
+========================================================= */
+
+const DALZON_ACCOUNTS = [
+
+    {
+        email: "salomon@dalzonshule.com",
+        code: "DZ-SHL-001",
+        name: "Salomon",
+        role: "Administration"
+    },
+
+    {
+        email: "eleve01@dalzonshule.com",
+        code: "DZ-SHL-002",
+        name: "Élève 01",
+        role: "Élève"
+    },
+
+    {
+        email: "eleve02@dalzonshule.com",
+        code: "DZ-SHL-003",
+        name: "Élève 02",
+        role: "Élève"
+    },
+
+    {
+        email: "eleve03@dalzonshule.com",
+        code: "DZ-SHL-004",
+        name: "Élève 03",
+        role: "Élève"
+    },
+
+    {
+        email: "eleve04@dalzonshule.com",
+        code: "DZ-SHL-005",
+        name: "Élève 04",
+        role: "Élève"
+    },
+
+    {
+        email: "eleve05@dalzonshule.com",
+        code: "DZ-SHL-006",
+        name: "Élève 05",
+        role: "Élève"
+    },
+
+    {
+        email: "prof01@dalzonshule.com",
+        code: "DZ-SHL-007",
+        name: "Professeur 01",
+        role: "Professeur"
+    },
+
+    {
+        email: "prof02@dalzonshule.com",
+        code: "DZ-SHL-008",
+        name: "Professeur 02",
+        role: "Professeur"
+    },
+
+    {
+        email: "prof03@dalzonshule.com",
+        code: "DZ-SHL-009",
+        name: "Professeur 03",
+        role: "Professeur"
+    },
+
+    {
+        email: "parent01@dalzonshule.com",
+        code: "DZ-SHL-010",
+        name: "Parent 01",
+        role: "Parent"
+    },
+
+    {
+        email: "parent02@dalzonshule.com",
+        code: "DZ-SHL-011",
+        name: "Parent 02",
+        role: "Parent"
+    },
+
+    {
+        email: "direction@dalzonshule.com",
+        code: "DZ-SHL-012",
+        name: "Direction",
+        role: "Direction"
+    },
+
+    {
+        email: "secretariat@dalzonshule.com",
+        code: "DZ-SHL-013",
+        name: "Secrétariat",
+        role: "Secrétariat"
+    },
+
+    {
+        email: "comptable@dalzonshule.com",
+        code: "DZ-SHL-014",
+        name: "Comptable",
+        role: "Comptabilité"
+    },
+
+    {
+        email: "support@dalzonshule.com",
+        code: "DZ-SHL-015",
+        name: "Support DALZON",
+        role: "Support"
+    }
+
+];
+
+
+/* =========================================================
    ELEMENTS
-========================= */
+========================================================= */
 
 const loginScreen =
     document.getElementById("loginScreen");
@@ -1161,6 +1430,15 @@ const loginButton =
 const togglePassword =
     document.getElementById("togglePassword");
 
+const loginMessage =
+    document.getElementById("loginMessage");
+
+const welcomeName =
+    document.getElementById("welcomeName");
+
+const welcomeRole =
+    document.getElementById("welcomeRole");
+
 const goDownload =
     document.getElementById("goDownload");
 
@@ -1174,34 +1452,64 @@ const closeModal =
     document.getElementById("closeModal");
 
 
-/* =========================
-   SCREEN SWITCH
-========================= */
+/* =========================================================
+   UTILITAIRE : AFFICHER UNE PAGE
+========================================================= */
 
 function showScreen(screen){
 
     document
         .querySelectorAll(".screen")
-        .forEach(item=>{
+        .forEach(item => {
+
             item.classList.remove("active");
+
         });
 
-    setTimeout(()=>{
+    requestAnimationFrame(() => {
 
         screen.classList.add("active");
 
-    },50);
+    });
 
 }
 
 
-/* =========================
-   PASSWORD
-========================= */
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(message, type){
+
+    loginMessage.textContent = message;
+
+    loginMessage.className =
+        "login-message " + type;
+
+}
+
+
+/* =========================================================
+   CACHER LE MESSAGE
+========================================================= */
+
+function clearMessage(){
+
+    loginMessage.textContent = "";
+
+    loginMessage.className =
+        "login-message";
+
+}
+
+
+/* =========================================================
+   AFFICHER / CACHER LE CODE
+========================================================= */
 
 togglePassword.addEventListener(
     "click",
-    ()=>{
+    () => {
 
         if(password.type === "password"){
 
@@ -1223,55 +1531,132 @@ togglePassword.addEventListener(
 );
 
 
-/* =========================
-   LOGIN
-========================= */
+/* =========================================================
+   AUTHENTIFICATION
+========================================================= */
 
 loginForm.addEventListener(
     "submit",
-    event=>{
+    event => {
 
         event.preventDefault();
 
-        const user =
-            identifier.value.trim();
+        clearMessage();
 
-        const pass =
+        const email =
+            identifier.value
+                .trim()
+                .toLowerCase();
+
+        const code =
             password.value.trim();
 
 
-        if(!user || !pass){
+        /* ---------------------------------------------
+           Vérification du format
+        --------------------------------------------- */
+
+        if(!email || !code){
+
+            showMessage(
+                "Veuillez remplir tous les champs.",
+                "error"
+            );
 
             return;
 
         }
 
 
+        /* ---------------------------------------------
+           Vérification domaine
+        --------------------------------------------- */
+
+        if(!email.endsWith("@dalzonshule.com")){
+
+            showMessage(
+                "Veuillez utiliser une adresse @dalzonshule.com.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /* ---------------------------------------------
+           Recherche du compte
+        --------------------------------------------- */
+
+        const account =
+            DALZON_ACCOUNTS.find(
+                user =>
+                    user.email === email &&
+                    user.code === code
+            );
+
+
+        /* ---------------------------------------------
+           COMPTE INCONNU
+        --------------------------------------------- */
+
+        if(!account){
+
+            showMessage(
+                "Adresse ou code d'accès incorrect.",
+                "error"
+            );
+
+            password.value = "";
+
+            return;
+
+        }
+
+
+        /* ---------------------------------------------
+           COMPTE RECONNU
+        --------------------------------------------- */
+
         loginButton.disabled = true;
 
         loginButton.textContent =
-            "Connexion...";
+            "Compte reconnu...";
+
+        showMessage(
+            "Connexion réussie.",
+            "success"
+        );
 
 
         /*
-         * Démonstration locale.
+         * IMPORTANT :
          *
-         * Plus tard :
-         * remplacer cette partie par
-         * l'appel à ton API d'authentification.
+         * Aucun localStorage.
+         * Aucun sessionStorage.
+         * Aucun cookie.
+         *
+         * Les données sont uniquement gardées
+         * temporairement dans les variables JavaScript
+         * pendant cette session de page.
          */
 
-        setTimeout(()=>{
+        setTimeout(() => {
 
-            localStorage.setItem(
-                "dalzon_logged",
-                "true"
-            );
+            welcomeName.textContent =
+                "Bienvenue, " + account.name;
 
-            localStorage.setItem(
-                "dalzon_user",
-                user
-            );
+            welcomeRole.textContent =
+                account.role;
+
+
+            /*
+             * Nettoyage immédiat des champs.
+             */
+
+            identifier.value = "";
+
+            password.value = "";
 
 
             loginButton.disabled =
@@ -1280,24 +1665,26 @@ loginForm.addEventListener(
             loginButton.textContent =
                 "Se connecter";
 
+            clearMessage();
+
 
             showScreen(
                 welcomeScreen
             );
 
-        },900);
+        }, 700);
 
     }
 );
 
 
-/* =========================
-   GO DOWNLOAD
-========================= */
+/* =========================================================
+   CONTINUER VERS L'APPLICATION
+========================================================= */
 
 goDownload.addEventListener(
     "click",
-    ()=>{
+    () => {
 
         showScreen(
             downloadScreen
@@ -1307,17 +1694,17 @@ goDownload.addEventListener(
 );
 
 
-/* =========================
-   STORE BUTTONS
-========================= */
+/* =========================================================
+   BOUTONS STORE
+========================================================= */
 
 document
     .querySelectorAll(".store")
-    .forEach(button=>{
+    .forEach(button => {
 
         button.addEventListener(
             "click",
-            ()=>{
+            () => {
 
                 const store =
                     button.dataset.store;
@@ -1337,13 +1724,13 @@ document
     });
 
 
-/* =========================
-   CLOSE MODAL
-========================= */
+/* =========================================================
+   FERMER MODAL
+========================================================= */
 
 closeModal.addEventListener(
     "click",
-    ()=>{
+    () => {
 
         modal.classList.remove(
             "active"
@@ -1353,9 +1740,13 @@ closeModal.addEventListener(
 );
 
 
+/* =========================================================
+   CLIQUER EN DEHORS DU MODAL
+========================================================= */
+
 modal.addEventListener(
     "click",
-    event=>{
+    event => {
 
         if(event.target === modal){
 
@@ -1369,13 +1760,13 @@ modal.addEventListener(
 );
 
 
-/* =========================
-   ESCAPE
-========================= */
+/* =========================================================
+   TOUCHE ESC
+========================================================= */
 
 document.addEventListener(
     "keydown",
-    event=>{
+    event => {
 
         if(event.key === "Escape"){
 
@@ -1384,6 +1775,34 @@ document.addEventListener(
             );
 
         }
+
+    }
+);
+
+
+/* =========================================================
+   PROTECTION CONTRE LE RETOUR AUTOMATIQUE
+========================================================= */
+
+/*
+ * Aucun compte n'est restauré au chargement.
+ *
+ * Donc si l'utilisateur :
+ *
+ * - actualise la page
+ * - ferme l'onglet
+ * - revient plus tard
+ *
+ * il devra se reconnecter.
+ */
+
+window.addEventListener(
+    "pageshow",
+    () => {
+
+        showScreen(
+            loginScreen
+        );
 
     }
 );
