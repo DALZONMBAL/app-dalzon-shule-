@@ -1,1716 +1,950 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta charset="UTF-8">
+<title>DALZON SHULE — Connexion</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Connexion à DALZON SHULE">
 
-    <meta name="description"
-          content="DALZON SHULE — Application éducative pour connecter l'école à la maison.">
+<link rel="icon"
+      type="image/png"
+      href="https://i.imghos.co/ScqSjIHB.png">
 
-    <meta name="theme-color"
-          content="#07111f"
-          id="themeColor">
-
-    <link rel="icon"
-          type="image/png"
-          href="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png">
-
-    <link rel="apple-touch-icon"
-          href="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png">
-
-    <meta property="og:title"
-          content="DALZON SHULE — Application">
-
-    <meta property="og:description"
-          content="Connecter l'école à la maison.">
-
-    <meta property="og:image"
-          content="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png">
-
-    <meta property="og:type"
-          content="website">
-
-    <title>DALZON SHULE — Application</title>
-
+<link rel="apple-touch-icon"
+      href="https://i.imghos.co/ScqSjIHB.png">
 
 <style>
 
-/* =========================================================
-   RESET
-========================================================= */
+/* =========================
+   BASE
+========================= */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+:root{
+    --bg:#050b14;
+    --card:rgba(12,24,40,.82);
+    --text:#ffffff;
+    --muted:#8fa3b8;
+    --border:rgba(255,255,255,.10);
+    --blue:#1687ff;
+    --cyan:#42c4ff;
 }
 
-body {
-    min-height: 100vh;
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    min-height:100vh;
+    overflow:hidden;
 
     font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
 
-    background: #07111f;
-    color: #ffffff;
+    color:var(--text);
 
-    overflow-x: hidden;
-
-    transition:
-        background .35s ease,
-        color .35s ease;
-}
-
-body.light {
-    background: #f4f8fc;
-    color: #081521;
-}
-
-button,
-input {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(22,135,255,.20),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(66,196,255,.12),
+            transparent 30%
+        ),
+        var(--bg);
 }
 
 
-/* =========================================================
+/* =========================
    BACKGROUND
-========================================================= */
+========================= */
 
-.background {
-    position: fixed;
-    inset: 0;
-
-    z-index: -10;
-
-    overflow: hidden;
-
-    pointer-events: none;
+.background{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
 }
 
-.grid {
-    position: absolute;
-    inset: 0;
+.orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.5;
+}
 
-    opacity: .045;
+.orb.one{
+    width:300px;
+    height:300px;
+    background:#087cff;
+    top:-150px;
+    left:-100px;
+}
+
+.orb.two{
+    width:350px;
+    height:350px;
+    background:#0077ff;
+    right:-160px;
+    bottom:-160px;
+}
+
+.grid{
+    position:absolute;
+    inset:0;
 
     background-image:
         linear-gradient(
-            rgba(90,190,255,.7) 1px,
+            rgba(255,255,255,.025) 1px,
             transparent 1px
         ),
         linear-gradient(
             90deg,
-            rgba(90,190,255,.7) 1px,
+            rgba(255,255,255,.025) 1px,
             transparent 1px
         );
 
-    background-size: 65px 65px;
-}
+    background-size:45px 45px;
 
-.orb {
-    position: absolute;
-
-    width: 420px;
-    height: 420px;
-
-    border-radius: 50%;
-
-    filter: blur(110px);
-
-    opacity: .18;
-}
-
-.orb.one {
-    top: -220px;
-    left: -180px;
-
-    background: #087cff;
-}
-
-.orb.two {
-    right: -200px;
-    bottom: -150px;
-
-    background: #00bfff;
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent
+        );
 }
 
 
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-
-    z-index: 100;
-
-    height: 76px;
-
-    display: flex;
-    align-items: center;
-
-    border-bottom:
-        1px solid rgba(255,255,255,.08);
-
-    background:
-        rgba(7,17,31,.58);
-
-    backdrop-filter:
-        blur(18px);
-}
-
-body.light .header {
-    background:
-        rgba(244,248,252,.78);
-
-    border-color:
-        rgba(8,21,33,.08);
-}
-
-.header-inner {
-    width:
-        min(1120px, calc(100% - 32px));
-
-    margin: auto;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-
-/* =========================================================
+/* =========================
    LOGO
-========================================================= */
+========================= */
 
-.brand {
-    display: flex;
-    align-items: center;
+.logo{
+    width:82px;
+    height:82px;
 
-    gap: 11px;
-}
+    object-fit:contain;
 
-.logo {
-    width: 43px;
-    height: 43px;
+    border-radius:22px;
 
-    object-fit: contain;
-
-    border-radius: 12px;
-
-    transition:
-        transform .25s ease;
-}
-
-.brand:hover .logo {
-    transform: scale(1.05);
-}
-
-.brand-name {
-    font-size: 14px;
-
-    font-weight: 900;
-
-    letter-spacing: 1.3px;
-}
-
-.brand-subtitle {
-    margin-top: 2px;
-
-    color: #8fa5ba;
-
-    font-size: 7px;
-
-    font-weight: 700;
-
-    letter-spacing: 1.4px;
-}
-
-.theme-button {
-    width: 40px;
-    height: 40px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid rgba(255,255,255,.10);
-
-    border-radius: 12px;
-
-    background:
-        rgba(255,255,255,.05);
-
-    color: currentColor;
-
-    transition:
-        transform .2s ease,
-        background .2s ease;
-}
-
-.theme-button:hover {
-    transform: translateY(-2px);
-}
-
-.theme-button svg {
-    width: 18px;
-    height: 18px;
-
-    fill: currentColor;
-}
-
-body.light .theme-button {
-    border-color:
-        rgba(8,21,33,.10);
-
-    background:
-        rgba(255,255,255,.7);
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-main {
-    min-height: 100vh;
-
-    padding:
-        130px 16px 70px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.page {
-    width:
-        min(1050px, 100%);
-
-    display: grid;
-
-    grid-template-columns:
-        1fr 430px;
-
-    gap: 60px;
-
-    align-items: center;
-}
-
-
-/* =========================================================
-   PRESENTATION
-========================================================= */
-
-.presentation {
-    max-width: 590px;
-}
-
-.status {
-    display: inline-flex;
-    align-items: center;
-
-    gap: 8px;
-
-    padding:
-        8px 13px;
-
-    border:
-        1px solid rgba(67,194,255,.18);
-
-    border-radius: 100px;
-
-    background:
-        rgba(22,119,255,.07);
-
-    color: #91d9ff;
-
-    font-size: 8px;
-
-    font-weight: 850;
-
-    letter-spacing: 1.6px;
-}
-
-.status-dot {
-    width: 6px;
-    height: 6px;
-
-    border-radius: 50%;
-
-    background: #42d996;
-
-    box-shadow:
-        0 0 12px rgba(66,217,150,.8);
-}
-
-.presentation h1 {
-    margin-top: 25px;
-
-    font-size:
-        clamp(50px, 7vw, 88px);
-
-    line-height: .92;
-
-    letter-spacing: -4px;
-
-    font-weight: 950;
-}
-
-.gradient-text {
-    background:
-        linear-gradient(
-            110deg,
-            #ffffff,
-            #42bfff,
-            #ffffff
+    filter:
+        drop-shadow(
+            0 15px 35px
+            rgba(22,135,255,.30)
         );
 
-    background-size: 200% auto;
-
-    -webkit-background-clip: text;
-    background-clip: text;
-
-    color: transparent;
-
-    animation:
-        shine 6s linear infinite;
+    transition:
+        transform .5s ease,
+        filter .5s ease;
 }
 
-body.light .gradient-text {
-    background:
-        linear-gradient(
-            110deg,
-            #07111f,
-            #087cff,
-            #07111f
+.logo:hover{
+    transform:
+        scale(1.05)
+        rotate(2deg);
+
+    filter:
+        drop-shadow(
+            0 20px 45px
+            rgba(22,135,255,.45)
         );
-
-    background-size: 200% auto;
-
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-@keyframes shine {
-
-    to {
-        background-position: 200% center;
-    }
-
-}
-
-.presentation p {
-    max-width: 550px;
-
-    margin-top: 25px;
-
-    color: #9eb0c2;
-
-    font-size: 15px;
-
-    line-height: 1.8;
-}
-
-body.light .presentation p {
-    color: #5e7184;
 }
 
 
-/* =========================================================
-   LOGIN CARD
-========================================================= */
+/* =========================
+   SCREENS
+========================= */
 
-.login-card {
-    width: 100%;
+.screen{
+    position:fixed;
+    inset:0;
 
-    padding: 34px;
+    display:flex;
 
-    border:
-        1px solid rgba(255,255,255,.10);
+    align-items:center;
+    justify-content:center;
 
-    border-radius: 25px;
+    padding:20px;
 
-    background:
-        rgba(12,29,47,.76);
-
-    backdrop-filter:
-        blur(22px);
-
-    box-shadow:
-        0 30px 80px rgba(0,0,0,.24);
-}
-
-body.light .login-card {
-    background:
-        rgba(255,255,255,.88);
-
-    border-color:
-        rgba(8,21,33,.09);
-
-    box-shadow:
-        0 30px 80px rgba(30,60,90,.12);
-}
-
-.card-logo {
-    width: 70px;
-    height: 70px;
-
-    object-fit: contain;
-
-    margin-bottom: 20px;
-
-    border-radius: 18px;
-}
-
-.login-card h2 {
-    font-size: 27px;
-
-    font-weight: 900;
-}
-
-.login-card-intro {
-    margin-top: 7px;
-
-    color: #91a5b9;
-
-    font-size: 11px;
-
-    line-height: 1.6;
-}
-
-body.light .login-card-intro {
-    color: #63778b;
-}
-
-
-/* =========================================================
-   FORM
-========================================================= */
-
-.form {
-    margin-top: 27px;
-}
-
-.field {
-    margin-bottom: 16px;
-}
-
-.field-label {
-    display: block;
-
-    margin-bottom: 7px;
-
-    color: #b8c8d8;
-
-    font-size: 10px;
-
-    font-weight: 750;
-}
-
-body.light .field-label {
-    color: #42586c;
-}
-
-.input-wrapper {
-    position: relative;
-}
-
-.input-icon {
-    position: absolute;
-
-    left: 14px;
-    top: 50%;
-
-    width: 17px;
-    height: 17px;
+    opacity:0;
+    visibility:hidden;
 
     transform:
-        translateY(-50%);
+        scale(.97)
+        translateY(15px);
 
-    fill: #71879b;
-
-    pointer-events: none;
+    transition:
+        opacity .5s ease,
+        transform .5s ease,
+        visibility .5s ease;
 }
 
-.input {
-    width: 100%;
+.screen.active{
+    opacity:1;
+    visibility:visible;
 
-    height: 52px;
+    transform:
+        scale(1)
+        translateY(0);
+}
 
-    padding:
-        0 44px;
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-card{
+    width:
+        min(430px,100%);
+
+    padding:42px 35px;
 
     border:
-        1px solid rgba(255,255,255,.10);
+        1px solid var(--border);
 
-    border-radius: 13px;
+    border-radius:30px;
 
-    outline: none;
+    background:
+        var(--card);
+
+    backdrop-filter:
+        blur(25px);
+
+    -webkit-backdrop-filter:
+        blur(25px);
+
+    box-shadow:
+        0 35px 100px
+        rgba(0,0,0,.40);
+
+    text-align:center;
+}
+
+.login-card h1{
+    margin-top:25px;
+
+    font-size:30px;
+
+    font-weight:900;
+
+    letter-spacing:-1.5px;
+}
+
+.login-card .subtitle{
+    margin-top:8px;
+
+    color:var(--muted);
+
+    font-size:11px;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.form{
+    margin-top:28px;
+
+    text-align:left;
+}
+
+.field{
+    margin-bottom:15px;
+}
+
+.field label{
+    display:block;
+
+    margin-bottom:7px;
+
+    color:var(--muted);
+
+    font-size:9px;
+
+    font-weight:800;
+
+    letter-spacing:.3px;
+}
+
+.input-box{
+    position:relative;
+}
+
+.input{
+    width:100%;
+    height:54px;
+
+    padding:0 16px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:14px;
+
+    outline:none;
 
     background:
         rgba(255,255,255,.045);
 
-    color: #ffffff;
+    color:white;
 
-    font-size: 12px;
+    font-size:12px;
 
     transition:
-        border-color .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
+        border-color .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
 }
 
-.input::placeholder {
-    color: #6f8295;
+.input::placeholder{
+    color:#60758a;
 }
 
-.input:focus {
+.input:focus{
     border-color:
-        rgba(67,194,255,.65);
+        rgba(66,196,255,.65);
+
+    background:
+        rgba(22,135,255,.06);
 
     box-shadow:
         0 0 0 4px
-        rgba(22,119,255,.10);
+        rgba(22,135,255,.10);
 }
 
-body.light .input {
+.password-toggle{
+    position:absolute;
+
+    right:7px;
+    top:7px;
+
+    height:40px;
+
+    padding:0 10px;
+
+    border:0;
+
+    background:transparent;
+
+    color:var(--muted);
+
+    font-size:9px;
+
+    cursor:pointer;
+}
+
+.forgot{
+    margin-top:4px;
+
+    color:var(--muted);
+
+    font-size:8px;
+
+    line-height:1.6;
+
+    text-align:center;
+}
+
+.login-button{
+    width:100%;
+
+    height:54px;
+
+    margin-top:20px;
+
+    border:0;
+
+    border-radius:14px;
+
     background:
-        #f5f8fb;
+        linear-gradient(
+            110deg,
+            #087cff,
+            #36baff,
+            #087cff
+        );
 
-    border-color:
-        rgba(8,21,33,.10);
+    background-size:200% 100%;
 
-    color: #081521;
+    color:white;
+
+    font-size:11px;
+
+    font-weight:900;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 15px 35px
+        rgba(22,135,255,.25);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background-position .5s ease;
 }
 
-.password-toggle {
-    position: absolute;
+.login-button:hover{
+    transform:translateY(-2px);
 
-    right: 12px;
-    top: 50%;
+    background-position:100% 0;
 
-    transform:
-        translateY(-50%);
-
-    width: 30px;
-    height: 30px;
-
-    display: grid;
-    place-items: center;
-
-    border: 0;
-
-    background: transparent;
-
-    color: #71879b;
+    box-shadow:
+        0 20px 45px
+        rgba(22,135,255,.35);
 }
 
-.password-toggle svg {
-    width: 17px;
-    height: 17px;
-
-    fill: currentColor;
-}
-
-
-/* =========================================================
-   FORGOT PASSWORD
-========================================================= */
-
-.forgot {
-    margin-top: 4px;
-
-    color: #8499ad;
-
-    font-size: 9px;
-
-    line-height: 1.6;
-
-    text-align: center;
-}
-
-.forgot strong {
-    color: #a9bfd2;
-
-    font-weight: 750;
-}
-
-body.light .forgot {
-    color: #64788b;
-}
-
-body.light .forgot strong {
-    color: #40566b;
+.login-button:disabled{
+    opacity:.65;
+    cursor:wait;
 }
 
 
-/* =========================================================
-   LOGIN BUTTON
-========================================================= */
+/* =========================
+   WELCOME
+========================= */
 
-.login-submit {
-    width: 100%;
+.welcome{
+    text-align:center;
 
-    height: 53px;
+    width:
+        min(600px,100%);
+}
 
-    margin-top: 22px;
+.welcome h1{
+    margin-top:28px;
 
-    border: 0;
+    font-size:
+        clamp(34px,7vw,58px);
 
-    border-radius: 14px;
+    line-height:1;
+
+    letter-spacing:-3px;
+
+    font-weight:950;
+}
+
+.welcome h1 span{
+    color:var(--cyan);
+}
+
+.welcome p{
+    margin:18px auto 0;
+
+    max-width:430px;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    line-height:1.7;
+}
+
+.download-button{
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    min-width:260px;
+
+    height:54px;
+
+    margin-top:28px;
+
+    border:0;
+
+    border-radius:14px;
 
     background:
         linear-gradient(
             135deg,
             #087cff,
-            #38b9ff
+            #36baff
         );
 
-    color: #ffffff;
+    color:#fff;
 
-    font-size: 12px;
+    font-size:11px;
 
-    font-weight: 900;
+    font-weight:900;
 
-    box-shadow:
-        0 14px 35px
-        rgba(22,119,255,.22);
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease;
-}
-
-.login-submit:hover {
-    transform:
-        translateY(-2px);
+    cursor:pointer;
 
     box-shadow:
-        0 18px 42px
-        rgba(22,119,255,.30);
-}
-
-.login-submit:disabled {
-    opacity: .65;
-
-    cursor: not-allowed;
-
-    transform: none;
-}
-
-
-/* =========================================================
-   DEMO NOTICE
-========================================================= */
-
-.demo-notice {
-    margin-top: 18px;
-
-    padding:
-        11px 12px;
-
-    border:
-        1px solid rgba(67,194,255,.12);
-
-    border-radius: 11px;
-
-    background:
-        rgba(22,119,255,.045);
-
-    color: #8196aa;
-
-    font-size: 8px;
-
-    line-height: 1.6;
-
-    text-align: center;
-}
-
-
-/* =========================================================
-   WELCOME PAGE
-========================================================= */
-
-.welcome-page {
-    display: none;
-
-    width: 100%;
-
-    min-height: 100vh;
-
-    padding:
-        120px 20px 60px;
-
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-page.active {
-    display: flex;
-}
-
-.login-page.hidden {
-    display: none;
-}
-
-.welcome-box {
-    width:
-        min(780px, 100%);
-
-    text-align: center;
-
-    padding: 55px 35px;
-}
-
-.welcome-logo {
-    width: 100px;
-    height: 100px;
-
-    object-fit: contain;
-
-    margin:
-        0 auto 28px;
-
-    border-radius: 24px;
-
-    animation:
-        logoAppear .7s ease;
-}
-
-@keyframes logoAppear {
-
-    from {
-        opacity: 0;
-        transform: scale(.75);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-}
-
-.welcome-label {
-    color: #48c2ff;
-
-    font-size: 9px;
-
-    font-weight: 900;
-
-    letter-spacing: 2px;
-}
-
-.welcome-title {
-    margin-top: 14px;
-
-    font-size:
-        clamp(38px, 6vw, 65px);
-
-    line-height: 1;
-
-    letter-spacing: -3px;
-
-    font-weight: 950;
-}
-
-.welcome-text {
-    max-width: 620px;
-
-    margin:
-        20px auto 0;
-
-    color: #94a9bc;
-
-    font-size: 14px;
-
-    line-height: 1.8;
-}
-
-body.light .welcome-text {
-    color: #607487;
-}
-
-
-/* =========================================================
-   DOWNLOAD BUTTONS
-========================================================= */
-
-.downloads {
-    margin-top: 35px;
-
-    display: flex;
-
-    justify-content: center;
-
-    flex-wrap: wrap;
-
-    gap: 12px;
-}
-
-.store-button {
-    min-width: 195px;
-
-    min-height: 59px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 12px;
-
-    padding:
-        0 16px;
-
-    border:
-        1px solid rgba(255,255,255,.12);
-
-    border-radius: 14px;
-
-    background:
-        #03080e;
-
-    color: #ffffff;
+        0 17px 40px
+        rgba(22,135,255,.28);
 
     transition:
         transform .25s ease,
-        border-color .25s ease;
+        box-shadow .25s ease;
 }
 
-.store-button:hover {
-    transform:
-        translateY(-3px);
+.download-button:hover{
+    transform:translateY(-3px);
 
-    border-color:
-        rgba(67,194,255,.65);
-}
-
-.store-icon {
-    width: 29px;
-    height: 29px;
-
-    flex-shrink: 0;
-
-    fill: currentColor;
-}
-
-.store-copy {
-    text-align: left;
-}
-
-.store-small {
-    display: block;
-
-    color: #92a5b7;
-
-    font-size: 8px;
-}
-
-.store-name {
-    display: block;
-
-    margin-top: 2px;
-
-    font-size: 14px;
-
-    font-weight: 900;
+    box-shadow:
+        0 22px 50px
+        rgba(22,135,255,.38);
 }
 
 
-/* =========================================================
-   BACK BUTTON
-========================================================= */
+/* =========================
+   DOWNLOAD
+========================= */
 
-.back-button {
-    display: inline-flex;
-    align-items: center;
+.download{
+    width:
+        min(760px,100%);
 
-    gap: 7px;
+    text-align:center;
+}
 
-    margin-top: 32px;
+.download h2{
+    margin-top:24px;
 
-    padding:
-        11px 16px;
+    font-size:
+        clamp(30px,6vw,48px);
+
+    font-weight:950;
+
+    letter-spacing:-2px;
+}
+
+.download h2 span{
+    color:var(--cyan);
+}
+
+.download p{
+    margin:13px auto 0;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    line-height:1.6;
+}
+
+.stores{
+    display:flex;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-top:30px;
+
+    flex-wrap:wrap;
+}
+
+
+/* =========================
+   STORE BUTTONS
+========================= */
+
+.store{
+    width:210px;
+    height:64px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+    padding:8px 17px;
 
     border:
-        1px solid rgba(255,255,255,.10);
+        1px solid
+        rgba(255,255,255,.13);
 
-    border-radius: 12px;
+    border-radius:15px;
 
-    background:
-        rgba(255,255,255,.05);
+    background:#000;
 
-    color: #a9bac9;
+    color:#fff;
 
-    font-size: 10px;
+    cursor:pointer;
 
-    font-weight: 800;
+    text-align:left;
+
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
 }
 
-body.light .back-button {
+.store:hover{
+    transform:translateY(-4px);
+
     border-color:
-        rgba(8,21,33,.10);
+        rgba(66,196,255,.55);
 
-    background:
-        rgba(255,255,255,.7);
+    box-shadow:
+        0 18px 40px
+        rgba(0,0,0,.35);
+}
 
-    color: #506579;
+.store-icon{
+    width:34px;
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    flex:none;
+}
+
+.store-icon svg{
+    width:31px;
+    height:31px;
+
+    fill:white;
+}
+
+.store-text small{
+    display:block;
+
+    color:#aab6c0;
+
+    font-size:7px;
+
+    letter-spacing:.5px;
+}
+
+.store-text strong{
+    display:block;
+
+    margin-top:2px;
+
+    font-size:15px;
+
+    font-weight:700;
 }
 
 
-/* =========================================================
+/* =========================
    MODAL
-========================================================= */
+========================= */
 
-.modal {
-    position: fixed;
+.modal{
+    position:fixed;
 
-    inset: 0;
+    inset:0;
 
-    z-index: 1000;
+    z-index:100;
 
-    display: none;
+    display:flex;
 
-    align-items: center;
-    justify-content: center;
+    align-items:center;
+    justify-content:center;
 
-    padding: 20px;
+    padding:20px;
 
     background:
         rgba(0,0,0,.72);
 
-    backdrop-filter:
-        blur(12px);
+    backdrop-filter:blur(10px);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s ease;
 }
 
-.modal.active {
-    display: flex;
+.modal.active{
+    opacity:1;
+    visibility:visible;
 }
 
-.modal-box {
+.modal-box{
     width:
-        min(410px, 100%);
+        min(390px,100%);
 
-    padding: 32px;
-
-    border-radius: 23px;
-
-    background: #0b1929;
+    padding:30px;
 
     border:
-        1px solid rgba(255,255,255,.11);
+        1px solid var(--border);
 
-    text-align: center;
+    border-radius:23px;
+
+    background:#0b1929;
+
+    text-align:center;
+
+    transform:scale(.94);
+
+    transition:.3s ease;
 }
 
-body.light .modal-box {
-    background: #ffffff;
-
-    border-color:
-        rgba(8,21,33,.09);
+.modal.active .modal-box{
+    transform:scale(1);
 }
 
-.modal-logo {
-    width: 60px;
-    height: 60px;
+.modal-box img{
+    width:65px;
+    height:65px;
 
-    object-fit: contain;
+    object-fit:contain;
 
-    margin:
-        0 auto 18px;
+    border-radius:17px;
 }
 
-.modal-title {
-    font-size: 22px;
+.modal-box h2{
+    margin-top:18px;
 
-    font-weight: 900;
+    font-size:21px;
 }
 
-.modal-text {
-    margin-top: 10px;
+.modal-box p{
+    margin-top:10px;
 
-    color: #8fa3b6;
+    color:var(--muted);
 
-    font-size: 12px;
+    font-size:11px;
 
-    line-height: 1.7;
+    line-height:1.7;
 }
 
-.modal-close {
-    width: 100%;
+.close-modal{
+    width:100%;
 
-    height: 45px;
+    height:45px;
 
-    margin-top: 22px;
+    margin-top:20px;
 
-    border: 0;
+    border:0;
 
-    border-radius: 12px;
+    border-radius:11px;
 
-    background: #087cff;
+    background:var(--blue);
 
-    color: #ffffff;
+    color:white;
 
-    font-size: 11px;
+    font-size:10px;
 
-    font-weight: 850;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer {
-    position: fixed;
-
-    bottom: 18px;
-
-    left: 0;
-    right: 0;
-
-    text-align: center;
-
-    color: #65798d;
-
-    font-size: 8px;
-
-    pointer-events: none;
+    font-weight:900;
 }
 
 
-/* =========================================================
+/* =========================
    RESPONSIVE
-========================================================= */
+========================= */
 
-@media (max-width: 850px) {
+@media(max-width:500px){
 
-    .page {
-        grid-template-columns: 1fr;
-
-        gap: 40px;
-
-        max-width: 540px;
+    .login-card{
+        padding:34px 22px;
+        border-radius:25px;
     }
 
-    .presentation {
-        text-align: center;
-
-        margin: auto;
+    .login-card h1{
+        font-size:27px;
     }
 
-    .presentation p {
-        margin-inline: auto;
+    .stores{
+        flex-direction:column;
+        align-items:center;
     }
 
-    .status {
-        justify-content: center;
+    .store{
+        width:100%;
+        max-width:300px;
     }
 
-    .login-card {
-        max-width: 470px;
-
-        margin: auto;
-    }
-
-}
-
-@media (max-width: 560px) {
-
-    .header {
-        height: 68px;
-    }
-
-    .logo {
-        width: 38px;
-        height: 38px;
-    }
-
-    .brand-name {
-        font-size: 12px;
-    }
-
-    .brand-subtitle {
-        display: none;
-    }
-
-    main {
-        padding-top: 100px;
-        padding-bottom: 65px;
-    }
-
-    .presentation h1 {
-        font-size: 53px;
-
-        letter-spacing: -3px;
-    }
-
-    .presentation p {
-        font-size: 13px;
-    }
-
-    .login-card {
-        padding: 25px 20px;
-
-        border-radius: 21px;
-    }
-
-    .welcome-box {
-        padding:
-            35px 10px;
-    }
-
-    .welcome-logo {
-        width: 80px;
-        height: 80px;
-    }
-
-    .downloads {
-        flex-direction: column;
-    }
-
-    .store-button {
-        width: 100%;
-    }
-
-    .footer {
-        position: static;
-
-        padding:
-            0 20px 20px;
-    }
-
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-
-        animation: none !important;
-
-        transition: none !important;
-
-        scroll-behavior: auto !important;
-
+    .welcome h1{
+        letter-spacing:-2px;
     }
 
 }
 
 </style>
-
 </head>
-
 
 <body>
 
 
-<!-- =======================================================
+<!-- =========================
      BACKGROUND
-======================================================= -->
+========================= -->
 
 <div class="background">
-
-    <div class="grid"></div>
 
     <div class="orb one"></div>
 
     <div class="orb two"></div>
 
+    <div class="grid"></div>
+
 </div>
 
 
-<!-- =======================================================
-     HEADER
-======================================================= -->
-
-<header class="header">
-
-    <div class="header-inner">
-
-        <a
-            href="#"
-            class="brand"
-            aria-label="DALZON SHULE"
-        >
-
-            <img
-                src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
-                alt="Logo DALZON SHULE"
-                class="logo"
-            >
-
-            <div>
-
-                <div class="brand-name">
-                    DALZON SHULE
-                </div>
-
-                <div class="brand-subtitle">
-                    CONNECTER L'ÉCOLE À LA MAISON
-                </div>
-
-            </div>
-
-        </a>
-
-
-        <button
-            type="button"
-            class="theme-button"
-            id="themeButton"
-            aria-label="Changer le thème"
-        >
-
-            <svg
-                id="themeIcon"
-                viewBox="0 0 24 24"
-            >
-
-                <path d="
-                    M12 18a6 6 0 1 0 0-12
-                    6 6 0 0 0 0 12z
-                "/>
-
-            </svg>
-
-        </button>
-
-    </div>
-
-</header>
-
-
-<!-- =======================================================
-     PAGE DE CONNEXION
-======================================================= -->
-
-<main
-    class="login-page"
-    id="loginPage"
->
-
-    <div class="page">
-
-
-        <!-- =================================================
-             PRÉSENTATION
-        ================================================= -->
-
-        <section class="presentation">
-
-            <div class="status">
-
-                <span class="status-dot"></span>
-
-                ESPACE ÉCOLE
-
-            </div>
-
-
-            <h1>
-
-                Votre école,
-
-                <br>
-
-                <span class="gradient-text">
-                    connectée.
-                </span>
-
-            </h1>
-
-
-            <p>
-
-                Accédez à votre espace DALZON SHULE
-                avec votre adresse e-mail ou votre
-                identifiant matricule.
-
-            </p>
-
-        </section>
-
-
-        <!-- =================================================
-             CARTE DE CONNEXION
-        ================================================= -->
-
-        <section class="login-card">
-
-            <img
-                src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
-                alt="Logo DALZON SHULE"
-                class="card-logo"
-            >
-
-
-            <h2>
-                Se connecter
-            </h2>
-
-
-            <p class="login-card-intro">
-
-                Entrez vos informations pour accéder
-                à votre espace.
-
-            </p>
-
-
-            <form
-                class="form"
-                id="loginForm"
-                novalidate
-            >
-
-
-                <!-- IDENTIFIANT -->
-
-                <div class="field">
-
-                    <label
-                        class="field-label"
-                        for="identifier"
-                    >
-                        Adresse e-mail ou ID matricule
-                    </label>
-
-
-                    <div class="input-wrapper">
-
-                        <svg
-                            class="input-icon"
-                            viewBox="0 0 24 24"
-                        >
-
-                            <path d="
-                                M12 12a5 5 0 1 0 0-10
-                                5 5 0 0 0 0 10zm0 2
-                                a8 8 0 0 0-8 8h16a8 8
-                                0 0 0-8-8z
-                            "/>
-
-                        </svg>
-
-
-                        <input
-                            class="input"
-                            id="identifier"
-                            name="identifier"
-                            type="text"
-                            autocomplete="username"
-                            placeholder="Ex. eleve@email.com ou DS-2026-001"
-                            required
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <!-- MOT DE PASSE -->
-
-                <div class="field">
-
-                    <label
-                        class="field-label"
-                        for="password"
-                    >
-                        Mot de passe
-                    </label>
-
-
-                    <div class="input-wrapper">
-
-                        <svg
-                            class="input-icon"
-                            viewBox="0 0 24 24"
-                        >
-
-                            <path d="
-                                M17 8h-1V6a4 4 0 0 0-8
-                                0v2H7a2 2 0 0 0-2 2v9
-                                a2 2 0 0 0 2 2h10a2 2
-                                0 0 0 2-2v-9a2 2 0
-                                0 0 0-2-2zm-7-2a2 2
-                                0 0 1 4 0v2h-4V6z
-                            "/>
-
-                        </svg>
-
-
-                        <input
-                            class="input"
-                            id="password"
-                            name="password"
-                            type="password"
-                            autocomplete="current-password"
-                            placeholder="Votre mot de passe"
-                            required
-                        >
-
-
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            id="passwordToggle"
-                            aria-label="Afficher le mot de passe"
-                        >
-
-                            <svg
-                                id="eyeIcon"
-                                viewBox="0 0 24 24"
-                            >
-
-                                <path d="
-                                    M12 5c-5 0-9 3-11 7
-                                    2 4 6 7 11 7s9-3
-                                    11-7c-2-4-6-7-11-7zm0
-                                    12a5 5 0 1 1 0-10
-                                    5 5 0 0 1 0 10z
-                                "/>
-
-                            </svg>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- OUBLI MOT DE PASSE -->
-
-                <div class="forgot">
-
-                    Si vous avez oublié votre mot de passe,
-                    <strong>
-                        contactez le secrétariat de votre école.
-                    </strong>
-
-                </div>
-
-
-                <!-- CONNEXION -->
-
-                <button
-                    type="submit"
-                    class="login-submit"
-                    id="loginSubmit"
-                >
-                    Se connecter
-                </button>
-
-
-                <div class="demo-notice">
-
-                    L'accès réel aux comptes sera activé
-                    lorsque le système d'authentification
-                    de DALZON SHULE sera connecté au serveur.
-
-                </div>
-
-            </form>
-
-        </section>
-
-    </div>
-
-</main>
-
-
-<!-- =======================================================
-     PAGE BON RETOUR
-======================================================= -->
+<!-- =========================
+     LOGIN SCREEN
+========================= -->
 
 <section
-    class="welcome-page"
-    id="welcomePage"
->
+    class="screen active"
+    id="loginScreen">
 
-    <div class="welcome-box">
-
+    <div class="login-card">
 
         <img
-            src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
-            alt="Logo DALZON SHULE"
-            class="welcome-logo"
-        >
+            class="logo"
+            src="https://i.imghos.co/ScqSjIHB.png"
+            alt="DALZON SHULE">
 
-
-        <div class="welcome-label">
-            CONNEXION RÉUSSIE
-        </div>
-
-
-        <h1 class="welcome-title">
-            Bon retour à
-            <span class="gradient-text">
-                DALZON SHULE
-            </span>
+        <h1>
+            Se connecter
         </h1>
 
+        <p class="subtitle">
+            Accédez à DALZON SHULE
+        </p>
 
-        <p class="welcome-text">
 
-            Votre session est prête.
-            La prochaine étape sera l'accès
-            complet à l'application DALZON SHULE.
+        <form
+            class="form"
+            id="loginForm">
+
+
+            <div class="field">
+
+                <label for="identifier">
+                    Adresse mail ou ID matricule
+                </label>
+
+                <div class="input-box">
+
+                    <input
+                        class="input"
+                        id="identifier"
+                        type="text"
+                        placeholder="Adresse mail ou ID matricule"
+                        autocomplete="username"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="password">
+                    Mot de passe
+                </label>
+
+                <div class="input-box">
+
+                    <input
+                        class="input"
+                        id="password"
+                        type="password"
+                        placeholder="Mot de passe"
+                        autocomplete="current-password"
+                        required>
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        id="togglePassword">
+
+                        Voir
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="forgot">
+
+                Si vous avez oublié votre mot de passe,
+                contactez le secrétariat de l'école.
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-button"
+                id="loginButton">
+
+                Se connecter
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     WELCOME SCREEN
+========================= -->
+
+<section
+    class="screen"
+    id="welcomeScreen">
+
+    <div class="welcome">
+
+        <img
+            class="logo"
+            src="https://i.imghos.co/ScqSjIHB.png"
+            alt="DALZON SHULE">
+
+        <h1>
+
+            Bon retour à
+
+            <br>
+
+            <span>
+                DALZON SHULE
+            </span>
+
+        </h1>
+
+        <p>
+
+            Téléchargez l'application DALZON SHULE
+            pour continuer.
 
         </p>
 
 
-        <div class="downloads">
-
-
-            <!-- =================================================
-                 APP STORE — VRAI LOGO
-            ================================================= -->
-
-            <button
-                type="button"
-                class="store-button"
-                data-store="App Store"
-            >
-
-                <svg
-                    class="store-icon"
-                    viewBox="0 0 24 24"
-                >
-
-                    <path d="
-                        M16.77 12.65c-.02-2.06
-                        1.68-3.06 1.76-3.11
-                        -.96-1.4-2.46-1.59
-                        -2.99-1.61-1.27-.13
-                        -2.5.75-3.15.75
-                        -.66 0-1.68-.73
-                        -2.75-.71-1.41.02
-                        -2.71.82-3.43 2.08
-                        -1.48 2.57-.38 6.35
-                        1.06 8.42.72 1.01
-                        1.56 2.14 2.67 2.1
-                        1.07-.04 1.48-.68
-                        2.78-.68 1.3 0
-                        1.67.68 2.8.65
-                        1.16-.02 1.88-1.02
-                        2.58-2.04.81-1.18
-                        1.15-2.32 1.17-2.38
-                        -.03-.01-2.25-.86
-                        -2.27-3.47Z
-                    "/>
-
-                </svg>
-
-
-                <span class="store-copy">
-
-                    <span class="store-small">
-                        Télécharger sur
-                    </span>
-
-                    <span class="store-name">
-                        App Store
-                    </span>
-
-                </span>
-
-            </button>
-
-
-            <!-- =================================================
-                 GOOGLE PLAY — VRAI LOGO
-            ================================================= -->
-
-            <button
-                type="button"
-                class="store-button"
-                data-store="Google Play"
-            >
-
-                <svg
-                    class="store-icon"
-                    viewBox="0 0 24 24"
-                >
-
-                    <path d="
-                        M3.3 2.6c-.2.35-.3.78-.3
-                        1.28v16.24c0 .5.1.93.3
-                        1.28L12.2 12 3.3 2.6Zm10.08
-                        8.42L4.58 1.96c.23-.13
-                        .5-.2.79-.2.36 0
-                        .69.1.98.27l10.36
-                        5.9-3.33 3.09Zm0
-                        1.96 3.33 3.09-10.36
-                        5.9c-.29.17-.62.27-.98
-                        .27-.29 0-.56-.07-.79-.2
-                        l8.8-9.06Zm1.01-.98
-                        3.72-3.46 1.34.76
-                        c.75.43 1.2 1.04
-                        1.2 1.71s-.45 1.28
-                        -1.2 1.71l-1.34.76
-                        -3.72-3.48Z
-                    "/>
-
-                </svg>
-
-
-                <span class="store-copy">
-
-                    <span class="store-small">
-                        Disponible bientôt sur
-                    </span>
-
-                    <span class="store-name">
-                        Google Play
-                    </span>
-
-                </span>
-
-            </button>
-
-        </div>
-
-
         <button
-            type="button"
-            class="back-button"
-            id="backButton"
-        >
-            ← Retour à la connexion
+            class="download-button"
+            id="goDownload">
+
+            Télécharger l'application
+
         </button>
 
     </div>
@@ -1718,42 +952,178 @@ body.light .modal-box {
 </section>
 
 
-<!-- =======================================================
-     MODAL STORE
-======================================================= -->
+<!-- =========================
+     DOWNLOAD SCREEN
+========================= -->
+
+<section
+    class="screen"
+    id="downloadScreen">
+
+    <div class="download">
+
+        <img
+            class="logo"
+            src="https://i.imghos.co/ScqSjIHB.png"
+            alt="DALZON SHULE">
+
+        <h2>
+
+            Téléchargez
+
+            <br>
+
+            <span>
+                DALZON SHULE
+            </span>
+
+        </h2>
+
+        <p>
+
+            L'application sera bientôt disponible
+            sur les plateformes officielles.
+
+        </p>
+
+
+        <div class="stores">
+
+
+            <!-- GOOGLE PLAY -->
+
+            <button
+                class="store"
+                data-store="Google Play">
+
+                <div class="store-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="
+                        M3.3 2.6c-.2.35-.3.78-.3
+                        1.28v16.24c0 .5.1.93.3
+                        1.28L12.2 12 3.3 2.6Z"/>
+
+                        <path d="
+                        M13.38 11.02 4.58 1.96c.23-.13
+                        .5-.2.79-.2.36 0 .69.1.98.27
+                        l10.36 5.9-3.33 3.09Z"/>
+
+                        <path d="
+                        m13.38 12.98 3.33 3.09-10.36
+                        5.9c-.29.17-.62.27-.98.27-.29
+                        0-.56-.07-.79-.2l8.8-9.06Z"/>
+
+                        <path d="
+                        m14.39 12 3.72-3.46 1.34.76
+                        c.75.43 1.2 1.04 1.2 1.71s-.45
+                        1.28-1.2 1.71l-1.34.76L14.39 12Z"/>
+
+                    </svg>
+
+                </div>
+
+                <div class="store-text">
+
+                    <small>
+                        DISPONIBLE BIENTÔT SUR
+                    </small>
+
+                    <strong>
+                        Google Play
+                    </strong>
+
+                </div>
+
+            </button>
+
+
+            <!-- APP STORE -->
+
+            <button
+                class="store"
+                data-store="App Store">
+
+                <div class="store-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="
+                        M16.77 12.65c-.02-2.06
+                        1.68-3.06 1.76-3.11-.96-1.4
+                        -2.46-1.59-2.99-1.61-1.27-.13
+                        -2.5.75-3.15.75-.66 0-1.68
+                        -.73-2.75-.71-1.41.02-2.71
+                        .82-3.43 2.08-1.48 2.57-.38
+                        6.35 1.06 8.42.72 1.01 1.56
+                        2.14 2.67 2.1 1.07-.04 1.48
+                        -.68 2.78-.68 1.3 0 1.67.68
+                        2.8.65 1.16-.02 1.88-1.02
+                        2.58-2.04.81-1.18 1.15-2.32
+                        1.17-2.38-.03-.01-2.25-.86
+                        -2.27-3.47ZM14.69 6.57c.58-.7
+                        .97-1.67.86-2.64-.84.03-1.86
+                        .56-2.46 1.26-.54.62-1.01
+                        1.62-.88 2.57.94.07 1.9-.48
+                        2.48-1.19Z"/>
+
+                    </svg>
+
+                </div>
+
+                <div class="store-text">
+
+                    <small>
+                        TÉLÉCHARGER SUR
+                    </small>
+
+                    <strong>
+                        App Store
+                    </strong>
+
+                </div>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     MODAL
+========================= -->
 
 <div
     class="modal"
-    id="storeModal"
-    aria-hidden="true"
->
+    id="modal">
 
     <div class="modal-box">
 
         <img
-            src="https://i.postimg.cc/1V66N19t/Chat-GPT-Image-4-aout-2026-09-22-33.png"
-            alt="Logo DALZON SHULE"
-            class="modal-logo"
-        >
+            src="https://i.imghos.co/ScqSjIHB.png"
+            alt="DALZON SHULE">
 
-        <h2 class="modal-title">
+        <h2>
             Bientôt disponible
         </h2>
 
-        <p
-            class="modal-text"
-            id="storeModalText"
-        >
-            L'application DALZON SHULE sera
-            prochainement disponible.
+        <p id="modalText">
+
+            L'application DALZON SHULE
+            sera bientôt disponible.
+
         </p>
 
         <button
-            type="button"
-            class="modal-close"
-            id="modalClose"
-        >
+            class="close-modal"
+            id="closeModal">
+
             Compris
+
         </button>
 
     </div>
@@ -1761,270 +1131,91 @@ body.light .modal-box {
 </div>
 
 
-<!-- =======================================================
-     FOOTER
-======================================================= -->
-
-<footer class="footer">
-
-    © 2026 DALZON SHULE — Une initiative de DALZON ENTREPRISE
-
-</footer>
-
-
 <script>
 
-/* =========================================================
+/* =========================
    ELEMENTS
-========================================================= */
+========================= */
 
-const body =
-    document.body;
+const loginScreen =
+    document.getElementById("loginScreen");
 
-const themeButton =
-    document.getElementById(
-        "themeButton"
-    );
+const welcomeScreen =
+    document.getElementById("welcomeScreen");
 
-const themeIcon =
-    document.getElementById(
-        "themeIcon"
-    );
-
-const themeColor =
-    document.getElementById(
-        "themeColor"
-    );
+const downloadScreen =
+    document.getElementById("downloadScreen");
 
 const loginForm =
-    document.getElementById(
-        "loginForm"
-    );
-
-const loginPage =
-    document.getElementById(
-        "loginPage"
-    );
-
-const welcomePage =
-    document.getElementById(
-        "welcomePage"
-    );
+    document.getElementById("loginForm");
 
 const identifier =
-    document.getElementById(
-        "identifier"
-    );
+    document.getElementById("identifier");
 
 const password =
-    document.getElementById(
-        "password"
-    );
+    document.getElementById("password");
 
-const passwordToggle =
-    document.getElementById(
-        "passwordToggle"
-    );
+const loginButton =
+    document.getElementById("loginButton");
 
-const eyeIcon =
-    document.getElementById(
-        "eyeIcon"
-    );
+const togglePassword =
+    document.getElementById("togglePassword");
 
-const loginSubmit =
-    document.getElementById(
-        "loginSubmit"
-    );
+const goDownload =
+    document.getElementById("goDownload");
 
-const backButton =
-    document.getElementById(
-        "backButton"
-    );
+const modal =
+    document.getElementById("modal");
 
-const storeModal =
-    document.getElementById(
-        "storeModal"
-    );
+const modalText =
+    document.getElementById("modalText");
 
-const storeModalText =
-    document.getElementById(
-        "storeModalText"
-    );
-
-const modalClose =
-    document.getElementById(
-        "modalClose"
-    );
+const closeModal =
+    document.getElementById("closeModal");
 
 
-/* =========================================================
-   THÈME
-========================================================= */
+/* =========================
+   SCREEN SWITCH
+========================= */
 
-const THEME_KEY =
-    "dalzon-shule-theme";
+function showScreen(screen){
 
+    document
+        .querySelectorAll(".screen")
+        .forEach(item=>{
+            item.classList.remove("active");
+        });
 
-function updateThemeIcon(
-    light
-) {
+    setTimeout(()=>{
 
-    if (light) {
+        screen.classList.add("active");
 
-        themeIcon.innerHTML = `
-            <path d="
-                M20.5 14.2
-                A8.5 8.5 0 1 1
-                9.8 3.5
-                A7 7 0 1 0
-                20.5 14.2Z
-            "/>
-        `;
-
-        themeButton.setAttribute(
-            "title",
-            "Mode sombre"
-        );
-
-    } else {
-
-        themeIcon.innerHTML = `
-            <path d="
-                M12 18a6 6 0 1 0 0-12
-                6 6 0 0 0 0 12z
-                M12 2a1 1 0 0 1 1 1v1
-                a1 1 0 1 1-2 0V3
-                a1 1 0 0 1 1-1z
-            "/>
-        `;
-
-        themeButton.setAttribute(
-            "title",
-            "Mode clair"
-        );
-
-    }
+    },50);
 
 }
 
 
-function setTheme(
-    theme
-) {
+/* =========================
+   PASSWORD
+========================= */
 
-    const light =
-        theme === "light";
-
-    body.classList.toggle(
-        "light",
-        light
-    );
-
-    localStorage.setItem(
-        THEME_KEY,
-        theme
-    );
-
-    themeColor.setAttribute(
-        "content",
-        light
-            ? "#f4f8fc"
-            : "#07111f"
-    );
-
-    updateThemeIcon(
-        light
-    );
-
-}
-
-
-const savedTheme =
-    localStorage.getItem(
-        THEME_KEY
-    );
-
-
-setTheme(
-    savedTheme === "light"
-        ? "light"
-        : "dark"
-);
-
-
-themeButton.addEventListener(
+togglePassword.addEventListener(
     "click",
-    function () {
+    ()=>{
 
-        setTheme(
-            body.classList.contains(
-                "light"
-            )
-                ? "dark"
-                : "light"
-        );
+        if(password.type === "password"){
 
-    }
-);
+            password.type = "text";
 
+            togglePassword.textContent =
+                "Masquer";
 
-/* =========================================================
-   AFFICHER / CACHER MOT DE PASSE
-========================================================= */
+        }else{
 
-passwordToggle.addEventListener(
-    "click",
-    function () {
+            password.type = "password";
 
-        const visible =
-            password.type === "text";
-
-        password.type =
-            visible
-                ? "password"
-                : "text";
-
-        if (visible) {
-
-            eyeIcon.innerHTML = `
-                <path d="
-                    M12 5c-5 0-9 3-11 7
-                    2 4 6 7 11 7s9-3
-                    11-7c-2-4-6-7-11-7zm0
-                    12a5 5 0 1 1 0-10
-                    5 5 0 0 1 0 10z
-                "/>
-            `;
-
-        } else {
-
-            eyeIcon.innerHTML = `
-                <path d="
-                    M2 5.27 3.28 4 20 20.72
-                    18.73 22l-2.24-2.24
-                    A10.7 10.7 0 0 1 12 21
-                    C7 21 2.73 18.11 1
-                    12a17.4 17.4 0 0 1
-                    3.55-5.06L2 5.27z
-                    M12 7c-2.76 0-5 2.24-5
-                    5 0 .69.14 1.35.4 1.94
-                    l1.67 1.67A5 5 0 0 1
-                    12 10c1.1 0 2.1.36
-                    2.91.97l1.43 1.43
-                    A5 5 0 0 0 12 7zm8.94
-                    3.11A17.42 17.42 0 0 0
-                    12 3C7 3 2.73 5.89
-                    1 12c.54 1.9 1.5 3.48
-                    2.71 4.9l1.42-1.42
-                    A15.4 15.4 0 0 1
-                    3.1 12 15.2 15.2 0 0 1
-                    12 5c4.08 0 7.63
-                    2.19 8.9 7a15.3 15.3 0 0 1
-                    -1.52 3.07l1.43 1.43A17.4
-                    17.4 0 0 0 22.9 12
-                    c-.48-1.69-1.13-3-1.96-4.02z
-                "/>
-            `;
+            togglePassword.textContent =
+                "Voir";
 
         }
 
@@ -2032,16 +1223,15 @@ passwordToggle.addEventListener(
 );
 
 
-/* =========================================================
-   CONNEXION
-========================================================= */
+/* =========================
+   LOGIN
+========================= */
 
 loginForm.addEventListener(
     "submit",
-    function (event) {
+    event=>{
 
         event.preventDefault();
-
 
         const user =
             identifier.value.trim();
@@ -2050,206 +1240,148 @@ loginForm.addEventListener(
             password.value.trim();
 
 
-        if (!user) {
-
-            identifier.focus();
-
-            identifier.style.borderColor =
-                "#ff6b6b";
-
-            setTimeout(
-                function () {
-                    identifier.style.borderColor = "";
-                },
-                1800
-            );
+        if(!user || !pass){
 
             return;
 
         }
 
 
-        if (!pass) {
+        loginButton.disabled = true;
 
-            password.focus();
-
-            password.style.borderColor =
-                "#ff6b6b";
-
-            setTimeout(
-                function () {
-                    password.style.borderColor = "";
-                },
-                1800
-            );
-
-            return;
-
-        }
+        loginButton.textContent =
+            "Connexion...";
 
 
         /*
-         * IMPORTANT :
-         * Cette partie simule uniquement la navigation.
+         * Démonstration locale.
          *
-         * Pour une vraie authentification,
-         * cette fonction devra appeler ton API.
+         * Plus tard :
+         * remplacer cette partie par
+         * l'appel à ton API d'authentification.
          */
 
+        setTimeout(()=>{
 
-        loginSubmit.disabled = true;
+            localStorage.setItem(
+                "dalzon_logged",
+                "true"
+            );
 
-        loginSubmit.textContent =
-            "Connexion en cours...";
+            localStorage.setItem(
+                "dalzon_user",
+                user
+            );
 
 
-        setTimeout(
-            function () {
+            loginButton.disabled =
+                false;
 
-                loginPage.classList.add(
-                    "hidden"
-                );
+            loginButton.textContent =
+                "Se connecter";
 
-                welcomePage.classList.add(
+
+            showScreen(
+                welcomeScreen
+            );
+
+        },900);
+
+    }
+);
+
+
+/* =========================
+   GO DOWNLOAD
+========================= */
+
+goDownload.addEventListener(
+    "click",
+    ()=>{
+
+        showScreen(
+            downloadScreen
+        );
+
+    }
+);
+
+
+/* =========================
+   STORE BUTTONS
+========================= */
+
+document
+    .querySelectorAll(".store")
+    .forEach(button=>{
+
+        button.addEventListener(
+            "click",
+            ()=>{
+
+                const store =
+                    button.dataset.store;
+
+                modalText.textContent =
+                    "DALZON SHULE sera bientôt disponible sur "
+                    + store
+                    + ". Le lien officiel sera activé dès la publication de l'application.";
+
+                modal.classList.add(
                     "active"
                 );
 
-                loginSubmit.disabled =
-                    false;
-
-                loginSubmit.textContent =
-                    "Se connecter";
-
-                window.scrollTo(
-                    0,
-                    0
-                );
-
-            },
-            850
+            }
         );
 
-    }
-);
+    });
 
 
-/* =========================================================
-   RETOUR
-========================================================= */
+/* =========================
+   CLOSE MODAL
+========================= */
 
-backButton.addEventListener(
+closeModal.addEventListener(
     "click",
-    function () {
+    ()=>{
 
-        welcomePage.classList.remove(
+        modal.classList.remove(
             "active"
         );
 
-        loginPage.classList.remove(
-            "hidden"
-        );
-
-        password.value = "";
-
-        window.scrollTo(
-            0,
-            0
-        );
-
     }
 );
 
 
-/* =========================================================
-   BOUTONS STORES
-========================================================= */
+modal.addEventListener(
+    "click",
+    event=>{
 
-document
-    .querySelectorAll(
-        ".store-button"
-    )
-    .forEach(
-        function (button) {
+        if(event.target === modal){
 
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const store =
-                        button.dataset.store;
-
-                    storeModalText.textContent =
-                        "La version " +
-                        store +
-                        " de DALZON SHULE sera disponible " +
-                        "lorsque l'application sera officiellement publiée.";
-
-                    storeModal.classList.add(
-                        "active"
-                    );
-
-                    storeModal.setAttribute(
-                        "aria-hidden",
-                        "false"
-                    );
-
-                }
+            modal.classList.remove(
+                "active"
             );
 
         }
-    );
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-function closeModal() {
-
-    storeModal.classList.remove(
-        "active"
-    );
-
-    storeModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-}
-
-
-modalClose.addEventListener(
-    "click",
-    closeModal
-);
-
-
-storeModal.addEventListener(
-    "click",
-    function (event) {
-
-        if (
-            event.target ===
-            storeModal
-        ) {
-
-            closeModal();
-
-        }
 
     }
 );
 
 
+/* =========================
+   ESCAPE
+========================= */
+
 document.addEventListener(
     "keydown",
-    function (event) {
+    event=>{
 
-        if (
-            event.key === "Escape"
-        ) {
+        if(event.key === "Escape"){
 
-            closeModal();
+            modal.classList.remove(
+                "active"
+            );
 
         }
 
