@@ -1,2413 +1,2314 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#08111f"
-    >
-
-    <meta
-        name="description"
-        content="DALZON SHULE — Connecter l'École à la Maison"
-    >
-
-    <title>DALZON SHULE</title>
-
-    <link
-        rel="icon"
-        href="https://i.imghos.co/ScqSjIHB.png"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
-
-    <link
-        rel="manifest"
-        href="./manifest.json"
-    >
-
-    <style>
-
-        :root {
-            --bg: #050b14;
-            --bg-2: #08111f;
-            --card: rgba(13, 24, 40, .72);
-            --card-strong: rgba(16, 29, 48, .92);
-            --border: rgba(255,255,255,.09);
-            --border-light: rgba(255,255,255,.14);
-            --text: #f4f7fb;
-            --muted: #94a3b8;
-            --blue: #3b82f6;
-            --blue-light: #60a5fa;
-            --green: #22c55e;
-            --red: #ef4444;
-            --orange: #f59e0b;
-            --shadow: 0 25px 80px rgba(0,0,0,.35);
-            --radius: 20px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: "Inter", sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(
-                    circle at 10% 10%,
-                    rgba(37,99,235,.18),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 90% 90%,
-                    rgba(14,165,233,.12),
-                    transparent 30%
-                ),
-                linear-gradient(
-                    135deg,
-                    #03070d,
-                    #08111f 50%,
-                    #050b14
-                );
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: .18;
-            background-image:
-                linear-gradient(
-                    rgba(255,255,255,.035) 1px,
-                    transparent 1px
-                ),
-                linear-gradient(
-                    90deg,
-                    rgba(255,255,255,.035) 1px,
-                    transparent 1px
-                );
-            background-size: 45px 45px;
-            mask-image: linear-gradient(
-                to bottom,
-                black,
-                transparent
-            );
-        }
-
-        button,
-        input,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        /* =====================================================
-           LOGIN
-           ===================================================== */
-
-        #login-screen {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            position: relative;
-        }
-
-        .login-orb {
-            position: fixed;
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
-        }
-
-        .login-orb.one {
-            top: -100px;
-            left: -80px;
-            background: rgba(37,99,235,.22);
-        }
-
-        .login-orb.two {
-            bottom: -100px;
-            right: -70px;
-            background: rgba(14,165,233,.16);
-        }
-
-        .login-wrapper {
-            width: 100%;
-            max-width: 460px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .brand {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .brand-logo {
-            width: 92px;
-            height: 92px;
-            object-fit: contain;
-            border-radius: 24px;
-            margin-bottom: 14px;
-            filter:
-                drop-shadow(
-                    0 12px 30px
-                    rgba(37,99,235,.22)
-                );
-        }
-
-        .brand h1 {
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 30px;
-            font-weight: 700;
-            letter-spacing: -.7px;
-        }
-
-        .brand p {
-            color: var(--muted);
-            margin-top: 7px;
-            font-size: 14px;
-        }
-
-        .login-card {
-            background: var(--card);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 32px;
-            box-shadow: var(--shadow);
-        }
-
-        .login-card h2 {
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 23px;
-            margin-bottom: 8px;
-        }
-
-        .login-description {
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .field {
-            margin-bottom: 18px;
-        }
-
-        .field label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #dbeafe;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-            pointer-events: none;
-        }
-
-        .field input {
-            width: 100%;
-            height: 52px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: rgba(255,255,255,.045);
-            color: var(--text);
-            padding:
-                0 46px
-                0 44px;
-            outline: none;
-            transition: .2s ease;
-        }
-
-        .field input:focus {
-            border-color: rgba(59,130,246,.65);
-            box-shadow:
-                0 0 0 4px
-                rgba(59,130,246,.09);
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
-            border: 0;
-            border-radius: 10px;
-            background: transparent;
-            color: #64748b;
-        }
-
-        .password-toggle:hover {
-            color: white;
-            background: rgba(255,255,255,.06);
-        }
-
-        .login-button {
-            width: 100%;
-            height: 53px;
-            border: 0;
-            border-radius: 15px;
-            color: white;
-            font-weight: 700;
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #3b82f6
-                );
-            box-shadow:
-                0 15px 35px
-                rgba(37,99,235,.22);
-            transition: .2s ease;
-            margin-top: 5px;
-        }
-
-        .login-button:hover {
-            transform: translateY(-1px);
-            box-shadow:
-                0 18px 40px
-                rgba(37,99,235,.3);
-        }
-
-        .login-button:active {
-            transform: translateY(0);
-        }
-
-        .login-help {
-            margin-top: 20px;
-            padding: 13px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.55;
-        }
-
-        .login-help strong {
-            color: #dbeafe;
-        }
-
-        /* =====================================================
-           APPLICATION
-           ===================================================== */
-
-        #app-screen {
-            min-height: 100vh;
-            display: none;
-        }
-
-        .app-layout {
-            min-height: 100vh;
-            display: flex;
-        }
-
-        .sidebar {
-            width: 260px;
-            flex-shrink: 0;
-            position: fixed;
-            inset: 0 auto 0 0;
-            z-index: 100;
-            padding: 20px 14px;
-            border-right: 1px solid var(--border);
-            background:
-                rgba(4,10,18,.92);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            overflow-y: auto;
-        }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            padding: 8px 10px 24px;
-        }
-
-        .sidebar-brand img {
-            width: 43px;
-            height: 43px;
-            border-radius: 12px;
-            object-fit: contain;
-        }
-
-        .sidebar-brand strong {
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 17px;
-        }
-
-        .sidebar-brand small {
-            display: block;
-            color: var(--muted);
-            font-size: 10px;
-            margin-top: 2px;
-        }
-
-        .nav-title {
-            color: #64748b;
-            text-transform: uppercase;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            padding: 14px 12px 7px;
-        }
-
-        .nav-link {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 0;
-            background: transparent;
-            color: #94a3b8;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: left;
-            margin-bottom: 3px;
-            transition: .18s ease;
-        }
-
-        .nav-link i {
-            width: 19px;
-            text-align: center;
-        }
-
-        .nav-link:hover {
-            background: rgba(255,255,255,.045);
-            color: white;
-        }
-
-        .nav-link.active {
-            background:
-                rgba(37,99,235,.15);
-            color: #dbeafe;
-            border: 1px solid
-                rgba(59,130,246,.15);
-        }
-
-        .sidebar-bottom {
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-
-        .logout-btn {
-            color: #fca5a5;
-        }
-
-        .logout-btn:hover {
-            color: #fecaca;
-            background: rgba(239,68,68,.08);
-        }
-
-        .main {
-            width: calc(100% - 260px);
-            margin-left: 260px;
-            min-width: 0;
-        }
-
-        .topbar {
-            height: 75px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 0 28px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(5,11,20,.76);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        #page-title {
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 22px;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            width: 42px;
-            height: 42px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,.04);
-            color: white;
-            border-radius: 12px;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-        }
-
-        .user-avatar {
-            width: 39px;
-            height: 39px;
-            border-radius: 12px;
-            display: grid;
-            place-items: center;
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #0ea5e9
-                );
-            font-weight: 800;
-        }
-
-        .user-info strong {
-            display: block;
-            font-size: 13px;
-        }
-
-        .user-info small {
-            display: block;
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 2px;
-        }
-
-        .content {
-            padding: 28px;
-            max-width: 1500px;
-            margin: 0 auto;
-        }
-
-        .app-page {
-            animation: pageIn .25s ease;
-        }
-
-        @keyframes pageIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-heading {
-            margin-bottom: 25px;
-        }
-
-        .page-heading h2 {
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 26px;
-        }
-
-        .page-heading p {
-            color: var(--muted);
-            margin-top: 5px;
-            font-size: 14px;
-        }
-
-        /* =====================================================
-           CARDS
-           ===================================================== */
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-        }
-
-        .stat-icon {
-            width: 42px;
-            height: 42px;
-            display: grid;
-            place-items: center;
-            border-radius: 12px;
-            background: rgba(59,130,246,.12);
-            color: #93c5fd;
-            margin-bottom: 15px;
-        }
-
-        .stat-card span {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .stat-card strong {
-            display: block;
-            margin-top: 6px;
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 28px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .panel {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 21px;
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 18px;
-        }
-
-        .panel-header h3 {
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 17px;
-        }
-
-        .panel-header span {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .student-summary {
-            display: grid;
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .summary-box {
-            padding: 16px;
-            border-radius: 14px;
-            background: rgba(255,255,255,.035);
-            border: 1px solid var(--border);
-        }
-
-        .summary-box span {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .summary-box strong {
-            display: block;
-            margin-top: 7px;
-            font-size: 20px;
-        }
-
-        /* =====================================================
-           TABLES
-           ===================================================== */
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            border: 1px solid var(--border);
-            border-radius: 15px;
-        }
-
-        table {
-            width: 100%;
-            min-width: 650px;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 14px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-        }
-
-        th {
-            color: #cbd5e1;
-            background: rgba(255,255,255,.025);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .4px;
-        }
-
-        td {
-            color: #dbe4ef;
-        }
-
-        tr:last-child td {
-            border-bottom: 0;
-        }
-
-        /* =====================================================
-           NOTES
-           ===================================================== */
-
-        .grades-summary {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 16px;
-        }
-
-        .grades-summary > div {
-            padding: 18px 24px;
-            background: rgba(37,99,235,.1);
-            border: 1px solid rgba(59,130,246,.18);
-            border-radius: 15px;
-            text-align: center;
-        }
-
-        .grades-summary span {
-            display: block;
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .grades-summary strong {
-            display: block;
-            margin-top: 4px;
-            font-family: "Space Grotesk";
-            font-size: 27px;
-        }
-
-        /* =====================================================
-           COURS
-           ===================================================== */
-
-        #courses-container {
-            display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-            gap: 15px;
-        }
-
-        .course-card {
-            display: flex;
-            gap: 16px;
-            padding: 18px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 17px;
-        }
-
-        .course-time {
-            min-width: 75px;
-            padding-right: 15px;
-            border-right: 1px solid var(--border);
-        }
-
-        .course-time strong {
-            display: block;
-            font-size: 15px;
-        }
-
-        .course-time span {
-            display: block;
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .course-content h3 {
-            font-size: 16px;
-            margin-bottom: 7px;
-        }
-
-        .course-content p {
-            color: var(--muted);
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        /* =====================================================
-           PRÉSENCES
-           ===================================================== */
-
-        .attendance-summary {
-            display: grid;
-            grid-template-columns:
-                repeat(5, minmax(0, 1fr));
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .attendance-summary > div {
-            padding: 16px;
-            background: rgba(255,255,255,.035);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-        }
-
-        .attendance-summary span {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .attendance-summary strong {
-            display: block;
-            font-size: 20px;
-            margin-top: 5px;
-        }
-
-        /* =====================================================
-           DOCUMENTS
-           ===================================================== */
-
-        #documents-container {
-            display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-            gap: 15px;
-        }
-
-        .document-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 18px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 17px;
-        }
-
-        .document-icon {
-            width: 46px;
-            height: 46px;
-            display: grid;
-            place-items: center;
-            flex-shrink: 0;
-            border-radius: 13px;
-            background: rgba(59,130,246,.1);
-            color: #93c5fd;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .document-card h3 {
-            font-size: 15px;
-        }
-
-        .document-card p {
-            color: var(--muted);
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .document-card small {
-            color: #64748b;
-            display: block;
-            margin-top: 6px;
-        }
-
-        .document-link {
-            margin-left: auto;
-            padding: 8px 11px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 12px;
-            color: #bfdbfe;
-        }
-
-        /* =====================================================
-           CALENDRIER
-           ===================================================== */
-
-        #calendar-container {
-            display: grid;
-            gap: 12px;
-        }
-
-        .event-card {
-            display: flex;
-            gap: 17px;
-            padding: 18px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 17px;
-        }
-
-        .event-date {
-            width: 105px;
-            flex-shrink: 0;
-            padding-right: 15px;
-            border-right: 1px solid var(--border);
-        }
-
-        .event-date strong {
-            display: block;
-            font-size: 13px;
-        }
-
-        .event-date span {
-            display: block;
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 6px;
-        }
-
-        .event-content h3 {
-            font-size: 15px;
-        }
-
-        .event-content p {
-            color: var(--muted);
-            font-size: 12px;
-            margin: 6px 0;
-        }
-
-        .event-content small {
-            color: #64748b;
-        }
-
-        /* =====================================================
-           PAIEMENTS
-           ===================================================== */
-
-        .payment-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 19px;
-            margin-bottom: 18px;
-            border-radius: 16px;
-            background: rgba(34,197,94,.08);
-            border: 1px solid rgba(34,197,94,.15);
-        }
-
-        .payment-total span {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .payment-total strong {
-            font-family: "Space Grotesk";
-            font-size: 24px;
-        }
-
-        /* =====================================================
-           CLASSES
-           ===================================================== */
-
-        #classes-container {
-            display: grid;
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-            gap: 15px;
-        }
-
-        .class-card {
-            padding: 20px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 17px;
-        }
-
-        .class-card h3 {
-            font-family: "Space Grotesk";
-            font-size: 17px;
-            margin-bottom: 12px;
-        }
-
-        .class-card p {
-            color: var(--muted);
-            font-size: 12px;
-            margin: 5px 0;
-        }
-
-        .class-card strong {
-            display: block;
-            margin-top: 15px;
-            color: #bfdbfe;
-        }
-
-        /* =====================================================
-           PROFIL
-           ===================================================== */
-
-        .profile-card {
-            max-width: 700px;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 22px;
-            display: grid;
-            place-items: center;
-            font-size: 26px;
-            font-weight: 800;
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #0ea5e9
-                );
-            margin-bottom: 18px;
-        }
-
-        .profile-name {
-            font-family: "Space Grotesk";
-            font-size: 25px;
-        }
-
-        .profile-role {
-            color: var(--muted);
-            margin-top: 4px;
-            margin-bottom: 25px;
-        }
-
-        .profile-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .profile-field {
-            padding: 15px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,.03);
-            border-radius: 13px;
-        }
-
-        .profile-field span {
-            display: block;
-            color: var(--muted);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: .6px;
-        }
-
-        .profile-field strong {
-            display: block;
-            margin-top: 6px;
-            font-size: 13px;
-        }
-
-        /* =====================================================
-           ÉTAT VIDE
-           ===================================================== */
-
-        .empty-state {
-            padding: 45px 20px;
-            text-align: center;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-        }
-
-        .empty-state h3 {
-            font-family: "Space Grotesk";
-            font-size: 18px;
-        }
-
-        .empty-state p {
-            color: var(--muted);
-            margin-top: 7px;
-            font-size: 13px;
-        }
-
-        /* =====================================================
-           RECHERCHE
-           ===================================================== */
-
-        .search-bar {
-            margin-bottom: 17px;
-        }
-
-        .search-bar input {
-            width: 100%;
-            height: 48px;
-            padding: 0 16px;
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            outline: none;
-            background: rgba(255,255,255,.04);
-            color: white;
-        }
-
-        .search-bar input:focus {
-            border-color: rgba(59,130,246,.55);
-        }
-
-        /* =====================================================
-           MOBILE
-           ===================================================== */
-
-        @media (max-width: 1100px) {
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0,1fr));
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            #classes-container {
-                grid-template-columns:
-                    repeat(2, minmax(0,1fr));
-            }
-
-        }
-
-
-        @media (max-width: 800px) {
-
-            .sidebar {
-                transform: translateX(-105%);
-                transition: transform .25s ease;
-                box-shadow: 20px 0 50px rgba(0,0,0,.35);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main {
-                width: 100%;
-                margin-left: 0;
-            }
-
-            .mobile-menu-btn {
-                display: grid;
-                place-items: center;
-            }
-
-            .topbar {
-                padding: 0 16px;
-            }
-
-            .content {
-                padding: 20px 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0,1fr));
-            }
-
-            #courses-container,
-            #documents-container {
-                grid-template-columns: 1fr;
-            }
-
-            .attendance-summary {
-                grid-template-columns:
-                    repeat(2, minmax(0,1fr));
-            }
-
-        }
-
-
-        @media (max-width: 520px) {
-
-            #login-screen {
-                padding: 15px;
-            }
-
-            .login-card {
-                padding: 23px 18px;
-                border-radius: 22px;
-            }
-
-            .brand-logo {
-                width: 78px;
-                height: 78px;
-            }
-
-            .brand h1 {
-                font-size: 25px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .stat-card strong {
-                font-size: 23px;
-            }
-
-            .stat-icon {
-                width: 37px;
-                height: 37px;
-            }
-
-            .user-info {
-                display: none;
-            }
-
-            #page-title {
-                font-size: 18px;
-            }
-
-            .student-summary {
-                grid-template-columns: 1fr;
-            }
-
-            .profile-grid {
-                grid-template-columns: 1fr;
-            }
-
-            #classes-container {
-                grid-template-columns: 1fr;
-            }
-
-            .attendance-summary {
-                grid-template-columns:
-                    repeat(2, minmax(0,1fr));
-            }
-
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <title>DALZON SHULE — Connecter l’École à la Maison</title>
+  <meta name="description" content="DALZON SHULE — Plateforme numérique de gestion scolaire. Connecter l’École à la Maison.">
+  <meta name="theme-color" content="#08111f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DALZON SHULE">
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="https://i.imghos.co/ScqSjIHB.png">
+  <link rel="apple-touch-icon" href="https://i.imghos.co/ScqSjIHB.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #050b14;
+      --bg-soft: #08111f;
+      --panel: rgba(10, 22, 38, .78);
+      --panel-strong: rgba(12, 27, 46, .94);
+      --border: rgba(255,255,255,.09);
+      --border-light: rgba(255,255,255,.14);
+      --text: #f5f8fc;
+      --muted: #8e9bad;
+      --blue: #2589ff;
+      --blue-light: #55a7ff;
+      --green: #32d583;
+      --red: #ff5d73;
+      --orange: #ffb547;
+      --shadow: 0 24px 80px rgba(0,0,0,.4);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(37,137,255,.13), transparent 28%),
+        radial-gradient(circle at 90% 85%, rgba(48,94,255,.08), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* =========================
+       LOGIN
+    ========================= */
+
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-grid {
+      position: absolute;
+      inset: 0;
+      opacity: .17;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 45px 45px;
+      mask-image: linear-gradient(to bottom, black, transparent);
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+    }
+
+    .orb-one {
+      width: 280px;
+      height: 280px;
+      background: rgba(0,110,255,.16);
+      top: -100px;
+      left: -70px;
+    }
+
+    .orb-two {
+      width: 260px;
+      height: 260px;
+      background: rgba(0,190,255,.10);
+      right: -80px;
+      bottom: -70px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      z-index: 2;
+      padding: 42px;
+      border: 1px solid var(--border-light);
+      background: rgba(8,17,31,.76);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-brand {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .login-brand img {
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+      border-radius: 22px;
+      margin-bottom: 18px;
+    }
+
+    .login-brand h1 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.7px;
+    }
+
+    .login-brand p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #c8d1dc;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap > i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #708097;
+      pointer-events: none;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      outline: none;
+      padding: 0 48px;
+      background: rgba(255,255,255,.035);
+      color: white;
+      transition: .2s ease;
+    }
+
+    .input-wrap input:focus {
+      border-color: rgba(37,137,255,.7);
+      background: rgba(255,255,255,.05);
+      box-shadow: 0 0 0 4px rgba(37,137,255,.08);
+    }
+
+    .input-wrap input::placeholder {
+      color: #647286;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: #718096;
+      width: 30px;
+      height: 30px;
+    }
+
+    .login-error {
+      display: none;
+      margin: 0 0 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255,93,115,.08);
+      border: 1px solid rgba(255,93,115,.2);
+      color: #ff91a0;
+      font-size: 13px;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .login-button {
+      width: 100%;
+      height: 54px;
+      border: 0;
+      border-radius: 15px;
+      color: white;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1478ed, #2c9cff);
+      box-shadow: 0 12px 30px rgba(37,137,255,.2);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .login-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 15px 35px rgba(37,137,255,.28);
+    }
+
+    .login-help {
+      margin-top: 20px;
+      text-align: center;
+      color: #718096;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .login-help strong {
+      color: #aebbd0;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    #app-screen {
+      min-height: 100vh;
+      display: none;
+    }
+
+    #app-screen.active {
+      display: block;
+    }
+
+    .app-layout {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      width: 255px;
+      min-width: 255px;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 50;
+      padding: 22px 15px;
+      background: rgba(5,12,22,.92);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 5px 10px 25px;
+    }
+
+    .sidebar-brand img {
+      width: 43px;
+      height: 43px;
+      object-fit: contain;
+      border-radius: 11px;
+    }
+
+    .sidebar-brand div {
+      min-width: 0;
+    }
+
+    .sidebar-brand strong {
+      display: block;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 16px;
+    }
+
+    .sidebar-brand span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .nav-label {
+      padding: 16px 11px 8px;
+      color: #58667a;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .nav-item {
+      width: 100%;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 13px;
+      margin-bottom: 4px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #8996a8;
+      text-align: left;
+      transition: .2s ease;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .nav-item:hover {
+      color: white;
+      background: rgba(255,255,255,.045);
+    }
+
+    .nav-item.active {
+      color: white;
+      background: rgba(37,137,255,.13);
+      border: 1px solid rgba(37,137,255,.12);
+    }
+
+    .nav-item.active i {
+      color: var(--blue-light);
+    }
+
+    .sidebar-bottom {
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* MAIN */
+
+    .main-area {
+      width: calc(100% - 255px);
+      margin-left: 255px;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      background: rgba(5,11,20,.76);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .mobile-menu {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: rgba(255,255,255,.04);
+      color: white;
+    }
+
+    .page-title {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: rgba(37,137,255,.14);
+      border: 1px solid rgba(37,137,255,.18);
+      color: #8bc5ff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .user-mini-info strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .user-mini-info span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .content {
+      padding: 30px;
+      max-width: 1500px;
+    }
+
+    /* =========================
+       PAGES
+    ========================= */
+
+    .page {
+      display: none;
+      animation: pageIn .22s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 28px;
+      margin-bottom: 7px;
+    }
+
+    .welcome p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card,
+    .panel,
+    .profile-card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 40px rgba(0,0,0,.12);
+    }
+
+    .stat-card {
+      padding: 20px;
+      min-height: 125px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: rgba(37,137,255,.1);
+      color: #75b9ff;
+      margin-bottom: 15px;
+    }
+
+    .stat-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .stat-card strong {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 25px;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .panel-header h3 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 16px;
+    }
+
+    .panel-header span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .quick-action {
+      min-height: 75px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      color: white;
+      text-align: left;
+      transition: .2s ease;
+    }
+
+    .quick-action:hover {
+      background: rgba(37,137,255,.08);
+      border-color: rgba(37,137,255,.2);
+    }
+
+    .quick-action i {
+      color: #74baff;
+      margin-bottom: 9px;
+    }
+
+    .quick-action strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .quick-action span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-state i {
+      display: block;
+      font-size: 30px;
+      margin-bottom: 12px;
+      opacity: .5;
+    }
+
+    /* TABLES */
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    .data-table th {
+      color: #78869a;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      font-weight: 700;
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.045);
+      font-size: 12px;
+      color: #dbe3ed;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(37,137,255,.1);
+      color: #82c1ff;
+    }
+
+    .badge.green {
+      color: #71e4aa;
+      background: rgba(50,213,131,.09);
+    }
+
+    .badge.orange {
+      color: #ffc76d;
+      background: rgba(255,181,71,.09);
+    }
+
+    .badge.red {
+      color: #ff8b9a;
+      background: rgba(255,93,115,.09);
+    }
+
+    /* PAGE HEAD */
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 24px;
+    }
+
+    .section-head p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search-box {
+      width: 240px;
+      position: relative;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #68768a;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      padding: 0 12px 0 38px;
+      background: rgba(255,255,255,.03);
+      color: white;
+    }
+
+    /* PROFILE */
+
+    .profile-card {
+      padding: 28px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 25px;
+    }
+
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      background: rgba(37,137,255,.12);
+      color: #8ac5ff;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .profile-header h2 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 21px;
+    }
+
+    .profile-header p {
+      color: var(--muted);
+      margin-top: 5px;
+      font-size: 12px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .profile-item {
+      padding: 15px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--border);
+    }
+
+    .profile-item span {
+      display: block;
+      color: #6e7c90;
+      font-size: 10px;
+      margin-bottom: 7px;
+    }
+
+    .profile-item strong {
+      font-size: 13px;
+    }
+
+    /* LOGOUT */
+
+    .logout-button {
+      color: #ff8191 !important;
+    }
+
+    .logout-button:hover {
+      background: rgba(255,93,115,.08) !important;
+    }
+
+    /* LOADING */
+
+    .loading {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .loading i {
+      margin-right: 8px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 1100px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 20px 0 60px rgba(0,0,0,.4);
+      }
+
+      .main-area {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .mobile-menu {
+        display: block;
+      }
+
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .content {
+        padding: 20px 16px;
+      }
+
+      .user-mini-info {
+        display: none;
+      }
+
+      .page-title {
+        font-size: 17px;
+      }
+    }
+
+    @media (max-width: 550px) {
+      #login-screen {
+        padding: 15px;
+      }
+
+      .login-card {
+        padding: 28px 20px;
+        border-radius: 22px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 15px;
+        min-height: 110px;
+      }
+
+      .stat-card strong {
+        font-size: 21px;
+      }
+
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
+  <!-- =====================================================
+       CONNEXION
+       ===================================================== -->
 
-<!-- =========================================================
-     ÉCRAN DE CONNEXION
-     ========================================================= -->
+  <section id="login-screen">
 
-<section id="login-screen">
+    <div class="login-grid"></div>
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
 
-    <div class="login-orb one"></div>
-    <div class="login-orb two"></div>
+    <div class="login-card">
 
-    <div class="login-wrapper">
+      <div class="login-brand">
+        <img
+          src="https://i.imghos.co/ScqSjIHB.png"
+          alt="DALZON SHULE">
 
-        <div class="brand">
+        <h1>DALZON SHULE</h1>
+        <p>Connecter l’École à la Maison</p>
+      </div>
 
-            <img
-                class="brand-logo"
-                src="https://i.imghos.co/ScqSjIHB.png"
-                alt="DALZON SHULE"
-            >
+      <form id="login-form">
 
-            <h1>DALZON SHULE</h1>
+        <div class="field">
+          <label for="email">
+            Adresse mail ou matricule
+          </label>
 
-            <p>
-                Connecter l'École à la Maison
-            </p>
+          <div class="input-wrap">
+            <i class="fa-solid fa-user"></i>
 
+            <input
+              type="text"
+              id="email"
+              name="email"
+              autocomplete="username"
+              placeholder="Email ou matricule"
+              required>
+          </div>
         </div>
 
+        <div class="field">
+          <label for="password">
+            Code d'accès
+          </label>
 
-        <div class="login-card">
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock"></i>
 
-            <h2>Bienvenue</h2>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Votre code d'accès"
+              required>
 
-            <p class="login-description">
-                Connectez-vous à votre espace
-                scolaire pour accéder à vos
-                informations.
-            </p>
+            <button
+              type="button"
+              class="password-toggle"
+              data-password-toggle
+              aria-label="Afficher le mot de passe">
 
+              <i class="fa-solid fa-eye"></i>
 
-            <form id="login-form">
-
-                <div class="field">
-
-                    <label for="email">
-                        Adresse mail ou matricule
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <i
-                            class="fa-solid fa-user input-icon"
-                        ></i>
-
-                        <input
-                            id="email"
-                            name="email"
-                            type="text"
-                            autocomplete="username"
-                            placeholder="nom@dalzonshule.com"
-                            required
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label for="password">
-                        Code d'accès
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <i
-                            class="fa-solid fa-lock input-icon"
-                        ></i>
-
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            autocomplete="current-password"
-                            placeholder="Votre code d'accès"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            data-password-toggle="password"
-                            aria-label="Afficher le code"
-                        >
-                            <i
-                                class="fa-solid fa-eye"
-                            ></i>
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="login-button"
-                >
-                    <i
-                        class="fa-solid fa-arrow-right-to-bracket"
-                    ></i>
-
-                    &nbsp;
-
-                    Se connecter
-                </button>
-
-            </form>
-
-
-            <div class="login-help">
-
-                <strong>
-                    Besoin d'aide ?
-                </strong>
-
-                <br>
-
-                En cas de problème de connexion,
-                contactez le secrétariat de votre
-                établissement.
-
-            </div>
-
+            </button>
+          </div>
         </div>
+
+        <div id="login-error" class="login-error"></div>
+
+        <button
+          type="submit"
+          class="login-button"
+          id="login-button">
+
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          &nbsp; Se connecter
+
+        </button>
+
+      </form>
+
+      <div class="login-help">
+        <strong>Accès DALZON SHULE</strong><br>
+        En cas d'oubli du code d'accès, veuillez contacter
+        le secrétariat de votre établissement.
+      </div>
 
     </div>
 
-</section>
+  </section>
 
 
-<!-- =========================================================
-     APPLICATION
-     ========================================================= -->
+  <!-- =====================================================
+       APPLICATION
+       ===================================================== -->
 
-<section id="app-screen">
+  <section id="app-screen">
 
     <div class="app-layout">
 
+      <!-- SIDEBAR -->
 
-        <!-- =================================================
-             SIDEBAR
-             ================================================= -->
+      <aside class="sidebar" id="sidebar">
 
-        <aside
-            id="sidebar"
-            class="sidebar"
-        >
+        <div class="sidebar-brand">
 
-            <div class="sidebar-brand">
+          <img
+            src="https://i.imghos.co/ScqSjIHB.png"
+            alt="DALZON SHULE">
 
-                <img
-                    src="https://i.imghos.co/ScqSjIHB.png"
-                    alt="DALZON SHULE"
-                >
+          <div>
+            <strong>DALZON SHULE</strong>
+            <span>École numérique</span>
+          </div>
+
+        </div>
+
+
+        <div class="nav-label">
+          Principal
+        </div>
+
+        <button class="nav-item active" data-route="dashboard">
+          <i class="fa-solid fa-grid-2"></i>
+          <span>Tableau de bord</span>
+        </button>
+
+        <button class="nav-item" data-route="grades">
+          <i class="fa-solid fa-chart-column"></i>
+          <span>Notes & résultats</span>
+        </button>
+
+        <button class="nav-item" data-route="courses">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Cours</span>
+        </button>
+
+        <button class="nav-item" data-route="attendance">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Présences</span>
+        </button>
+
+        <button class="nav-item" data-route="documents">
+          <i class="fa-solid fa-folder-open"></i>
+          <span>Documents</span>
+        </button>
+
+        <button class="nav-item" data-route="calendar">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Calendrier</span>
+        </button>
+
+
+        <div class="nav-label">
+          Administration
+        </div>
+
+        <button class="nav-item" data-route="students">
+          <i class="fa-solid fa-users"></i>
+          <span>Élèves</span>
+        </button>
+
+        <button class="nav-item" data-route="teachers">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          <span>Enseignants</span>
+        </button>
+
+        <button class="nav-item" data-route="classes">
+          <i class="fa-solid fa-school"></i>
+          <span>Classes</span>
+        </button>
+
+        <button class="nav-item" data-route="subjects">
+          <i class="fa-solid fa-book"></i>
+          <span>Matières</span>
+        </button>
+
+        <button class="nav-item" data-route="payments">
+          <i class="fa-solid fa-money-bill-transfer"></i>
+          <span>Paiements</span>
+        </button>
+
+
+        <div class="sidebar-bottom">
+
+          <button class="nav-item" data-route="profile">
+            <i class="fa-solid fa-user"></i>
+            <span>Mon profil</span>
+          </button>
+
+          <button class="nav-item logout-button" data-action="logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Déconnexion</span>
+          </button>
+
+        </div>
+
+      </aside>
+
+
+      <!-- MAIN -->
+
+      <main class="main-area">
+
+        <header class="topbar">
+
+          <div class="topbar-left">
+
+            <button
+              class="mobile-menu"
+              id="menu-toggle"
+              data-action="menu"
+              aria-label="Menu">
+
+              <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+            <div class="page-title" id="page-title">
+              Tableau de bord
+            </div>
+
+          </div>
+
+
+          <div class="topbar-right">
+
+            <div class="user-mini">
+
+              <div class="avatar" id="top-avatar">
+                DS
+              </div>
+
+              <div class="user-mini-info">
+
+                <strong id="top-user-name">
+                  DALZON
+                </strong>
+
+                <span id="top-user-role">
+                  Utilisateur
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </header>
+
+
+        <div class="content">
+
+
+          <!-- =========================
+               DASHBOARD
+               ========================= -->
+
+          <section
+            class="page active"
+            id="page-dashboard">
+
+            <div class="welcome">
+
+              <h2 id="dashboard-greeting">
+                Bienvenue
+              </h2>
+
+              <p>
+                Voici un aperçu de votre espace DALZON SHULE.
+              </p>
+
+            </div>
+
+
+            <div class="cards-grid">
+
+              <div class="stat-card">
+
+                <div class="stat-icon">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+
+                <span>Élèves</span>
+
+                <strong id="stat-students">
+                  —
+                </strong>
+
+              </div>
+
+
+              <div class="stat-card">
+
+                <div class="stat-icon">
+                  <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+
+                <span>Enseignants</span>
+
+                <strong id="stat-teachers">
+                  —
+                </strong>
+
+              </div>
+
+
+              <div class="stat-card">
+
+                <div class="stat-icon">
+                  <i class="fa-solid fa-school"></i>
+                </div>
+
+                <span>Classes</span>
+
+                <strong id="stat-classes">
+                  —
+                </strong>
+
+              </div>
+
+
+              <div class="stat-card">
+
+                <div class="stat-icon">
+                  <i class="fa-solid fa-book"></i>
+                </div>
+
+                <span>Matières</span>
+
+                <strong id="stat-subjects">
+                  —
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="two-columns">
+
+              <div class="panel">
+
+                <div class="panel-header">
+
+                  <h3>Accès rapide</h3>
+
+                  <span>DALZON SHULE</span>
+
+                </div>
+
+                <div class="quick-grid">
+
+                  <button
+                    class="quick-action"
+                    data-route="grades">
+
+                    <i class="fa-solid fa-chart-column"></i>
+
+                    <strong>Notes</strong>
+
+                    <span>
+                      Consulter les résultats
+                    </span>
+
+                  </button>
+
+
+                  <button
+                    class="quick-action"
+                    data-route="courses">
+
+                    <i class="fa-solid fa-book-open"></i>
+
+                    <strong>Cours</strong>
+
+                    <span>
+                      Voir les cours disponibles
+                    </span>
+
+                  </button>
+
+
+                  <button
+                    class="quick-action"
+                    data-route="attendance">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                    <strong>Présences</strong>
+
+                    <span>
+                      Suivre les présences
+                    </span>
+
+                  </button>
+
+
+                  <button
+                    class="quick-action"
+                    data-route="documents">
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    <strong>Documents</strong>
+
+                    <span>
+                      Accéder aux documents
+                    </span>
+
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="panel">
+
+                <div class="panel-header">
+
+                  <h3>Mon espace</h3>
+
+                  <span>Profil</span>
+
+                </div>
+
+                <div class="empty-state">
+
+                  <i class="fa-solid fa-user-circle"></i>
+
+                  <p id="dashboard-user-summary">
+                    Chargement de votre profil...
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               NOTES
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-grades">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Notes & résultats</h2>
+                <p>Consultez les résultats scolaires.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="grades-container"
+                class="table-wrap">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               COURS
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-courses">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Cours</h2>
+                <p>Programme et contenus pédagogiques.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="courses-container">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               PRESENCES
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-attendance">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Présences</h2>
+                <p>Suivi des présences et absences.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="attendance-container">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               DOCUMENTS
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-documents">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Documents</h2>
+                <p>Documents scolaires disponibles.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div id="documents-container">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               CALENDRIER
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-calendar">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Calendrier</h2>
+                <p>Événements et activités scolaires.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div id="calendar-container">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               ÉLÈVES
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-students">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Élèves</h2>
+                <p>Gestion des élèves.</p>
+              </div>
+
+              <div class="search-box">
+
+                <i class="fa-solid fa-search"></i>
+
+                <input
+                  type="search"
+                  id="student-search"
+                  data-student-search
+                  placeholder="Rechercher...">
+
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="students-container"
+                class="table-wrap">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               ENSEIGNANTS
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-teachers">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Enseignants</h2>
+                <p>Gestion des enseignants.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="teachers-container"
+                class="table-wrap">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               CLASSES
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-classes">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Classes</h2>
+                <p>Organisation des classes.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="classes-container"
+                class="table-wrap">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               MATIÈRES
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-subjects">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Matières</h2>
+                <p>Liste des matières enseignées.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="subjects-container"
+                class="table-wrap">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               PAIEMENTS
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-payments">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Paiements</h2>
+                <p>Suivi des frais et paiements scolaires.</p>
+              </div>
+
+            </div>
+
+            <div class="panel">
+
+              <div
+                id="payments-container">
+
+                <div class="loading">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Chargement...
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================
+               PROFIL
+               ========================= -->
+
+          <section
+            class="page"
+            id="page-profile">
+
+            <div class="section-head">
+
+              <div>
+                <h2>Mon profil</h2>
+                <p>Informations de votre compte DALZON SHULE.</p>
+              </div>
+
+            </div>
+
+
+            <div class="profile-card">
+
+              <div class="profile-header">
+
+                <div
+                  class="profile-avatar"
+                  id="profile-avatar">
+                  DS
+                </div>
 
                 <div>
 
-                    <strong>
-                        DALZON SHULE
-                    </strong>
+                  <h2 id="profile-name">
+                    —
+                  </h2>
 
-                    <small>
-                        Espace scolaire
-                    </small>
+                  <p id="profile-role-title">
+                    —
+                  </p>
 
                 </div>
 
-            </div>
+              </div>
 
 
-            <div class="nav-title">
-                Principal
-            </div>
+              <div class="profile-grid">
 
+                <div class="profile-item">
 
-            <button
-                class="nav-link"
-                data-route="dashboard"
-            >
-                <i class="fa-solid fa-house"></i>
-                <span>Tableau de bord</span>
-            </button>
+                  <span>
+                    Adresse mail
+                  </span>
 
-
-            <button
-                class="nav-link"
-                data-route="grades"
-            >
-                <i class="fa-solid fa-chart-column"></i>
-                <span>Notes</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="courses"
-            >
-                <i class="fa-solid fa-book-open"></i>
-                <span>Cours</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="attendance"
-            >
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>Présences</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="documents"
-            >
-                <i class="fa-solid fa-file-lines"></i>
-                <span>Documents</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="calendar"
-            >
-                <i class="fa-solid fa-calendar-days"></i>
-                <span>Calendrier</span>
-            </button>
-
-
-            <div class="nav-title">
-                Gestion
-            </div>
-
-
-            <button
-                class="nav-link"
-                data-route="students"
-            >
-                <i class="fa-solid fa-user-graduate"></i>
-                <span>Élèves</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="teachers"
-            >
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span>Enseignants</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="classes"
-            >
-                <i class="fa-solid fa-users"></i>
-                <span>Classes</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="subjects"
-            >
-                <i class="fa-solid fa-book"></i>
-                <span>Matières</span>
-            </button>
-
-
-            <button
-                class="nav-link"
-                data-route="payments"
-            >
-                <i class="fa-solid fa-money-bill-wave"></i>
-                <span>Paiements</span>
-            </button>
-
-
-            <div class="nav-title">
-                Compte
-            </div>
-
-
-            <button
-                class="nav-link"
-                data-route="profile"
-            >
-                <i class="fa-solid fa-user"></i>
-                <span>Mon profil</span>
-            </button>
-
-
-            <div class="sidebar-bottom">
-
-                <button
-                    class="nav-link logout-btn"
-                    data-action="logout"
-                >
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Déconnexion</span>
-                </button>
-
-            </div>
-
-        </aside>
-
-
-        <!-- =================================================
-             CONTENU PRINCIPAL
-             ================================================= -->
-
-        <main class="main">
-
-
-            <!-- TOPBAR -->
-
-            <header class="topbar">
-
-                <div class="topbar-left">
-
-                    <button
-                        id="menu-toggle"
-                        class="mobile-menu-btn"
-                        data-action="menu"
-                        aria-label="Menu"
-                    >
-                        <i
-                            class="fa-solid fa-bars"
-                        ></i>
-                    </button>
-
-                    <h1 id="page-title">
-                        Tableau de bord
-                    </h1>
+                  <strong id="profile-email">
+                    —
+                  </strong>
 
                 </div>
 
 
-                <div class="user-menu">
+                <div class="profile-item">
 
-                    <div class="user-info">
+                  <span>
+                    Matricule
+                  </span>
 
-                        <strong id="user-name">
-                            —
-                        </strong>
-
-                        <small id="user-role">
-                            —
-                        </small>
-
-                    </div>
-
-
-                    <div
-                        class="user-avatar"
-                        id="user-avatar"
-                    >
-                        U
-                    </div>
+                  <strong id="profile-matricule">
+                    —
+                  </strong>
 
                 </div>
 
-            </header>
 
+                <div class="profile-item">
 
-            <!-- CONTENU -->
+                  <span>
+                    Rôle
+                  </span>
 
-            <div class="content">
+                  <strong id="profile-role-value">
+                    —
+                  </strong>
 
+                </div>
 
-                <!-- =================================================
-                     DASHBOARD
-                     ================================================= -->
 
-                <section
-                    id="page-dashboard"
-                    class="app-page"
-                    data-page="dashboard"
-                >
+                <div class="profile-item">
 
-                    <div class="page-heading">
+                  <span>
+                    Classe
+                  </span>
 
-                        <h2>
-                            Tableau de bord
-                        </h2>
+                  <strong id="profile-class">
+                    —
+                  </strong>
 
-                        <p>
-                            Vue générale de votre
-                            espace DALZON SHULE.
-                        </p>
+                </div>
 
-                    </div>
-
-
-                    <div class="stats-grid">
-
-                        <div class="stat-card">
-
-                            <div class="stat-icon">
-                                <i
-                                    class="fa-solid fa-user-graduate"
-                                ></i>
-                            </div>
-
-                            <span>
-                                Élèves
-                            </span>
-
-                            <strong id="stat-students">
-                                0
-                            </strong>
-
-                        </div>
-
-
-                        <div class="stat-card">
-
-                            <div class="stat-icon">
-                                <i
-                                    class="fa-solid fa-chalkboard-user"
-                                ></i>
-                            </div>
-
-                            <span>
-                                Enseignants
-                            </span>
-
-                            <strong id="stat-teachers">
-                                0
-                            </strong>
-
-                        </div>
-
-
-                        <div class="stat-card">
-
-                            <div class="stat-icon">
-                                <i
-                                    class="fa-solid fa-users"
-                                ></i>
-                            </div>
-
-                            <span>
-                                Classes
-                            </span>
-
-                            <strong id="stat-classes">
-                                0
-                            </strong>
-
-                        </div>
-
-
-                        <div class="stat-card">
-
-                            <div class="stat-icon">
-                                <i
-                                    class="fa-solid fa-book"
-                                ></i>
-                            </div>
-
-                            <span>
-                                Matières
-                            </span>
-
-                            <strong id="stat-subjects">
-                                0
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="dashboard-grid">
-
-
-                        <div class="panel">
-
-                            <div class="panel-header">
-
-                                <h3>
-                                    Mon espace
-                                </h3>
-
-                                <span>
-                                    DALZON SHULE
-                                </span>
-
-                            </div>
-
-
-                            <div class="student-summary">
-
-                                <div class="summary-box">
-
-                                    <span>
-                                        Classe
-                                    </span>
-
-                                    <strong
-                                        id="student-class"
-                                    >
-                                        —
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="summary-box">
-
-                                    <span>
-                                        Moyenne
-                                    </span>
-
-                                    <strong
-                                        id="student-average"
-                                    >
-                                        —
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="summary-box">
-
-                                    <span>
-                                        Présence
-                                    </span>
-
-                                    <strong
-                                        id="student-attendance"
-                                    >
-                                        —
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="panel">
-
-                            <div class="panel-header">
-
-                                <h3>
-                                    Vue système
-                                </h3>
-
-                            </div>
-
-
-                            <div class="student-summary">
-
-                                <div class="summary-box">
-
-                                    <span>
-                                        Cours
-                                    </span>
-
-                                    <strong
-                                        id="stat-courses"
-                                    >
-                                        0
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="summary-box">
-
-                                    <span>
-                                        Documents
-                                    </span>
-
-                                    <strong
-                                        id="stat-documents"
-                                    >
-                                        0
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="summary-box">
-
-                                    <span>
-                                        Événements
-                                    </span>
-
-                                    <strong
-                                        id="stat-events"
-                                    >
-                                        0
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =================================================
-                     NOTES
-                     ================================================= -->
-
-                <section
-                    id="page-grades"
-                    class="app-page"
-                    data-page="grades"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Notes
-                        </h2>
-
-                        <p>
-                            Consultez les évaluations
-                            disponibles.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="grades-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     COURS
-                     ================================================= -->
-
-                <section
-                    id="page-courses"
-                    class="app-page"
-                    data-page="courses"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Cours
-                        </h2>
-
-                        <p>
-                            Planning des cours.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="courses-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     PRÉSENCES
-                     ================================================= -->
-
-                <section
-                    id="page-attendance"
-                    class="app-page"
-                    data-page="attendance"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Présences
-                        </h2>
-
-                        <p>
-                            Suivi de la présence scolaire.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="attendance-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     DOCUMENTS
-                     ================================================= -->
-
-                <section
-                    id="page-documents"
-                    class="app-page"
-                    data-page="documents"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Documents
-                        </h2>
-
-                        <p>
-                            Documents disponibles
-                            dans votre espace.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="documents-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     CALENDRIER
-                     ================================================= -->
-
-                <section
-                    id="page-calendar"
-                    class="app-page"
-                    data-page="calendar"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Calendrier
-                        </h2>
-
-                        <p>
-                            Événements et activités
-                            scolaires.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="calendar-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     PAIEMENTS
-                     ================================================= -->
-
-                <section
-                    id="page-payments"
-                    class="app-page"
-                    data-page="payments"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Paiements
-                        </h2>
-
-                        <p>
-                            Suivi des paiements scolaires.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="payments-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     ÉLÈVES
-                     ================================================= -->
-
-                <section
-                    id="page-students"
-                    class="app-page"
-                    data-page="students"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Élèves
-                        </h2>
-
-                        <p>
-                            Gestion des élèves
-                            de l'établissement.
-                        </p>
-
-                    </div>
-
-
-                    <div class="panel">
-
-                        <div class="search-bar">
-
-                            <input
-                                type="search"
-                                data-student-search
-                                placeholder="Rechercher un élève..."
-                            >
-
-                        </div>
-
-
-                        <div
-                            id="students-container"
-                        ></div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =================================================
-                     ENSEIGNANTS
-                     ================================================= -->
-
-                <section
-                    id="page-teachers"
-                    class="app-page"
-                    data-page="teachers"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Enseignants
-                        </h2>
-
-                        <p>
-                            Personnel enseignant.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        class="panel"
-                        id="teachers-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     CLASSES
-                     ================================================= -->
-
-                <section
-                    id="page-classes"
-                    class="app-page"
-                    data-page="classes"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Classes
-                        </h2>
-
-                        <p>
-                            Organisation des classes.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        id="classes-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     MATIÈRES
-                     ================================================= -->
-
-                <section
-                    id="page-subjects"
-                    class="app-page"
-                    data-page="subjects"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Matières
-                        </h2>
-
-                        <p>
-                            Matières enseignées
-                            dans l'établissement.
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        class="panel"
-                        id="subjects-container"
-                    ></div>
-
-                </section>
-
-
-                <!-- =================================================
-                     PROFIL
-                     ================================================= -->
-
-                <section
-                    id="page-profile"
-                    class="app-page"
-                    data-page="profile"
-                    style="display:none"
-                >
-
-                    <div class="page-heading">
-
-                        <h2>
-                            Mon profil
-                        </h2>
-
-                        <p>
-                            Informations de votre
-                            compte DALZON SHULE.
-                        </p>
-
-                    </div>
-
-
-                    <div class="panel profile-card">
-
-                        <div
-                            class="profile-avatar"
-                            id="profile-avatar"
-                        >
-                            U
-                        </div>
-
-
-                        <div
-                            class="profile-name"
-                            id="profile-name"
-                        >
-                            —
-                        </div>
-
-
-                        <div
-                            class="profile-role"
-                            id="profile-role"
-                        >
-                            —
-                        </div>
-
-
-                        <div class="profile-grid">
-
-                            <div class="profile-field">
-
-                                <span>
-                                    Adresse email
-                                </span>
-
-                                <strong
-                                    id="profile-email"
-                                >
-                                    —
-                                </strong>
-
-                            </div>
-
-
-                            <div class="profile-field">
-
-                                <span>
-                                    Matricule
-                                </span>
-
-                                <strong
-                                    id="profile-matricule"
-                                >
-                                    —
-                                </strong>
-
-                            </div>
-
-
-                            <div class="profile-field">
-
-                                <span>
-                                    Fonction
-                                </span>
-
-                                <strong
-                                    id="profile-role"
-                                >
-                                    —
-                                </strong>
-
-                            </div>
-
-
-                            <div class="profile-field">
-
-                                <span>
-                                    Classe
-                                </span>
-
-                                <strong
-                                    id="profile-class"
-                                >
-                                    —
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
+              </div>
 
             </div>
 
-        </main>
+          </section>
+
+
+        </div>
+
+      </main>
 
     </div>
 
-</section>
+  </section>
 
 
-<!-- =========================================================
-     SCRIPTS
-     ORDRE IMPORTANT
-     ========================================================= -->
+  <!-- =====================================================
+       LOGIQUE DALZON SHULE
+       ===================================================== -->
 
-<script src="./data.js"></script>
-<script src="./auth.js"></script>
-<script src="./app.js"></script>
+  <script src="./data.js"></script>
+  <script src="./auth.js"></script>
+  <script src="./app.js"></script>
 
 
-<script>
+  <!-- =====================================================
+       LOGIQUE DE CONNEXION / INTERFACE
+       ===================================================== -->
 
-    /*
-       Mise à jour de l'avatar utilisateur.
-    */
+  <script>
 
-    function updateAvatar() {
+    document.addEventListener("DOMContentLoaded", function () {
 
-        if (
-            typeof DALZON_AUTH ===
-            "undefined"
-        ) {
-            return;
+      const loginScreen = document.getElementById("login-screen");
+      const appScreen = document.getElementById("app-screen");
+      const loginForm = document.getElementById("login-form");
+      const loginError = document.getElementById("login-error");
+      const loginButton = document.getElementById("login-button");
+
+      const passwordInput = document.getElementById("password");
+      const passwordToggle = document.querySelector("[data-password-toggle]");
+
+      /*
+       * Afficher / cacher le code d'accès
+       */
+
+      if (passwordToggle && passwordInput) {
+
+        passwordToggle.addEventListener("click", function () {
+
+          const icon = passwordToggle.querySelector("i");
+
+          if (passwordInput.type === "password") {
+
+            passwordInput.type = "text";
+
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+
+          } else {
+
+            passwordInput.type = "password";
+
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+
+          }
+
+        });
+
+      }
+
+
+      /*
+       * Fonction pour afficher l'application
+       *
+       * IMPORTANT :
+       * Il n'y a PAS de deuxième page.
+       * Dès que l'utilisateur est authentifié,
+       * l'écran de connexion disparaît et
+       * l'application apparaît directement.
+       */
+
+      function showApplication(user) {
+
+        loginScreen.style.display = "none";
+
+        appScreen.classList.add("active");
+
+        document.body.style.overflow = "auto";
+
+        updateUserInterface(user);
+
+        /*
+         * Charge le dashboard immédiatement.
+         */
+
+        if (window.DALZON_APP &&
+            typeof window.DALZON_APP.init === "function") {
+
+          window.DALZON_APP.init(user);
+
         }
 
-        const user =
-            DALZON_AUTH.getAuthenticatedUser();
+      }
 
-        if (!user) {
-            return;
-        }
+
+      /*
+       * Mettre à jour le nom et l'avatar
+       */
+
+      function updateUserInterface(user) {
+
+        if (!user) return;
+
+        const name =
+          user.name ||
+          user.fullName ||
+          user.nom ||
+          "Utilisateur";
+
+        const role =
+          user.role ||
+          user.type ||
+          "Utilisateur";
+
+        const email =
+          user.email ||
+          "—";
+
+        const matricule =
+          user.matricule ||
+          user.id ||
+          "—";
+
+        const classe =
+          user.className ||
+          user.class ||
+          user.classe ||
+          "—";
 
         const initials =
-            (user.firstName || user.name || "U")
-                .trim()
-                .split(/\s+/)
-                .map(
-                    part =>
-                        part.charAt(0)
-                            .toUpperCase()
-                )
-                .slice(0, 2)
-                .join("");
+          name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(word => word.charAt(0).toUpperCase())
+            .join("") || "DS";
 
-        const avatars = [
-            document.getElementById(
-                "user-avatar"
-            ),
-            document.getElementById(
-                "profile-avatar"
-            )
-        ];
 
-        avatars.forEach(
-            avatar => {
+        const topName =
+          document.getElementById("top-user-name");
 
-                if (avatar) {
-                    avatar.textContent =
-                        initials || "U";
-                }
+        const topRole =
+          document.getElementById("top-user-role");
+
+        const topAvatar =
+          document.getElementById("top-avatar");
+
+        const greeting =
+          document.getElementById("dashboard-greeting");
+
+        const summary =
+          document.getElementById("dashboard-user-summary");
+
+
+        if (topName)
+          topName.textContent = name;
+
+        if (topRole)
+          topRole.textContent = role;
+
+        if (topAvatar)
+          topAvatar.textContent = initials;
+
+        if (greeting)
+          greeting.textContent = "Bonjour " + name;
+
+        if (summary)
+          summary.textContent =
+            name + " · " + role;
+
+
+        const profileAvatar =
+          document.getElementById("profile-avatar");
+
+        const profileName =
+          document.getElementById("profile-name");
+
+        const profileRoleTitle =
+          document.getElementById("profile-role-title");
+
+        const profileEmail =
+          document.getElementById("profile-email");
+
+        const profileMatricule =
+          document.getElementById("profile-matricule");
+
+        const profileRoleValue =
+          document.getElementById("profile-role-value");
+
+        const profileClass =
+          document.getElementById("profile-class");
+
+
+        if (profileAvatar)
+          profileAvatar.textContent = initials;
+
+        if (profileName)
+          profileName.textContent = name;
+
+        if (profileRoleTitle)
+          profileRoleTitle.textContent = role;
+
+        if (profileEmail)
+          profileEmail.textContent = email;
+
+        if (profileMatricule)
+          profileMatricule.textContent = matricule;
+
+        if (profileRoleValue)
+          profileRoleValue.textContent = role;
+
+        if (profileClass)
+          profileClass.textContent = classe;
+
+      }
+
+
+      /*
+       * Connexion
+       */
+
+      if (loginForm) {
+
+        loginForm.addEventListener("submit", async function (event) {
+
+          event.preventDefault();
+
+          loginError.classList.remove("show");
+          loginError.textContent = "";
+
+          const identifier =
+            document.getElementById("email").value.trim();
+
+          const password =
+            document.getElementById("password").value;
+
+
+          if (!identifier || !password) {
+
+            loginError.textContent =
+              "Veuillez remplir tous les champs.";
+
+            loginError.classList.add("show");
+
+            return;
+          }
+
+
+          loginButton.disabled = true;
+
+          loginButton.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Connexion...';
+
+
+          try {
+
+            /*
+             * Utilisation du système auth.js
+             */
+
+            if (window.DALZON_AUTH &&
+                typeof window.DALZON_AUTH.login === "function") {
+
+              const result =
+                await window.DALZON_AUTH.login(
+                  identifier,
+                  password
+                );
+
+
+              if (result && result.success) {
+
+                /*
+                 * DIRECTEMENT L'APPLICATION
+                 */
+
+                showApplication(
+                  result.user ||
+                  result.data ||
+                  result
+                );
+
+              } else {
+
+                throw new Error(
+                  result?.message ||
+                  "Identifiants incorrects."
+                );
+
+              }
+
+            } else {
+
+              throw new Error(
+                "Le système d'authentification n'est pas chargé."
+              );
 
             }
+
+          } catch (error) {
+
+            console.error(error);
+
+            loginError.textContent =
+              error.message ||
+              "Impossible de se connecter.";
+
+            loginError.classList.add("show");
+
+          } finally {
+
+            loginButton.disabled = false;
+
+            loginButton.innerHTML =
+              '<i class="fa-solid fa-arrow-right-to-bracket"></i> &nbsp; Se connecter';
+
+          }
+
+        });
+
+      }
+
+
+      /*
+       * Vérifier si une session existe déjà.
+       *
+       * Si l'utilisateur était déjà connecté :
+       *
+       * connexion automatique → application directement
+       */
+
+      try {
+
+        if (window.DALZON_AUTH &&
+            typeof window.DALZON_AUTH.getAuthenticatedUser === "function") {
+
+          const currentUser =
+            window.DALZON_AUTH.getAuthenticatedUser();
+
+          if (currentUser) {
+
+            showApplication(currentUser);
+
+          }
+
+        }
+
+      } catch (error) {
+
+        console.warn(
+          "Session non récupérée :",
+          error
         );
 
-    }
+      }
 
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        updateAvatar
-    );
+      /*
+       * Événement envoyé par auth.js après authentification.
+       */
 
-
-    window.addEventListener(
+      window.addEventListener(
         "dalzon:authenticated",
-        updateAvatar
-    );
+        function (event) {
 
-</script>
+          const user =
+            event.detail?.user ||
+            event.detail;
 
+          if (user) {
+            showApplication(user);
+          }
+
+        }
+      );
+
+
+      /*
+       * Déconnexion
+       */
+
+      document.addEventListener(
+        "click",
+        function (event) {
+
+          const logout =
+            event.target.closest(
+              '[data-action="logout"]'
+            );
+
+          if (!logout) return;
+
+          if (window.DALZON_AUTH &&
+              typeof window.DALZON_AUTH.logout === "function") {
+
+            window.DALZON_AUTH.logout();
+
+          } else {
+
+            sessionStorage.removeItem(
+              "dalzon_authenticated_user"
+            );
+
+          }
+
+          appScreen.classList.remove("active");
+
+          appScreen.style.display = "none";
+
+          loginScreen.style.display = "flex";
+
+          document.getElementById("email").value = "";
+          document.getElementById("password").value = "";
+
+          loginError.classList.remove("show");
+
+          document.body.style.overflow = "auto";
+
+        }
+      );
+
+
+      /*
+       * Menu mobile
+       */
+
+      const menuToggle =
+        document.getElementById("menu-toggle");
+
+      const sidebar =
+        document.getElementById("sidebar");
+
+
+      if (menuToggle && sidebar) {
+
+        menuToggle.addEventListener(
+          "click",
+          function () {
+
+            sidebar.classList.toggle("open");
+
+          }
+        );
+
+      }
+
+
+      /*
+       * Fermer le menu mobile après sélection.
+       */
+
+      document.addEventListener(
+        "click",
+        function (event) {
+
+          const nav =
+            event.target.closest("[data-route]");
+
+          if (!nav) return;
+
+          if (window.innerWidth <= 800 &&
+              sidebar) {
+
+            sidebar.classList.remove("open");
+
+          }
+
+        }
+      );
+
+    });
+
+  </script>
 
 </body>
 </html>
