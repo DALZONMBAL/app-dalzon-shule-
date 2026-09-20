@@ -1,6 +1,6 @@
 /* =========================================================
    DALZON SHULE — app.js
-   Logique principale de l'application
+   Version Supabase
    ========================================================= */
 
 (function () {
@@ -12,23 +12,41 @@
 
   const APP = {
     name: "DALZON SHULE",
-    version: "1.0.0"
+    version: "2.0.0"
   };
 
   let currentUser = null;
   let currentRoute = "dashboard";
+  let DB = {
+    schools: [],
+    profiles: [],
+    classes: [],
+    students: [],
+    teachers: [],
+    subjects: [],
+    courses: [],
+    grades: [],
+    attendance: [],
+    documents: [],
+    events: [],
+    payments: []
+  };
 
   /* =======================================================
-     OUTILS
+     SUPABASE
      ======================================================= */
 
-  function getDB() {
-    return window.DALZON_DB || {};
+  function getSupabase() {
+    return window.DALZON_SUPABASE || null;
   }
 
   function getAuth() {
     return window.DALZON_AUTH || {};
   }
+
+  /* =======================================================
+     OUTILS
+     ======================================================= */
 
   function byId(id) {
     return document.getElementById(id);
@@ -59,24 +77,6 @@
     return Array.isArray(value) ? value : [];
   }
 
-  function firstDefined(...values) {
-    return values.find(
-      value => value !== undefined && value !== null
-    );
-  }
-
-  function getArray(...names) {
-    const db = getDB();
-
-    for (const name of names) {
-      if (Array.isArray(db[name])) {
-        return db[name];
-      }
-    }
-
-    return [];
-  }
-
   function getValue(object, ...keys) {
     if (!object) return "";
 
@@ -98,7 +98,9 @@
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
-      .map(word => word.charAt(0).toUpperCase())
+      .map(word =>
+        word.charAt(0).toUpperCase()
+      )
       .join("") || "DS";
   }
 
@@ -176,7 +178,9 @@
         <thead>
           <tr>
             ${headers
-              .map(header => `<th>${escapeHTML(header)}</th>`)
+              .map(header =>
+                `<th>${escapeHTML(header)}</th>`
+              )
               .join("")}
           </tr>
         </thead>
@@ -189,7 +193,7 @@
   }
 
   /* =======================================================
-     UTILISATEUR CONNECTÉ
+     UTILISATEUR
      ======================================================= */
 
   function getCurrentUser() {
@@ -239,7 +243,9 @@
       "administrateur",
       "direction",
       "superadmin"
-    ].some(value => role.includes(value));
+    ].some(value =>
+      role.includes(value)
+    );
   }
 
   function isTeacher() {
@@ -249,7 +255,9 @@
       "enseignant",
       "professeur",
       "teacher"
-    ].some(value => role.includes(value));
+    ].some(value =>
+      role.includes(value)
+    );
   }
 
   function isStudent() {
@@ -259,7 +267,9 @@
       "élève",
       "eleve",
       "student"
-    ].some(value => role.includes(value));
+    ].some(value =>
+      role.includes(value)
+    );
   }
 
   function isParent() {
@@ -268,14 +278,415 @@
     return [
       "parent",
       "tuteur"
-    ].some(value => role.includes(value));
+    ].some(value =>
+      role.includes(value)
+    );
+  }
+
+  /* =======================================================
+     CHARGEMENT SUPABASE
+     ======================================================= */
+
+  async function loadTable(tableName) {
+    const supabase = getSupabase();
+
+    if (!supabase) {
+      console.error(
+        "DALZON_SUPABASE n'est pas disponible."
+      );
+
+      return [];
+    }
+
+    try {
+      const {
+        data,
+        error
+      } = await supabase
+        .from(tableName)
+        .select("*");
+
+      if (error) {
+        console.error(
+          `Erreur Supabase [${tableName}] :`,
+          error
+        );
+
+        return [];
+      }
+
+      return Array.isArray(data)
+        ? data
+        : [];
+
+    } catch (error) {
+      console.error(
+        `Erreur chargement ${tableName}:`,
+        error
+      );
+
+      return [];
+    }
+  }
+
+  async function loadDatabase() {
+
+    const tables = [
+      "schools",
+      "profiles",
+      "classes",
+      "students",
+      "teachers",
+      "subjects",
+      "courses",
+      "grades",
+      "attendance",
+      "documents",
+      "events",
+      "payments"
+    ];
+
+    const results =
+      await Promise.all(
+        tables.map(table =>
+          loadTable(table)
+        )
+      );
+
+    tables.forEach(
+      (table, index) => {
+        DB[table] =
+          results[index] || [];
+      }
+    );
+
+    buildRelations();
+
+    console.log(
+      "DALZON SHULE — données Supabase chargées",
+      DB
+    );
+  }
+
+  /* =======================================================
+     RELATIONS / DONNÉES AFFICHABLES
+     ======================================================= */
+
+  function buildRelations() {
+
+    /*
+     * Classe des élèves
+     */
+
+    DB.students =
+      DB.students.map(student => {
+
+        const classe =
+          DB.classes.find(
+            item =>
+              String(item.id) ===
+              String(student.class_id)
+          );
+
+        const profile =
+          DB.profiles.find(
+            item =>
+              String(item.id) ===
+              String(student.profile_id)
+          );
+
+        return {
+          ...student,
+
+          name:
+            `${student.first_name || ""} ${student.last_name || ""}`
+              .trim(),
+
+          fullName:
+            `${student.first_name || ""} ${student.last_name || ""}`
+              .trim(),
+
+          className:
+            classe?.name || "—",
+
+          class:
+            classe?.name || "—",
+
+          classe:
+            classe?.name || "—",
+
+          email:
+            profile?.email || "",
+
+          profile
+        };
+      });
+
+
+    /*
+     * Enseignants
+     */
+
+    DB.teachers =
+      DB.teachers.map(teacher => {
+
+        const profile =
+          DB.profiles.find(
+            item =>
+              String(item.id) ===
+              String(teacher.profile_id)
+          );
+
+        return {
+          ...teacher,
+
+          name:
+            `${teacher.first_name || ""} ${teacher.last_name || ""}`
+              .trim(),
+
+          fullName:
+            `${teacher.first_name || ""} ${teacher.last_name || ""}`
+              .trim(),
+
+          email:
+            profile?.email || "",
+
+          profile
+        };
+      });
+
+
+    /*
+     * Cours
+     */
+
+    DB.courses =
+      DB.courses.map(course => {
+
+        const subject =
+          DB.subjects.find(
+            item =>
+              String(item.id) ===
+              String(course.subject_id)
+          );
+
+        const teacher =
+          DB.teachers.find(
+            item =>
+              String(item.id) ===
+              String(course.teacher_id)
+          );
+
+        const classe =
+          DB.classes.find(
+            item =>
+              String(item.id) ===
+              String(course.class_id)
+          );
+
+        return {
+          ...course,
+
+          subjectName:
+            subject?.name || "—",
+
+          subject:
+            subject?.name || "—",
+
+          teacherName:
+            teacher?.name || "—",
+
+          teacher:
+            teacher?.name || "—",
+
+          className:
+            classe?.name || "—"
+        };
+      });
+
+
+    /*
+     * Notes
+     */
+
+    DB.grades =
+      DB.grades.map(grade => {
+
+        const student =
+          DB.students.find(
+            item =>
+              String(item.id) ===
+              String(grade.student_id)
+          );
+
+        const subject =
+          DB.subjects.find(
+            item =>
+              String(item.id) ===
+              String(grade.subject_id)
+          );
+
+        const teacher =
+          DB.teachers.find(
+            item =>
+              String(item.id) ===
+              String(grade.teacher_id)
+          );
+
+        return {
+          ...grade,
+
+          studentName:
+            student?.name || "—",
+
+          student:
+            student?.name || "—",
+
+          subjectName:
+            subject?.name || "—",
+
+          subject:
+            subject?.name || "—",
+
+          teacherName:
+            teacher?.name || "—",
+
+          evaluation:
+            grade.evaluation_name,
+
+          value:
+            grade.score,
+
+          note:
+            grade.score,
+
+          max:
+            grade.max_score
+        };
+      });
+
+
+    /*
+     * Présences
+     */
+
+    DB.attendance =
+      DB.attendance.map(item => {
+
+        const student =
+          DB.students.find(
+            student =>
+              String(student.id) ===
+              String(item.student_id)
+          );
+
+        const course =
+          DB.courses.find(
+            course =>
+              String(course.id) ===
+              String(item.course_id)
+          );
+
+        return {
+          ...item,
+
+          studentName:
+            student?.name || "—",
+
+          student:
+            student?.name || "—",
+
+          date:
+            item.attendance_date,
+
+          courseName:
+            course?.title || "—"
+        };
+      });
+
+
+    /*
+     * Documents
+     */
+
+    DB.documents =
+      DB.documents.map(document => ({
+        ...document,
+
+        name:
+          document.title,
+
+        url:
+          document.file_url,
+
+        type:
+          document.file_type || "Document",
+
+        date:
+          document.created_at
+      }));
+
+
+    /*
+     * Événements
+     */
+
+    DB.events =
+      DB.events.map(event => ({
+        ...event,
+
+        date:
+          event.event_date,
+
+        start:
+          event.event_date,
+
+        location:
+          event.location
+      }));
+
+
+    /*
+     * Paiements
+     */
+
+    DB.payments =
+      DB.payments.map(payment => {
+
+        const student =
+          DB.students.find(
+            student =>
+              String(student.id) ===
+              String(payment.student_id)
+          );
+
+        return {
+          ...payment,
+
+          studentName:
+            student?.name || "—",
+
+          student:
+            student?.name || "—",
+
+          amount:
+            payment.amount,
+
+          currency:
+            payment.currency,
+
+          date:
+            payment.payment_date ||
+            payment.created_at
+        };
+      });
   }
 
   /* =======================================================
      INITIALISATION
      ======================================================= */
 
-  function init(user) {
+  async function init(user) {
 
     currentUser =
       user ||
@@ -295,6 +706,8 @@
 
     applyRolePermissions();
 
+    await loadDatabase();
+
     renderDashboard();
 
     navigate(
@@ -302,7 +715,7 @@
     );
 
     console.log(
-      `${APP.name} ${APP.version} initialisé.`
+      `${APP.name} ${APP.version} initialisé avec Supabase.`
     );
   }
 
@@ -321,7 +734,8 @@
 
   function updateUserUI() {
 
-    const user = getCurrentUser();
+    const user =
+      getCurrentUser();
 
     if (!user) return;
 
@@ -354,8 +768,7 @@
         user,
         "matricule",
         "studentId",
-        "userId",
-        "id"
+        "userId"
       ) || "—";
 
     const classe =
@@ -368,7 +781,6 @@
 
     const userInitials =
       initials(name);
-
 
     const topName =
       byId("top-user-name");
@@ -406,7 +818,6 @@
     const summary =
       byId("dashboard-user-summary");
 
-
     if (topName) {
       topName.textContent = name;
     }
@@ -420,7 +831,8 @@
     }
 
     if (profileAvatar) {
-      profileAvatar.textContent = userInitials;
+      profileAvatar.textContent =
+        userInitials;
     }
 
     if (profileName) {
@@ -428,7 +840,8 @@
     }
 
     if (profileRoleTitle) {
-      profileRoleTitle.textContent = role;
+      profileRoleTitle.textContent =
+        role;
     }
 
     if (profileEmail) {
@@ -436,15 +849,18 @@
     }
 
     if (profileMatricule) {
-      profileMatricule.textContent = matricule;
+      profileMatricule.textContent =
+        matricule;
     }
 
     if (profileRoleValue) {
-      profileRoleValue.textContent = role;
+      profileRoleValue.textContent =
+        role;
     }
 
     if (profileClass) {
-      profileClass.textContent = classe;
+      profileClass.textContent =
+        classe;
     }
 
     if (greeting) {
@@ -471,15 +887,15 @@
         function () {
 
           const route =
-            this.getAttribute("data-route");
+            this.getAttribute(
+              "data-route"
+            );
 
           if (route) {
             navigate(route);
           }
-
         }
       );
-
     });
 
 
@@ -490,13 +906,13 @@
         const route =
           window.location.hash
             .replace("#", "")
-            .trim() || "dashboard";
+            .trim() ||
+          "dashboard";
 
         navigate(
           route,
           false
         );
-
       }
     );
   }
@@ -526,19 +942,13 @@
       route = "dashboard";
     }
 
-
     if (!hasPermission(route)) {
-
       route = "dashboard";
-
     }
-
 
     currentRoute = route;
 
-
     if (updateHash) {
-
       try {
         history.replaceState(
           null,
@@ -549,14 +959,11 @@
         window.location.hash =
           route;
       }
-
     }
-
 
     queryAll(".page").forEach(page => {
       page.classList.remove("active");
     });
-
 
     const page =
       byId(`page-${route}`);
@@ -565,20 +972,19 @@
       page.classList.add("active");
     }
 
+    queryAll(
+      ".nav-item[data-route]"
+    ).forEach(item => {
 
-    queryAll(".nav-item[data-route]")
-      .forEach(item => {
-
-        item.classList.toggle(
-          "active",
-          item.getAttribute("data-route") === route
-        );
-
-      });
-
+      item.classList.toggle(
+        "active",
+        item.getAttribute(
+          "data-route"
+        ) === route
+      );
+    });
 
     updatePageTitle(route);
-
 
     renderRoute(route);
   }
@@ -600,7 +1006,6 @@
       payments: "Paiements",
       profile: "Mon profil"
     };
-
 
     const title =
       byId("page-title");
@@ -664,7 +1069,6 @@
       case "profile":
         renderProfile();
         break;
-
     }
   }
 
@@ -675,11 +1079,6 @@
   function hasPermission(route) {
 
     const role = userRole();
-
-    /*
-     * Les pages principales sont accessibles
-     * à tous les utilisateurs connectés.
-     */
 
     if (
       [
@@ -695,11 +1094,6 @@
       return true;
     }
 
-
-    /*
-     * Administration.
-     */
-
     if (
       [
         "students",
@@ -709,16 +1103,13 @@
         "payments"
       ].includes(route)
     ) {
-
       return (
         isAdmin() ||
         isTeacher() ||
         role.includes("secr") ||
         role.includes("gestion")
       );
-
     }
-
 
     return false;
   }
@@ -731,18 +1122,17 @@
     ).forEach(item => {
 
       const route =
-        item.getAttribute("data-route");
+        item.getAttribute(
+          "data-route"
+        );
 
       if (
         route &&
         !hasPermission(route)
       ) {
-
         item.style.display =
           "none";
-
       }
-
     });
   }
 
@@ -752,84 +1142,33 @@
 
   function renderDashboard() {
 
-    const students =
-      getArray(
-        "students",
-        "eleves",
-        "studentsData"
-      );
-
-    const teachers =
-      getArray(
-        "teachers",
-        "enseignants",
-        "teachersData"
-      );
-
-    const classes =
-      getArray(
-        "classes",
-        "classrooms",
-        "classesData"
-      );
-
-    const subjects =
-      getArray(
-        "subjects",
-        "matieres",
-        "subjectsData"
-      );
-
-    const courses =
-      getArray(
-        "courses",
-        "cours",
-        "coursesData"
-      );
-
-    const documents =
-      getArray(
-        "documents",
-        "docs",
-        "documentsData"
-      );
-
-    const events =
-      getArray(
-        "events",
-        "calendar",
-        "eventsData"
-      );
-
-
     setText(
       "stat-students",
       formatNumber(
-        students.length
+        DB.students.length
       )
     );
 
     setText(
       "stat-teachers",
       formatNumber(
-        teachers.length
+        DB.teachers.length
       )
     );
 
     setText(
       "stat-classes",
       formatNumber(
-        classes.length
+        DB.classes.length
       )
     );
 
     setText(
       "stat-subjects",
       formatNumber(
-        subjects.length
+        DB.subjects.length
       )
     );
-
 
     updateStudentDashboard();
   }
@@ -842,85 +1181,42 @@
 
     if (!user) return;
 
-
     const student =
       findStudentForUser(user);
-
 
     if (!student) {
       return;
     }
 
-
-    const grades =
-      getArray(
-        "grades",
-        "notes",
-        "results"
-      );
-
-
     const studentId =
-      getValue(
-        student,
-        "id",
-        "studentId",
-        "matricule"
-      );
-
+      student.id;
 
     const studentGrades =
-      grades.filter(grade => {
-
-        const id =
-          getValue(
-            grade,
-            "studentId",
-            "studentId",
-            "eleveId",
-            "student"
-          );
-
-        return String(id) ===
-          String(studentId);
-
-      });
-
+      DB.grades.filter(
+        grade =>
+          String(
+            grade.student_id
+          ) ===
+          String(studentId)
+      );
 
     const values =
       studentGrades
-        .map(grade =>
-          Number(
-            getValue(
-              grade,
-              "value",
-              "note",
-              "score",
-              "mark"
-            )
-          )
+        .map(
+          grade =>
+            Number(grade.score)
         )
-        .filter(value =>
-          !Number.isNaN(value)
+        .filter(
+          value =>
+            !Number.isNaN(value)
         );
-
 
     const avg =
       average(values);
 
-
-    const classValue =
-      getValue(
-        student,
-        "className",
-        "class",
-        "classe"
-      ) || "—";
-
-
     setText(
       "student-class",
-      classValue
+      student.className || "—"
     );
 
     setText(
@@ -930,51 +1226,21 @@
         : avg.toFixed(2)
     );
 
-
-    const attendance =
-      getArray(
-        "attendance",
-        "presences"
+    const studentAttendance =
+      DB.attendance.filter(
+        item =>
+          String(
+            item.student_id
+          ) ===
+          String(studentId)
       );
 
-
-    const studentAttendance =
-      attendance.filter(item => {
-
-        const id =
-          getValue(
-            item,
-            "studentId",
-            "eleveId",
-            "student"
-          );
-
-        return String(id) ===
-          String(studentId);
-
-      });
-
-
     const present =
-      studentAttendance.filter(item => {
-
-        const status =
-          String(
-            getValue(
-              item,
-              "status",
-              "etat"
-            )
-          ).toLowerCase();
-
-        return (
-          status === "present" ||
-          status === "présent" ||
-          status === "p"
-        );
-
-      }).length;
-
+      studentAttendance.filter(
+        item =>
+          item.status ===
+          "present"
+      ).length;
 
     const attendanceRate =
       studentAttendance.length
@@ -983,7 +1249,6 @@
             studentAttendance.length
           ) * 100
         : null;
-
 
     setText(
       "student-attendance",
@@ -1007,22 +1272,11 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const grades =
-      getArray(
-        "grades",
-        "notes",
-        "results"
-      );
-
+    let visibleGrades =
+      [...DB.grades];
 
     const user =
       getCurrentUser();
-
-
-    let visibleGrades =
-      grades;
-
 
     if (
       isStudent() ||
@@ -1032,104 +1286,59 @@
       const student =
         findStudentForUser(user);
 
-
       if (student) {
 
-        const studentId =
-          getValue(
-            student,
-            "id",
-            "studentId",
-            "matricule"
-          );
-
-
         visibleGrades =
-          grades.filter(item => {
-
-            const id =
-              getValue(
-                item,
-                "studentId",
-                "eleveId",
-                "student"
-              );
-
-            return String(id) ===
-              String(studentId);
-
-          });
-
+          DB.grades.filter(
+            grade =>
+              String(
+                grade.student_id
+              ) ===
+              String(student.id)
+          );
       }
-
     }
-
 
     const rows =
       visibleGrades.map(grade => {
 
-        const subject =
-          getValue(
-            grade,
-            "subjectName",
-            "subject",
-            "matiere",
-            "subjectId"
-          ) || "—";
-
-
-        const student =
-          getValue(
-            grade,
-            "studentName",
-            "student",
-            "eleve"
-          ) || "—";
-
-
-        const evaluation =
-          getValue(
-            grade,
-            "evaluation",
-            "type",
-            "title"
-          ) || "Évaluation";
-
-
-        const score =
-          getValue(
-            grade,
-            "value",
-            "note",
-            "score",
-            "mark"
-          );
-
-
-        const max =
-          getValue(
-            grade,
-            "max",
-            "outOf",
-            "maximum"
-          ) || 20;
-
-
         return `
           <tr>
-            <td>${escapeHTML(student)}</td>
-            <td>${escapeHTML(subject)}</td>
-            <td>${escapeHTML(evaluation)}</td>
+
+            <td>
+              ${escapeHTML(
+                grade.studentName || "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHTML(
+                grade.subjectName || "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHTML(
+                grade.evaluation_name ||
+                "Évaluation"
+              )}
+            </td>
+
             <td>
               <span class="badge">
-                ${escapeHTML(score)} / ${escapeHTML(max)}
+                ${escapeHTML(
+                  grade.score
+                )}
+                /
+                ${escapeHTML(
+                  grade.max_score || 20
+                )}
               </span>
             </td>
+
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
@@ -1157,16 +1366,7 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const courses =
-      getArray(
-        "courses",
-        "cours",
-        "coursesData"
-      );
-
-
-    if (!courses.length) {
+    if (!DB.courses.length) {
 
       container.innerHTML =
         emptyHTML(
@@ -1178,45 +1378,60 @@
       return;
     }
 
+    let courses =
+      [...DB.courses];
+
+    const user =
+      getCurrentUser();
+
+    if (isStudent()) {
+
+      const student =
+        findStudentForUser(user);
+
+      if (student) {
+
+        courses =
+          courses.filter(
+            course =>
+              String(
+                course.class_id
+              ) ===
+              String(
+                student.class_id
+              )
+          );
+      }
+    }
+
+    if (isTeacher()) {
+
+      const teacher =
+        DB.teachers.find(
+          item =>
+            String(
+              item.profile_id
+            ) ===
+            String(user?.id)
+        );
+
+      if (teacher) {
+
+        courses =
+          courses.filter(
+            course =>
+              String(
+                course.teacher_id
+              ) ===
+              String(teacher.id)
+          );
+      }
+    }
 
     container.innerHTML = `
       <div class="quick-grid">
+
         ${courses.map(course => {
-
-          const title =
-            getValue(
-              course,
-              "title",
-              "name",
-              "nom"
-            ) || "Cours";
-
-
-          const subject =
-            getValue(
-              course,
-              "subjectName",
-              "subject",
-              "matiere"
-            ) || "";
-
-
-          const teacher =
-            getValue(
-              course,
-              "teacherName",
-              "teacher",
-              "enseignant"
-            ) || "";
-
-
-          const date =
-            getValue(
-              course,
-              "date",
-              "createdAt"
-            );
-
 
           return `
             <div class="quick-action">
@@ -1224,21 +1439,42 @@
               <i class="fa-solid fa-book-open"></i>
 
               <strong>
-                ${escapeHTML(title)}
+                ${escapeHTML(
+                  course.title || "Cours"
+                )}
               </strong>
 
               <span>
-                ${escapeHTML(subject)}
-                ${teacher
-                  ? " · " + escapeHTML(teacher)
-                  : ""}
+                ${escapeHTML(
+                  course.subjectName || ""
+                )}
+
+                ${
+                  course.teacherName
+                    ? " · " +
+                      escapeHTML(
+                        course.teacherName
+                      )
+                    : ""
+                }
               </span>
 
               ${
-                date
-                  ? `<small style="color:#66758a;display:block;margin-top:5px;">
-                      ${escapeHTML(formatDate(date))}
-                    </small>`
+                course.start_time
+                  ? `
+                    <small
+                      style="
+                        color:#66758a;
+                        display:block;
+                        margin-top:5px;
+                      ">
+                      ${escapeHTML(
+                        formatDate(
+                          course.start_time
+                        )
+                      )}
+                    </small>
+                  `
                   : ""
               }
 
@@ -1246,12 +1482,13 @@
           `;
 
         }).join("")}
+
       </div>
     `;
   }
 
   /* =======================================================
-     PRESENCES
+     PRÉSENCES
      ======================================================= */
 
   function renderAttendance() {
@@ -1264,18 +1501,8 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const attendance =
-      getArray(
-        "attendance",
-        "presences",
-        "attendanceData"
-      );
-
-
     let visible =
-      attendance;
-
+      [...DB.attendance];
 
     if (isStudent()) {
 
@@ -1284,119 +1511,73 @@
           getCurrentUser()
         );
 
-
       if (student) {
 
-        const studentId =
-          getValue(
-            student,
-            "id",
-            "studentId",
-            "matricule"
-          );
-
-
         visible =
-          attendance.filter(item => {
-
-            const id =
-              getValue(
-                item,
-                "studentId",
-                "eleveId",
-                "student"
-              );
-
-            return String(id) ===
-              String(studentId);
-
-          });
-
+          visible.filter(
+            item =>
+              String(
+                item.student_id
+              ) ===
+              String(student.id)
+          );
       }
-
     }
-
 
     const rows =
       visible.map(item => {
 
-        const date =
-          getValue(
-            item,
-            "date",
-            "day"
-          );
-
-
-        const student =
-          getValue(
-            item,
-            "studentName",
-            "student",
-            "eleve"
-          ) || "—";
-
-
-        const status =
-          getValue(
-            item,
-            "status",
-            "etat"
-          ) || "—";
-
-
-        const normalized =
-          String(status)
-            .toLowerCase();
-
-
         let badgeClass = "";
 
         if (
-          normalized.includes("présent") ||
-          normalized === "present" ||
-          normalized === "p"
+          item.status ===
+          "present"
         ) {
           badgeClass = "green";
         }
 
         if (
-          normalized.includes("absent")
+          item.status ===
+          "absent"
         ) {
           badgeClass = "red";
         }
 
         if (
-          normalized.includes("retard")
+          item.status ===
+          "late"
         ) {
           badgeClass = "orange";
         }
-
 
         return `
           <tr>
 
             <td>
               ${escapeHTML(
-                formatDate(date)
+                formatDate(
+                  item.attendance_date
+                )
               )}
             </td>
 
             <td>
-              ${escapeHTML(student)}
+              ${escapeHTML(
+                item.studentName || "—"
+              )}
             </td>
 
             <td>
               <span class="badge ${badgeClass}">
-                ${escapeHTML(status)}
+                ${escapeHTML(
+                  item.status || "—"
+                )}
               </span>
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
@@ -1423,16 +1604,7 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const documents =
-      getArray(
-        "documents",
-        "docs",
-        "documentsData"
-      );
-
-
-    if (!documents.length) {
+    if (!DB.documents.length) {
 
       container.innerHTML =
         emptyHTML(
@@ -1444,44 +1616,8 @@
       return;
     }
 
-
     const rows =
-      documents.map(document => {
-
-        const title =
-          getValue(
-            document,
-            "title",
-            "name",
-            "nom"
-          ) || "Document";
-
-
-        const type =
-          getValue(
-            document,
-            "type",
-            "category",
-            "categorie"
-          ) || "Document";
-
-
-        const date =
-          getValue(
-            document,
-            "date",
-            "createdAt"
-          );
-
-
-        const url =
-          getValue(
-            document,
-            "url",
-            "link",
-            "href"
-          );
-
+      DB.documents.map(document => {
 
         return `
           <tr>
@@ -1489,40 +1625,53 @@
             <td>
               <i class="fa-solid fa-file"></i>
               &nbsp;
-              ${escapeHTML(title)}
-            </td>
-
-            <td>
-              ${escapeHTML(type)}
-            </td>
-
-            <td>
               ${escapeHTML(
-                formatDate(date)
+                document.title
               )}
             </td>
 
             <td>
+              ${escapeHTML(
+                document.file_type ||
+                "Document"
+              )}
+            </td>
+
+            <td>
+              ${escapeHTML(
+                formatDate(
+                  document.created_at
+                )
+              )}
+            </td>
+
+            <td>
+
               ${
-                url
-                  ? `<a
-                      href="${escapeHTML(url)}"
+                document.file_url
+                  ? `
+                    <a
+                      href="${escapeHTML(
+                        document.file_url
+                      )}"
                       target="_blank"
                       rel="noopener"
                       class="badge">
                       Ouvrir
-                    </a>`
-                  : `<span class="badge">
+                    </a>
+                  `
+                  : `
+                    <span class="badge">
                       Disponible
-                    </span>`
+                    </span>
+                  `
               }
+
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
@@ -1550,16 +1699,7 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const events =
-      getArray(
-        "events",
-        "calendar",
-        "eventsData"
-      );
-
-
-    if (!events.length) {
+    if (!DB.events.length) {
 
       container.innerHTML =
         emptyHTML(
@@ -1571,56 +1711,25 @@
       return;
     }
 
-
     const sorted =
-      [...events].sort(
+      [...DB.events].sort(
         (a, b) =>
           new Date(
-            getValue(a, "date", "start")
+            a.event_date
           ) -
           new Date(
-            getValue(b, "date", "start")
+            b.event_date
           )
       );
 
-
     container.innerHTML = `
-      <div style="display:grid;gap:10px;">
+      <div
+        style="
+          display:grid;
+          gap:10px;
+        ">
 
         ${sorted.map(event => {
-
-          const title =
-            getValue(
-              event,
-              "title",
-              "name",
-              "nom"
-            ) || "Événement";
-
-
-          const date =
-            getValue(
-              event,
-              "date",
-              "start"
-            );
-
-
-          const location =
-            getValue(
-              event,
-              "location",
-              "lieu"
-            );
-
-
-          const description =
-            getValue(
-              event,
-              "description",
-              "details"
-            );
-
 
           return `
             <div
@@ -1630,32 +1739,45 @@
               <i class="fa-solid fa-calendar-days"></i>
 
               <strong>
-                ${escapeHTML(title)}
+                ${escapeHTML(
+                  event.title ||
+                  "Événement"
+                )}
               </strong>
 
               <span>
+
                 ${escapeHTML(
-                  formatDate(date)
+                  formatDate(
+                    event.event_date
+                  )
                 )}
 
                 ${
-                  location
+                  event.location
                     ? " · " +
-                      escapeHTML(location)
+                      escapeHTML(
+                        event.location
+                      )
                     : ""
                 }
+
               </span>
 
               ${
-                description
-                  ? `<small
+                event.description
+                  ? `
+                    <small
                       style="
                         display:block;
                         color:#68768a;
                         margin-top:7px;
                       ">
-                      ${escapeHTML(description)}
-                    </small>`
+                      ${escapeHTML(
+                        event.description
+                      )}
+                    </small>
+                  `
                   : ""
               }
 
@@ -1682,79 +1804,41 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const students =
-      getArray(
-        "students",
-        "eleves",
-        "studentsData"
-      );
-
-
     const rows =
-      students.map(student => {
-
-        const name =
-          getValue(
-            student,
-            "name",
-            "fullName",
-            "nom"
-          ) || "—";
-
-
-        const matricule =
-          getValue(
-            student,
-            "matricule",
-            "studentId",
-            "id"
-          ) || "—";
-
-
-        const classe =
-          getValue(
-            student,
-            "className",
-            "class",
-            "classe"
-          ) || "—";
-
-
-        const gender =
-          getValue(
-            student,
-            "gender",
-            "sexe"
-          ) || "—";
-
+      DB.students.map(student => {
 
         return `
           <tr>
 
             <td>
               <strong>
-                ${escapeHTML(name)}
+                ${escapeHTML(
+                  student.name || "—"
+                )}
               </strong>
             </td>
 
             <td>
-              ${escapeHTML(matricule)}
+              ${escapeHTML(
+                student.matricule || "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(classe)}
+              ${escapeHTML(
+                student.className || "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(gender)}
+              ${escapeHTML(
+                student.gender || "—"
+              )}
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
@@ -1782,86 +1866,49 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const teachers =
-      getArray(
-        "teachers",
-        "enseignants",
-        "teachersData"
-      );
-
-
     const rows =
-      teachers.map(teacher => {
-
-        const name =
-          getValue(
-            teacher,
-            "name",
-            "fullName",
-            "nom"
-          ) || "—";
-
-
-        const matricule =
-          getValue(
-            teacher,
-            "matricule",
-            "teacherId",
-            "id"
-          ) || "—";
-
-
-        const subject =
-          getValue(
-            teacher,
-            "subjectName",
-            "subject",
-            "matiere"
-          ) || "—";
-
-
-        const email =
-          getValue(
-            teacher,
-            "email",
-            "mail"
-          ) || "—";
-
+      DB.teachers.map(teacher => {
 
         return `
           <tr>
 
             <td>
               <strong>
-                ${escapeHTML(name)}
+                ${escapeHTML(
+                  teacher.name || "—"
+                )}
               </strong>
             </td>
 
             <td>
-              ${escapeHTML(matricule)}
+              ${escapeHTML(
+                teacher.matricule || "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(subject)}
+              ${escapeHTML(
+                teacher.specialization ||
+                "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(email)}
+              ${escapeHTML(
+                teacher.email || "—"
+              )}
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
         [
           "Nom",
           "Matricule",
-          "Matière",
+          "Spécialisation",
           "Email"
         ],
         rows
@@ -1882,97 +1929,35 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const classes =
-      getArray(
-        "classes",
-        "classrooms",
-        "classesData"
-      );
-
-
-    const students =
-      getArray(
-        "students",
-        "eleves"
-      );
-
-
     const rows =
-      classes.map(item => {
-
-        const id =
-          getValue(
-            item,
-            "id",
-            "classId"
-          );
-
-
-        const name =
-          getValue(
-            item,
-            "name",
-            "className",
-            "nom"
-          ) || "—";
-
-
-        const level =
-          getValue(
-            item,
-            "level",
-            "niveau",
-            "section"
-          ) || "—";
-
+      DB.classes.map(item => {
 
         const count =
-          students.filter(student => {
-
-            const classId =
-              getValue(
-                student,
-                "classId"
-              );
-
-
-            const className =
-              getValue(
-                student,
-                "className",
-                "class",
-                "classe"
-              );
-
-
-            return (
-              (
-                id &&
-                String(classId) ===
-                String(id)
-              ) ||
-              (
-                className &&
-                String(className) ===
-                String(name)
-              )
-            );
-
-          }).length;
-
+          DB.students.filter(
+            student =>
+              String(
+                student.class_id
+              ) ===
+              String(item.id)
+          ).length;
 
         return `
           <tr>
 
             <td>
               <strong>
-                ${escapeHTML(name)}
+                ${escapeHTML(
+                  item.name || "—"
+                )}
               </strong>
             </td>
 
             <td>
-              ${escapeHTML(level)}
+              ${escapeHTML(
+                item.level ||
+                item.section ||
+                "—"
+              )}
             </td>
 
             <td>
@@ -1983,9 +1968,7 @@
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
@@ -2012,85 +1995,42 @@
     container.innerHTML =
       loadingHTML();
 
-
-    const subjects =
-      getArray(
-        "subjects",
-        "matieres",
-        "subjectsData"
-      );
-
-
     const rows =
-      subjects.map(subject => {
-
-        const name =
-          getValue(
-            subject,
-            "name",
-            "title",
-            "nom"
-          ) || "—";
-
-
-        const code =
-          getValue(
-            subject,
-            "code",
-            "subjectCode"
-          ) || "—";
-
-
-        const teacher =
-          getValue(
-            subject,
-            "teacherName",
-            "teacher",
-            "enseignant"
-          ) || "—";
-
-
-        const coefficient =
-          getValue(
-            subject,
-            "coefficient",
-            "coef"
-          ) || "—";
-
+      DB.subjects.map(subject => {
 
         return `
           <tr>
 
             <td>
               <strong>
-                ${escapeHTML(name)}
+                ${escapeHTML(
+                  subject.name || "—"
+                )}
               </strong>
             </td>
 
             <td>
-              ${escapeHTML(code)}
+              ${escapeHTML(
+                subject.code || "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(teacher)}
-            </td>
-
-            <td>
-              ${escapeHTML(coefficient)}
+              ${escapeHTML(
+                subject.coefficient ??
+                "—"
+              )}
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
         [
           "Matière",
           "Code",
-          "Enseignant",
           "Coefficient"
         ],
         rows
@@ -2111,139 +2051,111 @@
     container.innerHTML =
       loadingHTML();
 
+    let visible =
+      [...DB.payments];
 
-    const payments =
-      getArray(
-        "payments",
-        "paiements",
-        "fees",
-        "transactions"
-      );
+    if (isStudent()) {
 
+      const student =
+        findStudentForUser(
+          getCurrentUser()
+        );
+
+      if (student) {
+
+        visible =
+          visible.filter(
+            payment =>
+              String(
+                payment.student_id
+              ) ===
+              String(student.id)
+          );
+      }
+    }
 
     const rows =
-      payments.map(payment => {
-
-        const student =
-          getValue(
-            payment,
-            "studentName",
-            "student",
-            "eleve"
-          ) || "—";
-
-
-        const description =
-          getValue(
-            payment,
-            "description",
-            "label",
-            "motif"
-          ) || "—";
-
-
-        const amount =
-          getValue(
-            payment,
-            "amount",
-            "montant"
-          );
-
-
-        const currency =
-          getValue(
-            payment,
-            "currency",
-            "devise"
-          ) || "CDF";
-
-
-        const status =
-          getValue(
-            payment,
-            "status",
-            "etat"
-          ) || "—";
-
-
-        const date =
-          getValue(
-            payment,
-            "date",
-            "createdAt"
-          );
-
+      visible.map(payment => {
 
         let badgeClass = "";
 
-        const normalized =
-          String(status)
-            .toLowerCase();
-
-
         if (
-          normalized.includes("pay") ||
-          normalized.includes("valid")
+          payment.status ===
+          "paid"
         ) {
           badgeClass = "green";
         }
 
         if (
-          normalized.includes("attente") ||
-          normalized.includes("pending")
+          payment.status ===
+          "pending"
         ) {
           badgeClass = "orange";
         }
 
         if (
-          normalized.includes("impay") ||
-          normalized.includes("failed")
+          payment.status ===
+          "cancelled"
         ) {
           badgeClass = "red";
         }
-
 
         return `
           <tr>
 
             <td>
-              ${escapeHTML(student)}
-            </td>
-
-            <td>
-              ${escapeHTML(description)}
+              ${escapeHTML(
+                payment.studentName ||
+                "—"
+              )}
             </td>
 
             <td>
               ${escapeHTML(
-                formatNumber(amount)
+                payment.payment_type ||
+                "—"
               )}
-              ${escapeHTML(currency)}
             </td>
 
             <td>
-              <span class="badge ${badgeClass}">
-                ${escapeHTML(status)}
+              ${escapeHTML(
+                formatNumber(
+                  payment.amount
+                )
+              )}
+              ${escapeHTML(
+                payment.currency ||
+                "USD"
+              )}
+            </td>
+
+            <td>
+              <span
+                class="badge ${badgeClass}">
+                ${escapeHTML(
+                  payment.status ||
+                  "—"
+                )}
               </span>
             </td>
 
             <td>
               ${escapeHTML(
-                formatDate(date)
+                formatDate(
+                  payment.payment_date
+                )
               )}
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
         [
           "Élève",
-          "Motif",
+          "Type",
           "Montant",
           "Statut",
           "Date"
@@ -2257,13 +2169,11 @@
      ======================================================= */
 
   function renderProfile() {
-
     updateUserUI();
-
   }
 
   /* =======================================================
-     RECHERCHE ÉLÈVES
+     RECHERCHE
      ======================================================= */
 
   function setupSearch() {
@@ -2272,7 +2182,6 @@
       byId("student-search");
 
     if (!input) return;
-
 
     input.addEventListener(
       "input",
@@ -2283,141 +2192,85 @@
             .trim()
             .toLowerCase();
 
-
-        const students =
-          getArray(
-            "students",
-            "eleves",
-            "studentsData"
-          );
-
-
         const filtered =
-          students.filter(student => {
+          DB.students.filter(
+            student => {
 
-            const name =
-              String(
-                getValue(
-                  student,
-                  "name",
-                  "fullName",
-                  "nom"
-                )
-              ).toLowerCase();
+              const name =
+                String(
+                  student.name || ""
+                ).toLowerCase();
 
+              const matricule =
+                String(
+                  student.matricule || ""
+                ).toLowerCase();
 
-            const matricule =
-              String(
-                getValue(
-                  student,
-                  "matricule",
-                  "studentId",
-                  "id"
-                )
-              ).toLowerCase();
+              const classe =
+                String(
+                  student.className || ""
+                ).toLowerCase();
 
-
-            const classe =
-              String(
-                getValue(
-                  student,
-                  "className",
-                  "class",
-                  "classe"
-                )
-              ).toLowerCase();
-
-
-            return (
-              name.includes(search) ||
-              matricule.includes(search) ||
-              classe.includes(search)
-            );
-
-          });
-
+              return (
+                name.includes(search) ||
+                matricule.includes(search) ||
+                classe.includes(search)
+              );
+            }
+          );
 
         renderStudentRows(
           filtered
         );
-
       }
     );
   }
 
 
-  function renderStudentRows(students) {
+  function renderStudentRows(
+    students
+  ) {
 
     const container =
       byId("students-container");
 
     if (!container) return;
 
-
     const rows =
       students.map(student => {
-
-        const name =
-          getValue(
-            student,
-            "name",
-            "fullName",
-            "nom"
-          ) || "—";
-
-
-        const matricule =
-          getValue(
-            student,
-            "matricule",
-            "studentId",
-            "id"
-          ) || "—";
-
-
-        const classe =
-          getValue(
-            student,
-            "className",
-            "class",
-            "classe"
-          ) || "—";
-
-
-        const gender =
-          getValue(
-            student,
-            "gender",
-            "sexe"
-          ) || "—";
-
 
         return `
           <tr>
 
             <td>
               <strong>
-                ${escapeHTML(name)}
+                ${escapeHTML(
+                  student.name || "—"
+                )}
               </strong>
             </td>
 
             <td>
-              ${escapeHTML(matricule)}
+              ${escapeHTML(
+                student.matricule || "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(classe)}
+              ${escapeHTML(
+                student.className || "—"
+              )}
             </td>
 
             <td>
-              ${escapeHTML(gender)}
+              ${escapeHTML(
+                student.gender || "—"
+              )}
             </td>
 
           </tr>
         `;
-
       });
-
 
     container.innerHTML =
       tableHTML(
@@ -2453,15 +2306,13 @@
           if (route) {
             navigate(route);
           }
-
         }
       );
-
     });
   }
 
   /* =======================================================
-     RECHERCHE D'UN ÉLÈVE
+     RECHERCHE ÉLÈVE CONNECTÉ
      ======================================================= */
 
   function findStudentForUser(user) {
@@ -2470,77 +2321,50 @@
       return null;
     }
 
-
-    const students =
-      getArray(
-        "students",
-        "eleves",
-        "studentsData"
-      );
-
-
-    const userId =
+    const matricule =
       getValue(
         user,
-        "studentId",
-        "matricule",
-        "id"
+        "matricule"
       );
 
+    const profileId =
+      getValue(
+        user,
+        "id",
+        "authUserId"
+      );
 
-    const email =
-      String(
-        getValue(
-          user,
-          "email",
-          "mail"
-        ) || ""
-      ).toLowerCase();
+    return DB.students.find(
+      student => {
 
-
-    return students.find(student => {
-
-      const studentId =
-        getValue(
-          student,
-          "id",
-          "studentId",
-          "matricule"
+        return (
+          (
+            matricule &&
+            String(
+              student.matricule
+            ) ===
+            String(matricule)
+          ) ||
+          (
+            profileId &&
+            String(
+              student.profile_id
+            ) ===
+            String(profileId)
+          )
         );
-
-
-      const studentEmail =
-        String(
-          getValue(
-            student,
-            "email",
-            "mail"
-          ) || ""
-        ).toLowerCase();
-
-
-      return (
-        (
-          userId &&
-          studentId &&
-          String(userId) ===
-          String(studentId)
-        ) ||
-        (
-          email &&
-          studentEmail &&
-          email === studentEmail
-        )
-      );
-
-    }) || null;
+      }
+    ) || null;
   }
 
   /* =======================================================
-     MISE À JOUR DU TEXTE
+     TEXTE
      ======================================================= */
 
-  function setText(id, value) {
+  function setText(
+    id,
+    value
+  ) {
 
     const element =
       byId(id);
@@ -2555,7 +2379,7 @@
   }
 
   /* =======================================================
-     EXPORT PUBLIC
+     EXPORT
      ======================================================= */
 
   window.DALZON_APP = {
@@ -2588,7 +2412,9 @@
 
     renderPayments,
 
-    renderProfile
+    renderProfile,
+
+    reloadData: loadDatabase
 
   };
 
