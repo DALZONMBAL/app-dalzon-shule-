@@ -1,189 +1,381 @@
 /* =========================================================
    DALZON SHULE — AUTH.JS
-   Gestion de l'authentification et des sessions
-   Version : 1.0
+   Authentification réelle avec Supabase
+   Version : 2.0
    ========================================================= */
 
 "use strict";
 
-
 /* =========================================================
-   1. CONFIGURATION
+   1. CONFIGURATION SUPABASE
    ========================================================= */
 
-const DALZON_AUTH = {
+const SUPABASE_URL =
+    "https://pdjzottshwqyvbjzqivw.supabase.co";
 
-    sessionKey:
-        "dalzon_shule_session",
-
-    maxSessionAge:
-        24 * 60 * 60 * 1000
-
-};
+const SUPABASE_KEY =
+    "COLLE_ICI_TA_PUBLISHABLE_KEY";
 
 
 /* =========================================================
-   2. ÉTAT DE L'AUTHENTIFICATION
+   2. CLIENT SUPABASE
+   ========================================================= */
+
+let supabaseClient = null;
+
+if (
+    window.supabase &&
+    typeof window.supabase.createClient === "function"
+) {
+    supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+} else {
+    console.error(
+        "Supabase JS n'est pas chargé."
+    );
+}
+
+
+/* =========================================================
+   3. ÉTAT
    ========================================================= */
 
 let currentUser = null;
+let currentProfile = null;
 
 
 /* =========================================================
-   3. CONNEXION
+   4. NORMALISER LE PROFIL
    ========================================================= */
 
-function login(identifier, code) {
+function normalizeProfile(profile, authUser) {
 
-    if (!identifier || !code) {
-
-        return {
-            success: false,
-            message: "Veuillez remplir tous les champs."
-        };
-
+    if (!profile) {
+        return null;
     }
-
-    const result =
-        DALZON.authenticateUser(
-            identifier,
-            code
-        );
-
-    if (!result.success) {
-
-        return result;
-
-    }
-
-    const user = result.user;
-
-    const session = {
-
-        userId: user.id,
-
-        schoolId: user.schoolId,
-
-        role: user.role,
-
-        loginAt: new Date().toISOString(),
-
-        expiresAt:
-            new Date(
-                Date.now() +
-                DALZON_AUTH.maxSessionAge
-            ).toISOString()
-
-    };
-
-
-    try {
-
-        sessionStorage.setItem(
-            DALZON_AUTH.sessionKey,
-            JSON.stringify(session)
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Erreur session :",
-            error
-        );
-
-        return {
-            success: false,
-            message:
-                "Impossible de créer la session."
-        };
-
-    }
-
-
-    currentUser = user;
-
 
     return {
 
-        success: true,
+        id: profile.id,
 
-        user: user,
+        userId: profile.id,
 
-        session: session,
+        schoolId:
+            profile.school_id || null,
 
-        message:
-            `Bienvenue ${user.firstName || user.name}.`
+        firstName:
+            profile.first_name || "",
+
+        lastName:
+            profile.last_name || "",
+
+        name:
+            `${profile.first_name || ""} ${profile.last_name || ""}`
+                .trim(),
+
+        email:
+            profile.email ||
+            authUser?.email ||
+            "",
+
+        phone:
+            profile.phone || "",
+
+        role:
+            profile.role || "student",
+
+        roleLabel:
+            getRoleLabel(
+                profile.role
+            ),
+
+        matricule:
+            profile.matricule || "",
+
+        avatarUrl:
+            profile.avatar_url || "",
+
+        status:
+            "active"
 
     };
-
 }
 
 
 /* =========================================================
-   4. RÉCUPÉRER LA SESSION
+   5. LIBELLÉ DES RÔLES
    ========================================================= */
 
-function getAuthSession() {
+function getRoleLabel(role) {
+
+    const labels = {
+
+        admin:
+            "Administrateur",
+
+        direction:
+            "Direction",
+
+        secretariat:
+            "Secrétariat",
+
+        teacher:
+            "Enseignant",
+
+        student:
+            "Élève",
+
+        parent:
+            "Parent",
+
+        gestion:
+            "Gestion"
+
+    };
+
+    return (
+        labels[role] ||
+        "Utilisateur"
+    );
+}
+
+
+/* =========================================================
+   6. RÉCUPÉRER LE PROFIL
+   ========================================================= */
+
+async function fetchProfile(authUser) {
+
+    if (!supabaseClient || !authUser) {
+        return null;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", authUser.id)
+            .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "Erreur récupération profil :",
+            error
+        );
+
+        return null;
+    }
+
+    if (!data) {
+        return null;
+    }
+
+    currentProfile =
+        normalizeProfile(
+            data,
+            authUser
+        );
+
+    return currentProfile;
+}
+
+
+/* =========================================================
+   7. CONNEXION
+   ========================================================= */
+
+async function login(
+    identifier,
+    password
+) {
+
+    if (!identifier || !password) {
+
+        return {
+
+            success: false,
+
+            message:
+                "Veuillez remplir tous les champs."
+
+        };
+
+    }
+
+    if (!supabaseClient) {
+
+        return {
+
+            success: false,
+
+            message:
+                "Supabase n'est pas correctement chargé."
+
+        };
+
+    }
+
+    let email =
+        String(identifier)
+            .trim()
+            .toLowerCase();
+
+
+    /*
+       Pour le moment, la connexion directe
+       utilise l'adresse email.
+
+       La connexion par matricule sera ajoutée
+       juste après lorsque la table students
+       sera reliée aux profils.
+    */
+
+    if (!email.includes("@")) {
+
+        return {
+
+            success: false,
+
+            message:
+                "Utilisez votre adresse e-mail pour vous connecter."
+
+        };
+
+    }
+
 
     try {
 
-        const raw =
-            sessionStorage.getItem(
-                DALZON_AUTH.sessionKey
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Erreur connexion :",
+                error
             );
 
-        if (!raw) {
+            return {
 
-            return null;
+                success: false,
 
-        }
+                message:
+                    getAuthErrorMessage(
+                        error
+                    )
 
-
-        const session =
-            JSON.parse(raw);
-
-
-        if (!session.userId) {
-
-            clearAuthSession();
-
-            return null;
+            };
 
         }
 
 
-        if (session.expiresAt) {
+        if (!data.user) {
 
-            const expiration =
-                new Date(
-                    session.expiresAt
-                ).getTime();
+            return {
 
-            if (
-                Date.now() >= expiration
-            ) {
+                success: false,
 
-                clearAuthSession();
+                message:
+                    "Utilisateur introuvable."
 
-                return null;
-
-            }
+            };
 
         }
 
 
-        return session;
+        currentUser =
+            data.user;
+
+
+        const profile =
+            await fetchProfile(
+                data.user
+            );
+
+
+        if (!profile) {
+
+            await supabaseClient.auth.signOut();
+
+            return {
+
+                success: false,
+
+                message:
+                    "Votre compte existe, mais votre profil DALZON SHULE n'est pas encore configuré."
+
+            };
+
+        }
+
+
+        currentProfile =
+            profile;
+
+
+        /*
+           Compatibilité avec l'index.html actuel.
+        */
+
+        window.dispatchEvent(
+
+            new CustomEvent(
+                "dalzon:authenticated",
+                {
+                    detail: {
+                        user: profile
+                    }
+                }
+            )
+
+        );
+
+
+        return {
+
+            success: true,
+
+            user: profile,
+
+            session:
+                data.session,
+
+            message:
+                `Bienvenue ${profile.firstName || profile.name}.`
+
+        };
+
 
     } catch (error) {
 
         console.error(
-            "Session corrompue :",
+            "Erreur inattendue :",
             error
         );
 
-        clearAuthSession();
+        return {
 
-        return null;
+            success: false,
+
+            message:
+                "Une erreur est survenue pendant la connexion."
+
+        };
 
     }
 
@@ -191,101 +383,180 @@ function getAuthSession() {
 
 
 /* =========================================================
-   5. RÉCUPÉRER L'UTILISATEUR CONNECTÉ
+   8. MESSAGE D'ERREUR
    ========================================================= */
 
-function getAuthenticatedUser() {
+function getAuthErrorMessage(error) {
 
-    const session =
-        getAuthSession();
-
-
-    if (!session) {
-
-        currentUser = null;
-
-        return null;
-
-    }
+    const message =
+        String(
+            error?.message || ""
+        ).toLowerCase();
 
 
-    const user =
-        DALZON.getUserById(
-            session.userId
-        );
+    if (
+        message.includes(
+            "invalid login credentials"
+        )
+    ) {
 
-
-    if (!user) {
-
-        clearAuthSession();
-
-        currentUser = null;
-
-        return null;
+        return "Adresse e-mail ou mot de passe incorrect.";
 
     }
 
 
-    if (user.status !== "active") {
+    if (
+        message.includes(
+            "email not confirmed"
+        )
+    ) {
 
-        clearAuthSession();
-
-        currentUser = null;
-
-        return null;
+        return "Votre adresse e-mail n'est pas encore confirmée.";
 
     }
 
 
-    currentUser = user;
+    if (
+        message.includes(
+            "too many requests"
+        )
+    ) {
 
+        return "Trop de tentatives. Réessayez dans quelques instants.";
 
-    return user;
+    }
 
-}
-
-
-/* =========================================================
-   6. VÉRIFIER SI CONNECTÉ
-   ========================================================= */
-
-function isAuthenticated() {
 
     return (
-        getAuthenticatedUser() !== null
+        error?.message ||
+        "Impossible de se connecter."
     );
 
 }
 
 
 /* =========================================================
-   7. DÉCONNEXION
+   9. UTILISATEUR CONNECTÉ
    ========================================================= */
 
-function logout() {
+async function getAuthenticatedUserAsync() {
 
-    clearAuthSession();
+    if (!supabaseClient) {
+        return null;
+    }
 
-    currentUser = null;
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
 
 
-    /*
-       On revient à la page de connexion.
-    */
+    if (error || !data?.user) {
 
-    if (
-        window.location.hash
-    ) {
+        currentUser = null;
+        currentProfile = null;
 
-        window.location.hash = "";
+        return null;
 
     }
 
 
+    currentUser =
+        data.user;
+
+
+    if (!currentProfile) {
+
+        await fetchProfile(
+            data.user
+        );
+
+    }
+
+
+    return currentProfile;
+
+}
+
+
+/* =========================================================
+   10. UTILISATEUR SYNCHRONE
+   ========================================================= */
+
+function getAuthenticatedUser() {
+
+    return currentProfile;
+
+}
+
+
+/* =========================================================
+   11. SESSION
+   ========================================================= */
+
+async function getAuthSession() {
+
+    if (!supabaseClient) {
+        return null;
+    }
+
+    const {
+        data
+    } =
+        await supabaseClient.auth.getSession();
+
+    return data?.session || null;
+
+}
+
+
+/* =========================================================
+   12. VÉRIFIER LA CONNEXION
+   ========================================================= */
+
+function isAuthenticated() {
+
+    return !!currentProfile;
+
+}
+
+
+/* =========================================================
+   13. DÉCONNEXION
+   ========================================================= */
+
+async function logout() {
+
+    if (supabaseClient) {
+
+        const {
+            error
+        } =
+            await supabaseClient.auth.signOut();
+
+        if (error) {
+
+            console.error(
+                "Erreur déconnexion :",
+                error
+            );
+
+        }
+
+    }
+
+
+    currentUser = null;
+    currentProfile = null;
+
+
     window.dispatchEvent(
+
         new CustomEvent(
             "dalzon:logout"
         )
+
     );
 
 
@@ -295,114 +566,131 @@ function logout() {
 
 
 /* =========================================================
-   8. SUPPRIMER LA SESSION
-   ========================================================= */
-
-function clearAuthSession() {
-
-    try {
-
-        sessionStorage.removeItem(
-            DALZON_AUTH.sessionKey
-        );
-
-        /*
-           Nettoyage de l'ancien système
-           si présent.
-        */
-
-        sessionStorage.removeItem(
-            "dalzon_session"
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Impossible de supprimer la session.",
-            error
-        );
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================================================
-   9. VÉRIFIER LE RÔLE
+   14. RÔLE
    ========================================================= */
 
 function hasRole(role) {
 
-    const user =
-        getAuthenticatedUser();
-
-
-    if (!user) {
-
+    if (!currentProfile) {
         return false;
-
     }
 
-
-    return user.role === role;
-
-}
-
-
-/* =========================================================
-   10. VÉRIFIER PLUSIEURS RÔLES
-   ========================================================= */
-
-function hasAnyRole(roles) {
-
-    const user =
-        getAuthenticatedUser();
-
-
-    if (!user) {
-
-        return false;
-
-    }
-
-
-    if (!Array.isArray(roles)) {
-
-        return false;
-
-    }
-
-
-    return roles.includes(
-        user.role
+    return (
+        currentProfile.role === role
     );
 
 }
 
 
 /* =========================================================
-   11. VÉRIFIER UNE PERMISSION
+   15. PLUSIEURS RÔLES
    ========================================================= */
 
-function can(permission) {
+function hasAnyRole(roles) {
 
-    const user =
-        getAuthenticatedUser();
-
-
-    if (!user) {
+    if (
+        !currentProfile ||
+        !Array.isArray(roles)
+    ) {
 
         return false;
 
     }
 
+    return roles.includes(
+        currentProfile.role
+    );
 
-    return DALZON.hasPermission(
-        user.role,
+}
+
+
+/* =========================================================
+   16. PERMISSIONS
+   ========================================================= */
+
+function can(permission) {
+
+    if (!currentProfile) {
+        return false;
+    }
+
+
+    const permissions = {
+
+        admin: [
+            "*"
+        ],
+
+        direction: [
+            "students.read",
+            "students.write",
+            "teachers.read",
+            "classes.read",
+            "subjects.read",
+            "grades.read",
+            "attendance.read",
+            "documents.read",
+            "events.read",
+            "payments.read"
+        ],
+
+        secretariat: [
+            "students.read",
+            "students.write",
+            "documents.read",
+            "documents.write"
+        ],
+
+        teacher: [
+            "students.read",
+            "courses.read",
+            "courses.write",
+            "grades.read",
+            "grades.write",
+            "attendance.read",
+            "attendance.write"
+        ],
+
+        student: [
+            "grades.read.own",
+            "courses.read",
+            "attendance.read.own",
+            "documents.read",
+            "events.read"
+        ],
+
+        parent: [
+            "grades.read.child",
+            "attendance.read.child",
+            "documents.read",
+            "events.read"
+        ],
+
+        gestion: [
+            "payments.read",
+            "payments.write",
+            "students.read"
+        ]
+
+    };
+
+
+    const userPermissions =
+        permissions[
+            currentProfile.role
+        ] || [];
+
+
+    if (
+        userPermissions.includes("*")
+    ) {
+
+        return true;
+
+    }
+
+
+    return userPermissions.includes(
         permission
     );
 
@@ -410,16 +698,12 @@ function can(permission) {
 
 
 /* =========================================================
-   12. PROTECTION D'UNE PAGE
+   17. PROTECTION
    ========================================================= */
 
 function requireAuth() {
 
-    const user =
-        getAuthenticatedUser();
-
-
-    if (!user) {
+    if (!isAuthenticated()) {
 
         window.location.hash = "";
 
@@ -427,23 +711,18 @@ function requireAuth() {
 
     }
 
-
     return true;
 
 }
 
 
 /* =========================================================
-   13. PROTECTION PAR RÔLE
+   18. PROTECTION PAR RÔLE
    ========================================================= */
 
 function requireRole(roles) {
 
-    const user =
-        getAuthenticatedUser();
-
-
-    if (!user) {
+    if (!currentProfile) {
 
         window.location.hash = "";
 
@@ -458,46 +737,22 @@ function requireRole(roles) {
             : [roles];
 
 
-    if (
-        !allowedRoles.includes(
-            user.role
-        )
-    ) {
-
-        window.dispatchEvent(
-            new CustomEvent(
-                "dalzon:unauthorized",
-                {
-                    detail: {
-                        user: user,
-                        requiredRoles:
-                            allowedRoles
-                    }
-                }
-            )
-        );
-
-        return false;
-
-    }
-
-
-    return true;
+    return allowedRoles.includes(
+        currentProfile.role
+    );
 
 }
 
 
 /* =========================================================
-   14. PROTECTION PAR PERMISSION
+   19. PROTECTION PAR PERMISSION
    ========================================================= */
 
-function requirePermission(permission) {
+function requirePermission(
+    permission
+) {
 
-    const user =
-        getAuthenticatedUser();
-
-
-    if (!user) {
+    if (!currentProfile) {
 
         window.location.hash = "";
 
@@ -506,69 +761,42 @@ function requirePermission(permission) {
     }
 
 
-    if (
-        !DALZON.hasPermission(
-            user.role,
-            permission
-        )
-    ) {
-
-        window.dispatchEvent(
-            new CustomEvent(
-                "dalzon:unauthorized",
-                {
-                    detail: {
-                        user: user,
-                        permission:
-                            permission
-                    }
-                }
-            )
-        );
-
-        return false;
-
-    }
-
-
-    return true;
+    return can(
+        permission
+    );
 
 }
 
 
 /* =========================================================
-   15. INFORMATIONS DE SESSION
+   20. INFORMATIONS SESSION
    ========================================================= */
 
 function getAuthInfo() {
 
-    const user =
-        getAuthenticatedUser();
-
-    const session =
-        getAuthSession();
-
-
-    if (!user || !session) {
-
+    if (!currentProfile) {
         return null;
-
     }
-
 
     return {
 
-        user: user,
+        user:
+            currentProfile,
 
-        session: session,
+        session:
+            null,
 
-        isAuthenticated: true,
+        isAuthenticated:
+            true,
 
-        role: user.role,
+        role:
+            currentProfile.role,
 
-        roleLabel: user.roleLabel,
+        roleLabel:
+            currentProfile.roleLabel,
 
-        schoolId: user.schoolId
+        schoolId:
+            currentProfile.schoolId
 
     };
 
@@ -576,188 +804,138 @@ function getAuthInfo() {
 
 
 /* =========================================================
-   16. TEMPS RESTANT DE SESSION
+   21. INITIALISATION
    ========================================================= */
 
-function getSessionRemainingTime() {
+async function initAuth() {
 
-    const session =
-        getAuthSession();
+    if (!supabaseClient) {
 
+        console.error(
+            "Supabase client indisponible."
+        );
 
-    if (!session || !session.expiresAt) {
-
-        return 0;
+        return;
 
     }
 
 
-    const expiration =
-        new Date(
-            session.expiresAt
-        ).getTime();
+    const {
+        data
+    } =
+        await supabaseClient.auth.getSession();
 
 
-    const remaining =
-        expiration - Date.now();
+    if (
+        data?.session?.user
+    ) {
+
+        currentUser =
+            data.session.user;
 
 
-    return Math.max(
-        0,
-        remaining
+        const profile =
+            await fetchProfile(
+                currentUser
+            );
+
+
+        if (profile) {
+
+            currentProfile =
+                profile;
+
+
+            window.dispatchEvent(
+
+                new CustomEvent(
+                    "dalzon:authenticated",
+                    {
+                        detail: {
+                            user: profile
+                        }
+                    }
+                )
+
+            );
+
+        }
+
+    } else {
+
+        window.dispatchEvent(
+
+            new CustomEvent(
+                "dalzon:unauthenticated"
+            )
+
+        );
+
+    }
+
+
+    /*
+       Écoute les changements de session
+       Supabase.
+    */
+
+    supabaseClient.auth.onAuthStateChange(
+        async (event, session) => {
+
+            if (
+                event === "SIGNED_IN" &&
+                session?.user
+            ) {
+
+                currentUser =
+                    session.user;
+
+                const profile =
+                    await fetchProfile(
+                        session.user
+                    );
+
+                if (profile) {
+
+                    currentProfile =
+                        profile;
+
+                    window.dispatchEvent(
+
+                        new CustomEvent(
+                            "dalzon:authenticated",
+                            {
+                                detail: {
+                                    user:
+                                        profile
+                                }
+                            }
+                        )
+
+                    );
+
+                }
+
+            }
+
+
+            if (
+                event === "SIGNED_OUT"
+            ) {
+
+                currentUser = null;
+                currentProfile = null;
+
+            }
+
+        }
     );
 
 }
 
 
 /* =========================================================
-   17. RENOUVELLEMENT DE SESSION
-   ========================================================= */
-
-function refreshSession() {
-
-    const session =
-        getAuthSession();
-
-
-    if (!session) {
-
-        return false;
-
-    }
-
-
-    session.expiresAt =
-        new Date(
-            Date.now() +
-            DALZON_AUTH.maxSessionAge
-        ).toISOString();
-
-
-    try {
-
-        sessionStorage.setItem(
-            DALZON_AUTH.sessionKey,
-            JSON.stringify(session)
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Impossible de renouveler la session.",
-            error
-        );
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================================================
-   18. AUTO-INITIALISATION
-   ========================================================= */
-
-function initAuth() {
-
-    const user =
-        getAuthenticatedUser();
-
-
-    if (user) {
-
-        console.log(
-            `Session active : ${user.name}`
-        );
-
-        window.dispatchEvent(
-            new CustomEvent(
-                "dalzon:authenticated",
-                {
-                    detail: {
-                        user: user
-                    }
-                }
-            )
-        );
-
-    } else {
-
-        console.log(
-            "Aucune session active."
-        );
-
-        window.dispatchEvent(
-            new CustomEvent(
-                "dalzon:unauthenticated"
-            )
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   19. ÉVÉNEMENT : EXPIRATION
-   ========================================================= */
-
-function checkSessionExpiration() {
-
-    const session =
-        getAuthSession();
-
-
-    if (!session) {
-
-        return false;
-
-    }
-
-
-    const remaining =
-        getSessionRemainingTime();
-
-
-    if (remaining <= 0) {
-
-        logout();
-
-        return false;
-
-    }
-
-
-    return true;
-
-}
-
-
-/* =========================================================
-   20. SURVEILLANCE AUTOMATIQUE
-   ========================================================= */
-
-setInterval(
-    () => {
-
-        if (
-            isAuthenticated()
-        ) {
-
-            checkSessionExpiration();
-
-        }
-
-    },
-    60 * 1000
-);
-
-
-/* =========================================================
-   21. EXPOSITION GLOBALE
+   22. API PUBLIQUE
    ========================================================= */
 
 window.DALZON_AUTH = {
@@ -769,6 +947,8 @@ window.DALZON_AUTH = {
     isAuthenticated,
 
     getAuthenticatedUser,
+
+    getAuthenticatedUserAsync,
 
     getAuthSession,
 
@@ -786,48 +966,24 @@ window.DALZON_AUTH = {
 
     requirePermission,
 
-    clearAuthSession,
+    initAuth,
 
-    refreshSession,
-
-    getSessionRemainingTime,
-
-    checkSessionExpiration,
-
-    initAuth
+    fetchProfile
 
 };
 
 
 /* =========================================================
-   22. COMPATIBILITÉ
+   23. COMPATIBILITÉ
    ========================================================= */
 
-window.DALZON_LOGIN = login;
+window.DALZON_LOGIN =
+    login;
 
-window.DALZON_LOGOUT = logout;
+window.DALZON_LOGOUT =
+    logout;
 
 
 /* =========================================================
-   23. INITIALISATION
-   ========================================================= */
-
-if (
-    document.readyState === "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initAuth
-    );
-
-} else {
-
-    initAuth();
-
-}
-
-
-/* =========================================================
-   FIN AUTH.JS
+   FIN
    ========================================================= */
