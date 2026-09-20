@@ -1,33 +1,99 @@
-/* =========================================================
-   DALZON SHULE — auth.js
-   Authentification Supabase
-   ========================================================= */
-
 (function () {
   "use strict";
 
+  /*
+   * =========================================================
+   * DALZON SHULE
+   * AUTH.JS — AUTHENTIFICATION SUPABASE
+   * =========================================================
+   *
+   * Fonctionnalités :
+   * - Connexion par email
+   * - Préparation pour connexion par matricule
+   * - Restauration automatique de session
+   * - Récupération du profil utilisateur
+   * - Déconnexion
+   * - Synchronisation avec public.profiles
+   *
+   * IMPORTANT :
+   * La clé service_role ne doit JAMAIS être placée ici.
+   */
+
+
   const AUTH = {
-    currentUser: null
+    appName: "DALZON SHULE",
+    version: "2.0.0"
   };
 
+
+  let cachedUser = null;
+  let authListenerStarted = false;
+
+
+  /* =========================================================
+     SUPABASE
+  ========================================================= */
+
   function getSupabase() {
-    return window.DALZON_SUPABASE || null;
+
+    if (
+      window.DALZON_SUPABASE &&
+      typeof window.DALZON_SUPABASE.auth !== "undefined"
+    ) {
+      return window.DALZON_SUPABASE;
+    }
+
+    console.error(
+      "DALZON SHULE : window.DALZON_SUPABASE est introuvable."
+    );
+
+    return null;
   }
 
-  function normalizeProfile(profile, authUser) {
-    if (!profile) return null;
 
-    const firstName = profile.first_name || "";
-    const lastName = profile.last_name || "";
+  /* =========================================================
+     UTILITAIRES
+  ========================================================= */
 
-    const name =
-      `${firstName} ${lastName}`.trim() ||
-      authUser?.email ||
-      "Utilisateur";
+  function normalize(value) {
 
-    const role = profile.role || "student";
+    return String(value || "")
+      .trim()
+      .toLowerCase();
 
-    const roleLabels = {
+  }
+
+
+  function cleanName(value) {
+
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+  }
+
+
+  function initials(name) {
+
+    const words =
+      cleanName(name)
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2);
+
+    if (!words.length) return "DS";
+
+    return words
+      .map(word => word.charAt(0).toUpperCase())
+      .join("");
+
+  }
+
+
+  function getRoleLabel(role) {
+
+    const roles = {
+
       admin: "Administrateur",
       direction: "Direction",
       secretariat: "Secrétariat",
@@ -35,414 +101,805 @@
       student: "Élève",
       parent: "Parent",
       gestion: "Gestion"
+
     };
+
+    return roles[normalize(role)] || role || "Utilisateur";
+
+  }
+
+
+  /* =========================================================
+     CONSTRUIRE L'UTILISATEUR DALZON
+  ========================================================= */
+
+  function buildUser(authUser, profile) {
+
+    if (!authUser) return null;
+
+    const metadata =
+      authUser.user_metadata || {};
+
+    const firstName =
+      cleanName(
+        profile?.first_name ||
+        metadata.first_name ||
+        metadata.firstname ||
+        ""
+      );
+
+    const lastName =
+      cleanName(
+        profile?.last_name ||
+        metadata.last_name ||
+        metadata.lastname ||
+        ""
+      );
+
+
+    let name =
+      cleanName(
+        `${firstName} ${lastName}`
+      );
+
+
+    if (!name) {
+
+      name =
+        cleanName(
+          metadata.full_name ||
+          metadata.name ||
+          authUser.email?.split("@")[0] ||
+          "Utilisateur"
+        );
+
+    }
+
+
+    const role =
+      normalize(
+        profile?.role ||
+        metadata.role ||
+        "student"
+      );
+
 
     return {
-      id: profile.id,
-      authUserId: authUser?.id || profile.id,
 
-      schoolId: profile.school_id || null,
+      id: authUser.id,
 
-      firstName,
-      lastName,
-      name,
-      fullName: name,
+      authUserId: authUser.id,
 
       email:
-        profile.email ||
-        authUser?.email ||
+        profile?.email ||
+        authUser.email ||
         "",
 
-      phone: profile.phone || "",
+      firstName,
+
+      lastName,
+
+      name,
+
+      fullName: name,
 
       role,
-      roleLabel: roleLabels[role] || role,
 
-      matricule: profile.matricule || "",
+      roleLabel:
+        getRoleLabel(role),
 
-      avatarUrl: profile.avatar_url || "",
+      matricule:
+        profile?.matricule ||
+        metadata.matricule ||
+        "",
 
-      className: "",
-      class: "",
-      classe: "",
+      schoolId:
+        profile?.school_id ||
+        metadata.school_id ||
+        null,
 
-      createdAt: profile.created_at || null,
-      updatedAt: profile.updated_at || null
+      classId:
+        metadata.class_id ||
+        null,
+
+      className:
+        metadata.class_name ||
+        "",
+
+      avatarUrl:
+        profile?.avatar_url ||
+        metadata.avatar_url ||
+        "",
+
+      initials:
+        initials(name),
+
+      profile,
+
+      authUser
+
     };
+
   }
 
-  async function getAuthenticatedUserAsync() {
-    const supabase = getSupabase();
 
-    if (!supabase) {
-      throw new Error(
-        "Supabase n'est pas correctement initialisé."
-      );
+  /* =========================================================
+     RÉCUPÉRER LE PROFIL
+  ========================================================= */
+
+  async function getProfile(authUser) {
+
+    const supabase =
+      getSupabase();
+
+    if (!supabase || !authUser) {
+      return null;
     }
 
-    try {
-      const {
-        data: sessionData,
-        error: sessionError
-      } = await supabase.auth.getSession();
-
-      if (sessionError) {
-        console.error(
-          "Erreur récupération session :",
-          sessionError
-        );
-
-        return null;
-      }
-
-      const session = sessionData?.session;
-
-      if (!session?.user) {
-        AUTH.currentUser = null;
-        return null;
-      }
-
-      const authUser = session.user;
-
-      const {
-        data: profile,
-        error: profileError
-      } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", authUser.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error(
-          "Erreur récupération profil :",
-          profileError
-        );
-
-        throw new Error(
-          "Impossible de récupérer votre profil."
-        );
-      }
-
-      if (!profile) {
-        console.error(
-          "Aucun profil trouvé pour :",
-          authUser.id
-        );
-
-        throw new Error(
-          "Votre compte existe, mais votre profil DALZON SHULE n'est pas configuré."
-        );
-      }
-
-      const user = normalizeProfile(
-        profile,
-        authUser
-      );
-
-      AUTH.currentUser = user;
-
-      return user;
-
-    } catch (error) {
-
-      console.error(
-        "getAuthenticatedUserAsync :",
-        error
-      );
-
-      throw error;
-    }
-  }
-
-  async function login(identifier, password) {
-
-    const supabase = getSupabase();
-
-    if (!supabase) {
-      return {
-        success: false,
-        message:
-          "Supabase n'est pas correctement initialisé."
-      };
-    }
-
-    if (!identifier || !password) {
-      return {
-        success: false,
-        message:
-          "Veuillez remplir tous les champs."
-      };
-    }
-
-    /*
-     * Pour cette première version,
-     * la connexion utilise l'adresse e-mail.
-     *
-     * La connexion par matricule sera ajoutée
-     * ensuite avec une méthode sécurisée.
-     */
-
-    const email = identifier.trim();
-
-    if (!email.includes("@")) {
-      return {
-        success: false,
-        message:
-          "Pour le moment, utilisez votre adresse e-mail."
-      };
-    }
 
     try {
 
       const {
         data,
         error
-      } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", authUser.id)
+        .maybeSingle();
+
 
       if (error) {
 
-        console.error(
-          "Supabase signInWithPassword :",
+        console.warn(
+          "DALZON SHULE : impossible de charger le profil.",
           error
         );
 
-        return {
-          success: false,
-          message:
-            "Adresse e-mail ou code d'accès incorrect."
-        };
+        return null;
+
       }
 
-      if (!data?.user) {
-        return {
-          success: false,
-          message:
-            "Impossible de récupérer votre compte."
-        };
-      }
 
-      const user =
-        await getAuthenticatedUserAsync();
-
-      if (!user) {
-
-        return {
-          success: false,
-          message:
-            "Votre profil DALZON SHULE est introuvable."
-        };
-      }
-
-      window.dispatchEvent(
-        new CustomEvent(
-          "dalzon:authenticated",
-          {
-            detail: {
-              user
-            }
-          }
-        )
-      );
-
-      return {
-        success: true,
-        user
-      };
+      return data || null;
 
     } catch (error) {
 
       console.error(
-        "DALZON SHULE Login :",
+        "Erreur getProfile :",
         error
       );
 
-      return {
-        success: false,
-        message:
-          error?.message ||
-          "Une erreur est survenue pendant la connexion."
-      };
-    }
-  }
+      return null;
 
-  async function logout() {
-
-    const supabase = getSupabase();
-
-    try {
-
-      if (supabase) {
-        const {
-          error
-        } = await supabase.auth.signOut();
-
-        if (error) {
-          console.error(
-            "Erreur déconnexion :",
-            error
-          );
-        }
-      }
-
-    } finally {
-
-      AUTH.currentUser = null;
-
-      window.dispatchEvent(
-        new CustomEvent(
-          "dalzon:logout"
-        )
-      );
     }
 
-    return true;
   }
 
-  function getAuthenticatedUser() {
-    return AUTH.currentUser;
-  }
 
-  function isAuthenticated() {
-    return !!AUTH.currentUser;
-  }
+  /* =========================================================
+     RÉCUPÉRER L'UTILISATEUR AUTHENTIFIÉ
+  ========================================================= */
 
-  function getAuthSession() {
-    return null;
-  }
-
-  function hasRole(role) {
-
-    const user =
-      AUTH.currentUser;
-
-    if (!user) return false;
-
-    return String(user.role)
-      .toLowerCase() ===
-      String(role)
-        .toLowerCase();
-  }
-
-  function hasAnyRole(roles) {
-
-    if (!Array.isArray(roles)) {
-      return false;
-    }
-
-    const user =
-      AUTH.currentUser;
-
-    if (!user) return false;
-
-    return roles.some(
-      role =>
-        String(role)
-          .toLowerCase() ===
-        String(user.role)
-          .toLowerCase()
-    );
-  }
-
-  function can() {
-    return true;
-  }
-
-  async function initAuth() {
+  async function getAuthenticatedUserAsync() {
 
     const supabase =
       getSupabase();
 
     if (!supabase) {
-      console.error(
-        "DALZON_SUPABASE est introuvable."
-      );
       return null;
     }
 
-    /*
-     * Surveillance automatique de la session.
-     */
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase.auth.getUser();
+
+
+      if (error) {
+
+        cachedUser = null;
+
+        return null;
+
+      }
+
+
+      const authUser =
+        data?.user;
+
+
+      if (!authUser) {
+
+        cachedUser = null;
+
+        return null;
+
+      }
+
+
+      const profile =
+        await getProfile(authUser);
+
+
+      const user =
+        buildUser(
+          authUser,
+          profile
+        );
+
+
+      cachedUser =
+        user;
+
+
+      return user;
+
+
+    } catch (error) {
+
+      console.error(
+        "Erreur récupération utilisateur :",
+        error
+      );
+
+      cachedUser = null;
+
+      return null;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     VERSION SYNCHRONE
+  ========================================================= */
+
+  function getAuthenticatedUser() {
+
+    return cachedUser;
+
+  }
+
+
+  /* =========================================================
+     RECHERCHE MATRICULE
+  =========================================================
+   *
+   * Avec les policies RLS actuelles, un utilisateur non
+   * authentifié ne peut pas rechercher librement un profil
+   * par matricule.
+   *
+   * Cette fonction essaie donc une recherche uniquement
+   * lorsqu'une session authentifiée existe déjà.
+   *
+   * Pour permettre une vraie connexion "matricule + mot
+   * de passe" depuis l'écran de connexion, il faudra ensuite
+   * mettre en place une RPC/Edge Function sécurisée.
+  ========================================================= */
+
+  async function findEmailByMatricule(matricule) {
+
+    const supabase =
+      getSupabase();
+
+    if (!supabase) {
+      return null;
+    }
+
+
+    const value =
+      String(matricule || "").trim();
+
+
+    if (!value) {
+      return null;
+    }
+
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase
+        .from("profiles")
+        .select("email, matricule")
+        .eq("matricule", value)
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.warn(
+          "Recherche matricule impossible :",
+          error
+        );
+
+        return null;
+
+      }
+
+
+      return data?.email || null;
+
+
+    } catch (error) {
+
+      console.error(
+        "Erreur recherche matricule :",
+        error
+      );
+
+      return null;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     CONNEXION
+  ========================================================= */
+
+  async function login(identifier, password) {
+
+    const supabase =
+      getSupabase();
+
+
+    if (!supabase) {
+
+      return {
+
+        user: null,
+
+        error: new Error(
+          "Supabase n'est pas correctement initialisé."
+        )
+
+      };
+
+    }
+
+
+    const loginIdentifier =
+      String(identifier || "").trim();
+
+
+    const loginPassword =
+      String(password || "");
+
+
+    if (!loginIdentifier) {
+
+      return {
+
+        user: null,
+
+        error: new Error(
+          "Veuillez saisir votre email ou matricule."
+        )
+
+      };
+
+    }
+
+
+    if (!loginPassword) {
+
+      return {
+
+        user: null,
+
+        error: new Error(
+          "Veuillez saisir votre mot de passe."
+        )
+
+      };
+
+    }
+
+
+    try {
+
+      /*
+       * -----------------------------------------------------
+       * CAS 1 : EMAIL
+       * -----------------------------------------------------
+       */
+
+      let email =
+        loginIdentifier;
+
+
+      /*
+       * -----------------------------------------------------
+       * CAS 2 : MATRICULE
+       * -----------------------------------------------------
+       *
+       * Si l'identifiant ne ressemble pas à un email,
+       * on tente une recherche dans profiles.
+       *
+       * Avec RLS, cette partie peut nécessiter plus tard
+       * une fonction RPC/Edge Function dédiée.
+       */
+
+      if (!loginIdentifier.includes("@")) {
+
+        const foundEmail =
+          await findEmailByMatricule(
+            loginIdentifier
+          );
+
+
+        if (!foundEmail) {
+
+          return {
+
+            user: null,
+
+            error: new Error(
+              "Matricule introuvable. Utilisez votre email ou vérifiez votre matricule."
+            )
+
+          };
+
+        }
+
+
+        email =
+          foundEmail;
+
+      }
+
+
+      /*
+       * -----------------------------------------------------
+       * AUTH SUPABASE
+       * -----------------------------------------------------
+       */
+
+      const {
+        data,
+        error
+      } = await supabase.auth.signInWithPassword({
+
+        email,
+
+        password: loginPassword
+
+      });
+
+
+      if (error) {
+
+        console.error(
+          "Supabase login error :",
+          error
+        );
+
+
+        return {
+
+          user: null,
+
+          error
+
+        };
+
+      }
+
+
+      if (!data?.user) {
+
+        return {
+
+          user: null,
+
+          error: new Error(
+            "Connexion impossible : utilisateur introuvable."
+          )
+
+        };
+
+      }
+
+
+      /*
+       * -----------------------------------------------------
+       * PROFIL DALZON
+       * -----------------------------------------------------
+       */
+
+      const profile =
+        await getProfile(
+          data.user
+        );
+
+
+      const user =
+        buildUser(
+          data.user,
+          profile
+        );
+
+
+      cachedUser =
+        user;
+
+
+      return {
+
+        user,
+
+        data,
+
+        error: null
+
+      };
+
+
+    } catch (error) {
+
+      console.error(
+        "DALZON SHULE login error :",
+        error
+      );
+
+
+      return {
+
+        user: null,
+
+        error
+
+      };
+
+    }
+
+  }
+
+
+  /* =========================================================
+     DÉCONNEXION
+  ========================================================= */
+
+  async function logout() {
+
+    const supabase =
+      getSupabase();
+
+
+    cachedUser =
+      null;
+
+
+    if (!supabase) {
+      return {
+        error: null
+      };
+    }
+
+
+    try {
+
+      const {
+        error
+      } =
+        await supabase.auth.signOut();
+
+
+      if (error) {
+
+        console.error(
+          "Erreur déconnexion :",
+          error
+        );
+
+        return {
+          error
+        };
+
+      }
+
+
+      /*
+       * Notification destinée à index.html
+       */
+
+      document.dispatchEvent(
+        new CustomEvent(
+          "dalzon:logout"
+        )
+      );
+
+
+      return {
+        error: null
+      };
+
+
+    } catch (error) {
+
+      console.error(
+        "Erreur logout :",
+        error
+      );
+
+
+      return {
+        error
+      };
+
+    }
+
+  }
+
+
+  /* =========================================================
+     RAFRAÎCHIR LE PROFIL
+  ========================================================= */
+
+  async function refreshUser() {
+
+    cachedUser =
+      await getAuthenticatedUserAsync();
+
+    return cachedUser;
+
+  }
+
+
+  /* =========================================================
+     ÉCOUTEUR DE SESSION SUPABASE
+  ========================================================= */
+
+  function startAuthListener() {
+
+    if (authListenerStarted) {
+      return;
+    }
+
+
+    const supabase =
+      getSupabase();
+
+
+    if (!supabase) {
+      return;
+    }
+
+
+    authListenerStarted =
+      true;
+
 
     supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async function (
+        event,
+        session
+      ) {
 
         console.log(
-          "DALZON Auth event :",
+          "DALZON SHULE Auth:",
           event
         );
 
-        if (
-          event === "SIGNED_OUT"
-        ) {
 
-          AUTH.currentUser = null;
+        /*
+         * SIGNED_OUT
+         */
 
-          window.dispatchEvent(
+        if (event === "SIGNED_OUT") {
+
+          cachedUser =
+            null;
+
+
+          document.dispatchEvent(
             new CustomEvent(
               "dalzon:logout"
             )
           );
 
+
           return;
+
         }
+
+
+        /*
+         * SESSION DISPONIBLE
+         */
 
         if (
-          event === "SIGNED_IN" ||
-          event === "TOKEN_REFRESHED"
+          session?.user &&
+          (
+            event === "SIGNED_IN" ||
+            event === "TOKEN_REFRESHED" ||
+            event === "USER_UPDATED"
+          )
         ) {
 
-          try {
+          /*
+           * Éviter de lancer immédiatement plusieurs
+           * requêtes pendant le changement de token.
+           */
 
-            const user =
-              await getAuthenticatedUserAsync();
+          setTimeout(
+            async function () {
 
-            if (user) {
+              try {
 
-              window.dispatchEvent(
-                new CustomEvent(
-                  "dalzon:authenticated",
-                  {
-                    detail: {
-                      user
-                    }
-                  }
-                )
-              );
-            }
+                const profile =
+                  await getProfile(
+                    session.user
+                  );
 
-          } catch (error) {
 
-            console.error(
-              "Erreur après événement Auth :",
-              error
-            );
-          }
+                cachedUser =
+                  buildUser(
+                    session.user,
+                    profile
+                  );
+
+
+              } catch (error) {
+
+                console.warn(
+                  "Actualisation du profil impossible :",
+                  error
+                );
+
+              }
+
+            },
+            0
+          );
+
         }
+
       }
     );
 
-    try {
-
-      return await getAuthenticatedUserAsync();
-
-    } catch (error) {
-
-      console.error(
-        "Initialisation Auth :",
-        error
-      );
-
-      return null;
-    }
   }
 
-  /*
-   * API publique
-   */
+
+  /* =========================================================
+     INITIALISATION
+  ========================================================= */
+
+  function initAuth() {
+
+    if (!getSupabase()) {
+
+      console.error(
+        "DALZON SHULE Auth : Supabase indisponible."
+      );
+
+      return;
+
+    }
+
+
+    startAuthListener();
+
+
+    console.log(
+      `${AUTH.appName} Auth ${AUTH.version} chargé.`
+    );
+
+  }
+
+
+  /* =========================================================
+     API PUBLIQUE
+  ========================================================= */
 
   window.DALZON_AUTH = {
 
@@ -450,45 +907,32 @@
 
     logout,
 
-    getAuthenticatedUser,
-
     getAuthenticatedUserAsync,
 
-    isAuthenticated,
+    getAuthenticatedUser,
 
-    getAuthSession,
+    refreshUser,
 
-    hasRole,
+    getProfile,
 
-    hasAnyRole,
+    findEmailByMatricule,
 
-    can,
-
-    initAuth
+    getRoleLabel
 
   };
 
-  /*
-   * Compatibilité avec l'ancien système
-   */
 
-  window.DALZON_LOGIN = login;
-  window.DALZON_LOGOUT = logout;
-
-  /*
-   * Initialisation après chargement
-   */
+  /* =========================================================
+     DÉMARRAGE
+  ========================================================= */
 
   if (
-    document.readyState ===
-    "loading"
+    document.readyState === "loading"
   ) {
 
     document.addEventListener(
       "DOMContentLoaded",
-      function () {
-        initAuth();
-      }
+      initAuth
     );
 
   } else {
@@ -496,5 +940,6 @@
     initAuth();
 
   }
+
 
 })();
