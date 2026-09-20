@@ -1,0 +1,26 @@
+{
+  "name": "DALZON SHULE",
+  "short_name": "DALZON SHULE",
+  "description": "Connecter l’École à la Maison",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#050b14",
+  "theme_color": "#08111f",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "https://i.imghos.co/ScqSjIHB.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.imghos.co/ScqSjIHB.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
