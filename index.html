@@ -1,900 +1,1246 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>DALZON SHULE — Connexion</title>
-
-<meta name="description" content="Connexion sécurisée à DALZON SHULE">
-
-<link rel="icon"
-      type="image/png"
-      href="https://i.imghos.co/ScqSjIHB.png">
-
-<link rel="apple-touch-icon"
-      href="https://i.imghos.co/ScqSjIHB.png">
-
-<style>
-
-/* =========================================================
-   BASE
-========================================================= */
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-:root{
-    --bg:#050b14;
-    --card:rgba(12,24,40,.82);
-    --text:#ffffff;
-    --muted:#8fa3b8;
-    --border:rgba(255,255,255,.10);
-    --blue:#1687ff;
-    --cyan:#42c4ff;
-    --danger:#ff5570;
-    --success:#32d583;
-}
-
-html,
-body{
-    width:100%;
-    min-height:100%;
-}
-
-body{
-    min-height:100vh;
-    overflow:hidden;
-
-    font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
-
-    color:var(--text);
-
-    background:
-        radial-gradient(
-            circle at 15% 20%,
-            rgba(22,135,255,.20),
-            transparent 32%
-        ),
-        radial-gradient(
-            circle at 85% 80%,
-            rgba(66,196,255,.12),
-            transparent 30%
-        ),
-        var(--bg);
-}
-
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-.background{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    pointer-events:none;
-}
-
-.orb{
-    position:absolute;
-    border-radius:50%;
-    filter:blur(80px);
-    opacity:.5;
-}
-
-.orb.one{
-    width:300px;
-    height:300px;
-    background:#087cff;
-    top:-150px;
-    left:-100px;
-}
-
-.orb.two{
-    width:350px;
-    height:350px;
-    background:#0077ff;
-    right:-160px;
-    bottom:-160px;
-}
-
-.grid{
-    position:absolute;
-    inset:0;
-
-    background-image:
-        linear-gradient(
-            rgba(255,255,255,.025) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,.025) 1px,
-            transparent 1px
-        );
-
-    background-size:45px 45px;
-
-    mask-image:
-        linear-gradient(
-            to bottom,
-            black,
-            transparent
-        );
-
-    -webkit-mask-image:
-        linear-gradient(
-            to bottom,
-            black,
-            transparent
-        );
-}
-
-
-/* =========================================================
-   LOGO
-========================================================= */
-
-.logo{
-    width:82px;
-    height:82px;
-
-    object-fit:contain;
-
-    border-radius:22px;
-
-    filter:
-        drop-shadow(
-            0 15px 35px
-            rgba(22,135,255,.30)
-        );
-
-    transition:
-        transform .5s ease,
-        filter .5s ease;
-}
-
-.logo:hover{
-    transform:
-        scale(1.05)
-        rotate(2deg);
-
-    filter:
-        drop-shadow(
-            0 20px 45px
-            rgba(22,135,255,.45)
-        );
-}
-
-
-/* =========================================================
-   SCREENS
-========================================================= */
-
-.screen{
-    position:fixed;
-    inset:0;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-
-    opacity:0;
-    visibility:hidden;
-
-    transform:
-        scale(.97)
-        translateY(15px);
-
-    transition:
-        opacity .5s ease,
-        transform .5s ease,
-        visibility .5s ease;
-
-    overflow-y:auto;
-}
-
-.screen.active{
-    opacity:1;
-    visibility:visible;
-
-    transform:
-        scale(1)
-        translateY(0);
-}
-
-
-/* =========================================================
-   LOGIN CARD
-========================================================= */
-
-.login-card{
-    width:min(430px,100%);
-
-    padding:42px 35px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius:30px;
-
-    background:var(--card);
-
-    backdrop-filter:blur(25px);
-
-    -webkit-backdrop-filter:blur(25px);
-
-    box-shadow:
-        0 35px 100px
-        rgba(0,0,0,.40);
-
-    text-align:center;
-}
-
-.login-card h1{
-    margin-top:25px;
-
-    font-size:30px;
-
-    font-weight:900;
-
-    letter-spacing:-1.5px;
-}
-
-.login-card .subtitle{
-    margin-top:8px;
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-
-/* =========================================================
-   FORM
-========================================================= */
-
-.form{
-    margin-top:28px;
-
-    text-align:left;
-}
-
-.field{
-    margin-bottom:15px;
-}
-
-.field label{
-    display:block;
-
-    margin-bottom:7px;
-
-    color:var(--muted);
-
-    font-size:9px;
-
-    font-weight:800;
-
-    letter-spacing:.3px;
-}
-
-.input-box{
-    position:relative;
-}
-
-.input{
-    width:100%;
-    height:54px;
-
-    padding:0 16px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius:14px;
-
-    outline:none;
-
-    background:
-        rgba(255,255,255,.045);
-
-    color:white;
-
-    font-size:12px;
-
-    transition:
-        border-color .25s ease,
-        box-shadow .25s ease,
-        background .25s ease;
-}
-
-.input::placeholder{
-    color:#60758a;
-}
-
-.input:focus{
-    border-color:
-        rgba(66,196,255,.65);
-
-    background:
-        rgba(22,135,255,.06);
-
-    box-shadow:
-        0 0 0 4px
-        rgba(22,135,255,.10);
-}
-
-.password-toggle{
-    position:absolute;
-
-    right:7px;
-    top:7px;
-
-    height:40px;
-
-    padding:0 10px;
-
-    border:0;
-
-    background:transparent;
-
-    color:var(--muted);
-
-    font-size:9px;
-
-    cursor:pointer;
-}
-
-
-/* =========================================================
-   ERROR
-========================================================= */
-
-.login-message{
-    display:none;
-
-    margin-top:14px;
-
-    padding:11px 13px;
-
-    border-radius:12px;
-
-    font-size:10px;
-
-    line-height:1.5;
-
-    text-align:center;
-}
-
-.login-message.error{
-    display:block;
-
-    color:#ff9aaa;
-
-    background:
-        rgba(255,85,112,.08);
-
-    border:
-        1px solid
-        rgba(255,85,112,.18);
-}
-
-.login-message.success{
-    display:block;
-
-    color:#82efb5;
-
-    background:
-        rgba(50,213,131,.08);
-
-    border:
-        1px solid
-        rgba(50,213,131,.18);
-}
-
-
-/* =========================================================
-   FORGOT
-========================================================= */
-
-.forgot{
-    margin-top:4px;
-
-    color:var(--muted);
-
-    font-size:8px;
-
-    line-height:1.6;
-
-    text-align:center;
-}
-
-
-/* =========================================================
-   LOGIN BUTTON
-========================================================= */
-
-.login-button{
-    width:100%;
-
-    height:54px;
-
-    margin-top:20px;
-
-    border:0;
-
-    border-radius:14px;
-
-    background:
-        linear-gradient(
-            110deg,
-            #087cff,
-            #36baff,
-            #087cff
-        );
-
-    background-size:200% 100%;
-
-    color:white;
-
-    font-size:11px;
-
-    font-weight:900;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 15px 35px
-        rgba(22,135,255,.25);
-
-    transition:
-        transform .25s ease,
-        box-shadow .25s ease,
-        background-position .5s ease;
-}
-
-.login-button:hover{
-    transform:translateY(-2px);
-
-    background-position:100% 0;
-
-    box-shadow:
-        0 20px 45px
-        rgba(22,135,255,.35);
-}
-
-.login-button:disabled{
-    opacity:.65;
-    cursor:wait;
-}
-
-
-/* =========================================================
-   WELCOME
-========================================================= */
-
-.welcome{
-    text-align:center;
-
-    width:min(600px,100%);
-}
-
-.welcome h1{
-    margin-top:28px;
-
-    font-size:
-        clamp(34px,7vw,58px);
-
-    line-height:1;
-
-    letter-spacing:-3px;
-
-    font-weight:950;
-}
-
-.welcome h1 span{
-    color:var(--cyan);
-}
-
-.welcome p{
-    margin:18px auto 0;
-
-    max-width:430px;
-
-    color:var(--muted);
-
-    font-size:12px;
-
-    line-height:1.7;
-}
-
-
-/* =========================================================
-   USER INFO
-========================================================= */
-
-.user-info{
-    margin:22px auto 0;
-
-    width:min(360px,100%);
-
-    padding:14px 18px;
-
-    border:
-        1px solid
-        rgba(66,196,255,.15);
-
-    border-radius:15px;
-
-    background:
-        rgba(22,135,255,.06);
-}
-
-.user-name{
-    font-size:14px;
-
-    font-weight:800;
-}
-
-.user-role{
-    margin-top:5px;
-
-    color:var(--cyan);
-
-    font-size:10px;
-
-    font-weight:700;
-
-    text-transform:uppercase;
-
-    letter-spacing:.7px;
-}
-
-
-/* =========================================================
-   DOWNLOAD BUTTON
-========================================================= */
-
-.download-button{
-    display:inline-flex;
-
-    align-items:center;
-    justify-content:center;
-
-    min-width:260px;
-
-    height:54px;
-
-    margin-top:28px;
-
-    border:0;
-
-    border-radius:14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #087cff,
-            #36baff
-        );
-
-    color:#fff;
-
-    font-size:11px;
-
-    font-weight:900;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 17px 40px
-        rgba(22,135,255,.28);
-
-    transition:
-        transform .25s ease,
-        box-shadow .25s ease;
-}
-
-.download-button:hover{
-    transform:translateY(-3px);
-
-    box-shadow:
-        0 22px 50px
-        rgba(22,135,255,.38);
-}
-
-
-/* =========================================================
-   DOWNLOAD
-========================================================= */
-
-.download{
-    width:min(760px,100%);
-
-    text-align:center;
-}
-
-.download h2{
-    margin-top:24px;
-
-    font-size:
-        clamp(30px,6vw,48px);
-
-    font-weight:950;
-
-    letter-spacing:-2px;
-}
-
-.download h2 span{
-    color:var(--cyan);
-}
-
-.download p{
-    margin:13px auto 0;
-
-    color:var(--muted);
-
-    font-size:11px;
-
-    line-height:1.6;
-}
-
-.stores{
-    display:flex;
-
-    justify-content:center;
-
-    gap:15px;
-
-    margin-top:30px;
-
-    flex-wrap:wrap;
-}
-
-
-/* =========================================================
-   STORE BUTTONS
-========================================================= */
-
-.store{
-    width:210px;
-    height:64px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:13px;
-
-    padding:8px 17px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.13);
-
-    border-radius:15px;
-
-    background:#000;
-
-    color:#fff;
-
-    cursor:pointer;
-
-    text-align:left;
-
-    transition:
-        transform .25s ease,
-        border-color .25s ease,
-        box-shadow .25s ease;
-}
-
-.store:hover{
-    transform:translateY(-4px);
-
-    border-color:
-        rgba(66,196,255,.55);
-
-    box-shadow:
-        0 18px 40px
-        rgba(0,0,0,.35);
-}
-
-.store-icon{
-    width:34px;
-    height:34px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    flex:none;
-}
-
-.store-icon svg{
-    width:31px;
-    height:31px;
-
-    fill:white;
-}
-
-.store-text small{
-    display:block;
-
-    color:#aab6c0;
-
-    font-size:7px;
-
-    letter-spacing:.5px;
-}
-
-.store-text strong{
-    display:block;
-
-    margin-top:2px;
-
-    font-size:15px;
-
-    font-weight:700;
-}
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal{
-    position:fixed;
-
-    inset:0;
-
-    z-index:100;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-
-    background:
-        rgba(0,0,0,.72);
-
-    backdrop-filter:blur(10px);
-
-    -webkit-backdrop-filter:blur(10px);
-
-    opacity:0;
-    visibility:hidden;
-
-    transition:.3s ease;
-}
-
-.modal.active{
-    opacity:1;
-    visibility:visible;
-}
-
-.modal-box{
-    width:min(390px,100%);
-
-    padding:30px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius:23px;
-
-    background:#0b1929;
-
-    text-align:center;
-
-    transform:scale(.94);
-
-    transition:.3s ease;
-}
-
-.modal.active .modal-box{
-    transform:scale(1);
-}
-
-.modal-box img{
-    width:65px;
-    height:65px;
-
-    object-fit:contain;
-
-    border-radius:17px;
-}
-
-.modal-box h2{
-    margin-top:18px;
-
-    font-size:21px;
-}
-
-.modal-box p{
-    margin-top:10px;
-
-    color:var(--muted);
-
-    font-size:11px;
-
-    line-height:1.7;
-}
-
-.close-modal{
-    width:100%;
-
-    height:45px;
-
-    margin-top:20px;
-
-    border:0;
-
-    border-radius:11px;
-
-    background:var(--blue);
-
-    color:white;
-
-    font-size:10px;
-
-    font-weight:900;
-
-    cursor:pointer;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:500px){
-
-    .login-card{
-        padding:34px 22px;
-
-        border-radius:25px;
-    }
-
-    .login-card h1{
-        font-size:27px;
-    }
-
-    .stores{
-        flex-direction:column;
-
-        align-items:center;
-    }
-
-    .store{
-        width:100%;
-
-        max-width:300px;
-    }
-
-    .welcome h1{
-        letter-spacing:-2px;
-    }
-
-}
-
-</style>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#08111f"
+    >
+
+    <meta
+        name="description"
+        content="DALZON SHULE — Connecter l'École à la Maison"
+    >
+
+    <title>DALZON SHULE</title>
+
+    <link
+        rel="icon"
+        href="https://i.imghos.co/ScqSjIHB.png"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link
+        rel="manifest"
+        href="./manifest.json"
+    >
+
+    <style>
+
+        :root {
+            --bg: #050b14;
+            --bg-2: #08111f;
+            --card: rgba(13, 24, 40, .72);
+            --card-strong: rgba(16, 29, 48, .92);
+            --border: rgba(255,255,255,.09);
+            --border-light: rgba(255,255,255,.14);
+            --text: #f4f7fb;
+            --muted: #94a3b8;
+            --blue: #3b82f6;
+            --blue-light: #60a5fa;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f59e0b;
+            --shadow: 0 25px 80px rgba(0,0,0,.35);
+            --radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Inter", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(37,99,235,.18),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(14,165,233,.12),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #03070d,
+                    #08111f 50%,
+                    #050b14
+                );
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .18;
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.035) 1px,
+                    transparent 1px
+                );
+            background-size: 45px 45px;
+            mask-image: linear-gradient(
+                to bottom,
+                black,
+                transparent
+            );
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =====================================================
+           LOGIN
+           ===================================================== */
+
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+        }
+
+        .login-orb {
+            position: fixed;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+
+        .login-orb.one {
+            top: -100px;
+            left: -80px;
+            background: rgba(37,99,235,.22);
+        }
+
+        .login-orb.two {
+            bottom: -100px;
+            right: -70px;
+            background: rgba(14,165,233,.16);
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 460px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-logo {
+            width: 92px;
+            height: 92px;
+            object-fit: contain;
+            border-radius: 24px;
+            margin-bottom: 14px;
+            filter:
+                drop-shadow(
+                    0 12px 30px
+                    rgba(37,99,235,.22)
+                );
+        }
+
+        .brand h1 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -.7px;
+        }
+
+        .brand p {
+            color: var(--muted);
+            margin-top: 7px;
+            font-size: 14px;
+        }
+
+        .login-card {
+            background: var(--card);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+
+        .login-card h2 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 23px;
+            margin-bottom: 8px;
+        }
+
+        .login-description {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #dbeafe;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            pointer-events: none;
+        }
+
+        .field input {
+            width: 100%;
+            height: 52px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255,255,255,.045);
+            color: var(--text);
+            padding:
+                0 46px
+                0 44px;
+            outline: none;
+            transition: .2s ease;
+        }
+
+        .field input:focus {
+            border-color: rgba(59,130,246,.65);
+            box-shadow:
+                0 0 0 4px
+                rgba(59,130,246,.09);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: #64748b;
+        }
+
+        .password-toggle:hover {
+            color: white;
+            background: rgba(255,255,255,.06);
+        }
+
+        .login-button {
+            width: 100%;
+            height: 53px;
+            border: 0;
+            border-radius: 15px;
+            color: white;
+            font-weight: 700;
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #3b82f6
+                );
+            box-shadow:
+                0 15px 35px
+                rgba(37,99,235,.22);
+            transition: .2s ease;
+            margin-top: 5px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 18px 40px
+                rgba(37,99,235,.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-help {
+            margin-top: 20px;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .login-help strong {
+            color: #dbeafe;
+        }
+
+        /* =====================================================
+           APPLICATION
+           ===================================================== */
+
+        #app-screen {
+            min-height: 100vh;
+            display: none;
+        }
+
+        .app-layout {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 100;
+            padding: 20px 14px;
+            border-right: 1px solid var(--border);
+            background:
+                rgba(4,10,18,.92);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 8px 10px 24px;
+        }
+
+        .sidebar-brand img {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        .sidebar-brand strong {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 17px;
+        }
+
+        .sidebar-brand small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .nav-title {
+            color: #64748b;
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 14px 12px 7px;
+        }
+
+        .nav-link {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 0;
+            background: transparent;
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: left;
+            margin-bottom: 3px;
+            transition: .18s ease;
+        }
+
+        .nav-link i {
+            width: 19px;
+            text-align: center;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,.045);
+            color: white;
+        }
+
+        .nav-link.active {
+            background:
+                rgba(37,99,235,.15);
+            color: #dbeafe;
+            border: 1px solid
+                rgba(59,130,246,.15);
+        }
+
+        .sidebar-bottom {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .logout-btn {
+            color: #fca5a5;
+        }
+
+        .logout-btn:hover {
+            color: #fecaca;
+            background: rgba(239,68,68,.08);
+        }
+
+        .main {
+            width: calc(100% - 260px);
+            margin-left: 260px;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 75px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(5,11,20,.76);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        #page-title {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 22px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .user-avatar {
+            width: 39px;
+            height: 39px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #0ea5e9
+                );
+            font-weight: 800;
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .user-info small {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .content {
+            padding: 28px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .app-page {
+            animation: pageIn .25s ease;
+        }
+
+        @keyframes pageIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h2 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 26px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           CARDS
+           ===================================================== */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(59,130,246,.12);
+            color: #93c5fd;
+            margin-bottom: 15px;
+        }
+
+        .stat-card span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-card strong {
+            display: block;
+            margin-top: 6px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 28px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 21px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .panel-header h3 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 17px;
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .student-summary {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .summary-box {
+            padding: 16px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid var(--border);
+        }
+
+        .summary-box span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .summary-box strong {
+            display: block;
+            margin-top: 7px;
+            font-size: 20px;
+        }
+
+        /* =====================================================
+           TABLES
+           ===================================================== */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            color: #cbd5e1;
+            background: rgba(255,255,255,.025);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        td {
+            color: #dbe4ef;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        /* =====================================================
+           NOTES
+           ===================================================== */
+
+        .grades-summary {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .grades-summary > div {
+            padding: 18px 24px;
+            background: rgba(37,99,235,.1);
+            border: 1px solid rgba(59,130,246,.18);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .grades-summary span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .grades-summary strong {
+            display: block;
+            margin-top: 4px;
+            font-family: "Space Grotesk";
+            font-size: 27px;
+        }
+
+        /* =====================================================
+           COURS
+           ===================================================== */
+
+        #courses-container {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .course-card {
+            display: flex;
+            gap: 16px;
+            padding: 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .course-time {
+            min-width: 75px;
+            padding-right: 15px;
+            border-right: 1px solid var(--border);
+        }
+
+        .course-time strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .course-time span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .course-content h3 {
+            font-size: 16px;
+            margin-bottom: 7px;
+        }
+
+        .course-content p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* =====================================================
+           PRÉSENCES
+           ===================================================== */
+
+        .attendance-summary {
+            display: grid;
+            grid-template-columns:
+                repeat(5, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .attendance-summary > div {
+            padding: 16px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .attendance-summary span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .attendance-summary strong {
+            display: block;
+            font-size: 20px;
+            margin-top: 5px;
+        }
+
+        /* =====================================================
+           DOCUMENTS
+           ===================================================== */
+
+        #documents-container {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .document-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .document-icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border-radius: 13px;
+            background: rgba(59,130,246,.1);
+            color: #93c5fd;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .document-card h3 {
+            font-size: 15px;
+        }
+
+        .document-card p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .document-card small {
+            color: #64748b;
+            display: block;
+            margin-top: 6px;
+        }
+
+        .document-link {
+            margin-left: auto;
+            padding: 8px 11px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #bfdbfe;
+        }
+
+        /* =====================================================
+           CALENDRIER
+           ===================================================== */
+
+        #calendar-container {
+            display: grid;
+            gap: 12px;
+        }
+
+        .event-card {
+            display: flex;
+            gap: 17px;
+            padding: 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .event-date {
+            width: 105px;
+            flex-shrink: 0;
+            padding-right: 15px;
+            border-right: 1px solid var(--border);
+        }
+
+        .event-date strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .event-date span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        .event-content h3 {
+            font-size: 15px;
+        }
+
+        .event-content p {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 6px 0;
+        }
+
+        .event-content small {
+            color: #64748b;
+        }
+
+        /* =====================================================
+           PAIEMENTS
+           ===================================================== */
+
+        .payment-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 19px;
+            margin-bottom: 18px;
+            border-radius: 16px;
+            background: rgba(34,197,94,.08);
+            border: 1px solid rgba(34,197,94,.15);
+        }
+
+        .payment-total span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .payment-total strong {
+            font-family: "Space Grotesk";
+            font-size: 24px;
+        }
+
+        /* =====================================================
+           CLASSES
+           ===================================================== */
+
+        #classes-container {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .class-card {
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .class-card h3 {
+            font-family: "Space Grotesk";
+            font-size: 17px;
+            margin-bottom: 12px;
+        }
+
+        .class-card p {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .class-card strong {
+            display: block;
+            margin-top: 15px;
+            color: #bfdbfe;
+        }
+
+        /* =====================================================
+           PROFIL
+           ===================================================== */
+
+        .profile-card {
+            max-width: 700px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 22px;
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+            font-weight: 800;
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #0ea5e9
+                );
+            margin-bottom: 18px;
+        }
+
+        .profile-name {
+            font-family: "Space Grotesk";
+            font-size: 25px;
+        }
+
+        .profile-role {
+            color: var(--muted);
+            margin-top: 4px;
+            margin-bottom: 25px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .profile-field {
+            padding: 15px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.03);
+            border-radius: 13px;
+        }
+
+        .profile-field span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        .profile-field strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           ÉTAT VIDE
+           ===================================================== */
+
+        .empty-state {
+            padding: 45px 20px;
+            text-align: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .empty-state h3 {
+            font-family: "Space Grotesk";
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            color: var(--muted);
+            margin-top: 7px;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           RECHERCHE
+           ===================================================== */
+
+        .search-bar {
+            margin-bottom: 17px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            outline: none;
+            background: rgba(255,255,255,.04);
+            color: white;
+        }
+
+        .search-bar input:focus {
+            border-color: rgba(59,130,246,.55);
+        }
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #classes-container {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+        }
+
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                transform: translateX(-105%);
+                transition: transform .25s ease;
+                box-shadow: 20px 0 50px rgba(0,0,0,.35);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: grid;
+                place-items: center;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+            #courses-container,
+            #documents-container {
+                grid-template-columns: 1fr;
+            }
+
+            .attendance-summary {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+        }
+
+
+        @media (max-width: 520px) {
+
+            #login-screen {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 23px 18px;
+                border-radius: 22px;
+            }
+
+            .brand-logo {
+                width: 78px;
+                height: 78px;
+            }
+
+            .brand h1 {
+                font-size: 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card strong {
+                font-size: 23px;
+            }
+
+            .stat-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            #page-title {
+                font-size: 18px;
+            }
+
+            .student-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #classes-container {
+                grid-template-columns: 1fr;
+            }
+
+            .attendance-summary {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+        }
+
+    </style>
 </head>
 
 
@@ -902,135 +1248,1080 @@ body{
 
 
 <!-- =========================================================
-     BACKGROUND
-========================================================= -->
+     ÉCRAN DE CONNEXION
+     ========================================================= -->
 
-<div class="background">
+<section id="login-screen">
 
-    <div class="orb one"></div>
+    <div class="login-orb one"></div>
+    <div class="login-orb two"></div>
 
-    <div class="orb two"></div>
+    <div class="login-wrapper">
 
-    <div class="grid"></div>
+        <div class="brand">
 
-</div>
+            <img
+                class="brand-logo"
+                src="https://i.imghos.co/ScqSjIHB.png"
+                alt="DALZON SHULE"
+            >
+
+            <h1>DALZON SHULE</h1>
+
+            <p>
+                Connecter l'École à la Maison
+            </p>
+
+        </div>
+
+
+        <div class="login-card">
+
+            <h2>Bienvenue</h2>
+
+            <p class="login-description">
+                Connectez-vous à votre espace
+                scolaire pour accéder à vos
+                informations.
+            </p>
+
+
+            <form id="login-form">
+
+                <div class="field">
+
+                    <label for="email">
+                        Adresse mail ou matricule
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-solid fa-user input-icon"
+                        ></i>
+
+                        <input
+                            id="email"
+                            name="email"
+                            type="text"
+                            autocomplete="username"
+                            placeholder="nom@dalzonshule.com"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="password">
+                        Code d'accès
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-solid fa-lock input-icon"
+                        ></i>
+
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autocomplete="current-password"
+                            placeholder="Votre code d'accès"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-password-toggle="password"
+                            aria-label="Afficher le code"
+                        >
+                            <i
+                                class="fa-solid fa-eye"
+                            ></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    <i
+                        class="fa-solid fa-arrow-right-to-bracket"
+                    ></i>
+
+                    &nbsp;
+
+                    Se connecter
+                </button>
+
+            </form>
+
+
+            <div class="login-help">
+
+                <strong>
+                    Besoin d'aide ?
+                </strong>
+
+                <br>
+
+                En cas de problème de connexion,
+                contactez le secrétariat de votre
+                établissement.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
 
 <!-- =========================================================
-     LOGIN
-========================================================= -->
+     APPLICATION
+     ========================================================= -->
 
-<section
-    class="screen active"
-    id="loginScreen">
+<section id="app-screen">
 
-    <div class="login-card">
-
-        <img
-            class="logo"
-            src="https://i.imghos.co/ScqSjIHB.png"
-            alt="DALZON SHULE">
-
-        <h1>
-            Se connecter
-        </h1>
-
-        <p class="subtitle">
-            Accédez à DALZON SHULE
-        </p>
+    <div class="app-layout">
 
 
-        <form
-            class="form"
-            id="loginForm"
-            autocomplete="off">
+        <!-- =================================================
+             SIDEBAR
+             ================================================= -->
 
+        <aside
+            id="sidebar"
+            class="sidebar"
+        >
 
-            <!-- EMAIL -->
+            <div class="sidebar-brand">
 
-            <div class="field">
+                <img
+                    src="https://i.imghos.co/ScqSjIHB.png"
+                    alt="DALZON SHULE"
+                >
 
-                <label for="identifier">
-                    Adresse mail DALZON SHULE
-                </label>
+                <div>
 
-                <div class="input-box">
+                    <strong>
+                        DALZON SHULE
+                    </strong>
 
-                    <input
-                        class="input"
-                        id="identifier"
-                        type="email"
-                        placeholder="nom@dalzonshule.com"
-                        autocomplete="off"
-                        autocapitalize="none"
-                        spellcheck="false"
-                        required>
+                    <small>
+                        Espace scolaire
+                    </small>
 
                 </div>
 
             </div>
 
 
-            <!-- CODE -->
+            <div class="nav-title">
+                Principal
+            </div>
 
-            <div class="field">
 
-                <label for="password">
-                    Code d'accès
-                </label>
+            <button
+                class="nav-link"
+                data-route="dashboard"
+            >
+                <i class="fa-solid fa-house"></i>
+                <span>Tableau de bord</span>
+            </button>
 
-                <div class="input-box">
 
-                    <input
-                        class="input"
-                        id="password"
-                        type="password"
-                        placeholder="Votre code d'accès"
-                        autocomplete="new-password"
-                        required>
+            <button
+                class="nav-link"
+                data-route="grades"
+            >
+                <i class="fa-solid fa-chart-column"></i>
+                <span>Notes</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="courses"
+            >
+                <i class="fa-solid fa-book-open"></i>
+                <span>Cours</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="attendance"
+            >
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Présences</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="documents"
+            >
+                <i class="fa-solid fa-file-lines"></i>
+                <span>Documents</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="calendar"
+            >
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Calendrier</span>
+            </button>
+
+
+            <div class="nav-title">
+                Gestion
+            </div>
+
+
+            <button
+                class="nav-link"
+                data-route="students"
+            >
+                <i class="fa-solid fa-user-graduate"></i>
+                <span>Élèves</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="teachers"
+            >
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>Enseignants</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="classes"
+            >
+                <i class="fa-solid fa-users"></i>
+                <span>Classes</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="subjects"
+            >
+                <i class="fa-solid fa-book"></i>
+                <span>Matières</span>
+            </button>
+
+
+            <button
+                class="nav-link"
+                data-route="payments"
+            >
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <span>Paiements</span>
+            </button>
+
+
+            <div class="nav-title">
+                Compte
+            </div>
+
+
+            <button
+                class="nav-link"
+                data-route="profile"
+            >
+                <i class="fa-solid fa-user"></i>
+                <span>Mon profil</span>
+            </button>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    class="nav-link logout-btn"
+                    data-action="logout"
+                >
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Déconnexion</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             CONTENU PRINCIPAL
+             ================================================= -->
+
+        <main class="main">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <div class="topbar-left">
 
                     <button
-                        type="button"
-                        class="password-toggle"
-                        id="togglePassword">
-
-                        Voir
-
+                        id="menu-toggle"
+                        class="mobile-menu-btn"
+                        data-action="menu"
+                        aria-label="Menu"
+                    >
+                        <i
+                            class="fa-solid fa-bars"
+                        ></i>
                     </button>
 
+                    <h1 id="page-title">
+                        Tableau de bord
+                    </h1>
+
                 </div>
 
+
+                <div class="user-menu">
+
+                    <div class="user-info">
+
+                        <strong id="user-name">
+                            —
+                        </strong>
+
+                        <small id="user-role">
+                            —
+                        </small>
+
+                    </div>
+
+
+                    <div
+                        class="user-avatar"
+                        id="user-avatar"
+                    >
+                        U
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- CONTENU -->
+
+            <div class="content">
+
+
+                <!-- =================================================
+                     DASHBOARD
+                     ================================================= -->
+
+                <section
+                    id="page-dashboard"
+                    class="app-page"
+                    data-page="dashboard"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Tableau de bord
+                        </h2>
+
+                        <p>
+                            Vue générale de votre
+                            espace DALZON SHULE.
+                        </p>
+
+                    </div>
+
+
+                    <div class="stats-grid">
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                <i
+                                    class="fa-solid fa-user-graduate"
+                                ></i>
+                            </div>
+
+                            <span>
+                                Élèves
+                            </span>
+
+                            <strong id="stat-students">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                <i
+                                    class="fa-solid fa-chalkboard-user"
+                                ></i>
+                            </div>
+
+                            <span>
+                                Enseignants
+                            </span>
+
+                            <strong id="stat-teachers">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                <i
+                                    class="fa-solid fa-users"
+                                ></i>
+                            </div>
+
+                            <span>
+                                Classes
+                            </span>
+
+                            <strong id="stat-classes">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                <i
+                                    class="fa-solid fa-book"
+                                ></i>
+                            </div>
+
+                            <span>
+                                Matières
+                            </span>
+
+                            <strong id="stat-subjects">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-grid">
+
+
+                        <div class="panel">
+
+                            <div class="panel-header">
+
+                                <h3>
+                                    Mon espace
+                                </h3>
+
+                                <span>
+                                    DALZON SHULE
+                                </span>
+
+                            </div>
+
+
+                            <div class="student-summary">
+
+                                <div class="summary-box">
+
+                                    <span>
+                                        Classe
+                                    </span>
+
+                                    <strong
+                                        id="student-class"
+                                    >
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="summary-box">
+
+                                    <span>
+                                        Moyenne
+                                    </span>
+
+                                    <strong
+                                        id="student-average"
+                                    >
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="summary-box">
+
+                                    <span>
+                                        Présence
+                                    </span>
+
+                                    <strong
+                                        id="student-attendance"
+                                    >
+                                        —
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="panel">
+
+                            <div class="panel-header">
+
+                                <h3>
+                                    Vue système
+                                </h3>
+
+                            </div>
+
+
+                            <div class="student-summary">
+
+                                <div class="summary-box">
+
+                                    <span>
+                                        Cours
+                                    </span>
+
+                                    <strong
+                                        id="stat-courses"
+                                    >
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="summary-box">
+
+                                    <span>
+                                        Documents
+                                    </span>
+
+                                    <strong
+                                        id="stat-documents"
+                                    >
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="summary-box">
+
+                                    <span>
+                                        Événements
+                                    </span>
+
+                                    <strong
+                                        id="stat-events"
+                                    >
+                                        0
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     NOTES
+                     ================================================= -->
+
+                <section
+                    id="page-grades"
+                    class="app-page"
+                    data-page="grades"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Notes
+                        </h2>
+
+                        <p>
+                            Consultez les évaluations
+                            disponibles.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="grades-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     COURS
+                     ================================================= -->
+
+                <section
+                    id="page-courses"
+                    class="app-page"
+                    data-page="courses"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Cours
+                        </h2>
+
+                        <p>
+                            Planning des cours.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="courses-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     PRÉSENCES
+                     ================================================= -->
+
+                <section
+                    id="page-attendance"
+                    class="app-page"
+                    data-page="attendance"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Présences
+                        </h2>
+
+                        <p>
+                            Suivi de la présence scolaire.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="attendance-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     DOCUMENTS
+                     ================================================= -->
+
+                <section
+                    id="page-documents"
+                    class="app-page"
+                    data-page="documents"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Documents
+                        </h2>
+
+                        <p>
+                            Documents disponibles
+                            dans votre espace.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="documents-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     CALENDRIER
+                     ================================================= -->
+
+                <section
+                    id="page-calendar"
+                    class="app-page"
+                    data-page="calendar"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Calendrier
+                        </h2>
+
+                        <p>
+                            Événements et activités
+                            scolaires.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="calendar-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     PAIEMENTS
+                     ================================================= -->
+
+                <section
+                    id="page-payments"
+                    class="app-page"
+                    data-page="payments"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Paiements
+                        </h2>
+
+                        <p>
+                            Suivi des paiements scolaires.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="payments-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     ÉLÈVES
+                     ================================================= -->
+
+                <section
+                    id="page-students"
+                    class="app-page"
+                    data-page="students"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Élèves
+                        </h2>
+
+                        <p>
+                            Gestion des élèves
+                            de l'établissement.
+                        </p>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="search-bar">
+
+                            <input
+                                type="search"
+                                data-student-search
+                                placeholder="Rechercher un élève..."
+                            >
+
+                        </div>
+
+
+                        <div
+                            id="students-container"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     ENSEIGNANTS
+                     ================================================= -->
+
+                <section
+                    id="page-teachers"
+                    class="app-page"
+                    data-page="teachers"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Enseignants
+                        </h2>
+
+                        <p>
+                            Personnel enseignant.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="panel"
+                        id="teachers-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     CLASSES
+                     ================================================= -->
+
+                <section
+                    id="page-classes"
+                    class="app-page"
+                    data-page="classes"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Classes
+                        </h2>
+
+                        <p>
+                            Organisation des classes.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="classes-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     MATIÈRES
+                     ================================================= -->
+
+                <section
+                    id="page-subjects"
+                    class="app-page"
+                    data-page="subjects"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Matières
+                        </h2>
+
+                        <p>
+                            Matières enseignées
+                            dans l'établissement.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="panel"
+                        id="subjects-container"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     PROFIL
+                     ================================================= -->
+
+                <section
+                    id="page-profile"
+                    class="app-page"
+                    data-page="profile"
+                    style="display:none"
+                >
+
+                    <div class="page-heading">
+
+                        <h2>
+                            Mon profil
+                        </h2>
+
+                        <p>
+                            Informations de votre
+                            compte DALZON SHULE.
+                        </p>
+
+                    </div>
+
+
+                    <div class="panel profile-card">
+
+                        <div
+                            class="profile-avatar"
+                            id="profile-avatar"
+                        >
+                            U
+                        </div>
+
+
+                        <div
+                            class="profile-name"
+                            id="profile-name"
+                        >
+                            —
+                        </div>
+
+
+                        <div
+                            class="profile-role"
+                            id="profile-role"
+                        >
+                            —
+                        </div>
+
+
+                        <div class="profile-grid">
+
+                            <div class="profile-field">
+
+                                <span>
+                                    Adresse email
+                                </span>
+
+                                <strong
+                                    id="profile-email"
+                                >
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="profile-field">
+
+                                <span>
+                                    Matricule
+                                </span>
+
+                                <strong
+                                    id="profile-matricule"
+                                >
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="profile-field">
+
+                                <span>
+                                    Fonction
+                                </span>
+
+                                <strong
+                                    id="profile-role"
+                                >
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="profile-field">
+
+                                <span>
+                                    Classe
+                                </span>
+
+                                <strong
+                                    id="profile-class"
+                                >
+                                    —
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
             </div>
 
-
-            <div class="forgot">
-
-                Utilisez l'adresse et le code
-                qui vous ont été attribués par DALZON SHULE.
-
-            </div>
-
-
-            <!-- MESSAGE -->
-
-            <div
-                class="login-message"
-                id="loginMessage">
-            </div>
-
-
-            <!-- BUTTON -->
-
-            <button
-                type="submit"
-                class="login-button"
-                id="loginButton">
-
-                Se connecter
-
-            </button>
-
-        </form>
+        </main>
 
     </div>
 
@@ -1038,776 +2329,85 @@ body{
 
 
 <!-- =========================================================
-     WELCOME
-========================================================= -->
-
-<section
-    class="screen"
-    id="welcomeScreen">
-
-    <div class="welcome">
-
-        <img
-            class="logo"
-            src="https://i.imghos.co/ScqSjIHB.png"
-            alt="DALZON SHULE">
-
-        <h1>
-
-            Bon retour à
-
-            <br>
-
-            <span>
-                DALZON SHULE
-            </span>
-
-        </h1>
-
-
-        <p>
-            Heureux de vous retrouver sur
-            l'espace DALZON SHULE.
-        </p>
-
-
-        <div class="user-info">
-
-            <div
-                class="user-name"
-                id="welcomeName">
-            </div>
-
-            <div
-                class="user-role"
-                id="welcomeRole">
-            </div>
-
-        </div>
-
-
-        <button
-            class="download-button"
-            id="goDownload">
-
-            Continuer sur l'application
-
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     DOWNLOAD
-========================================================= -->
-
-<section
-    class="screen"
-    id="downloadScreen">
-
-    <div class="download">
-
-        <img
-            class="logo"
-            src="https://i.imghos.co/ScqSjIHB.png"
-            alt="DALZON SHULE">
-
-        <h2>
-
-            Téléchargez
-
-            <br>
-
-            <span>
-                DALZON SHULE
-            </span>
-
-        </h2>
-
-        <p>
-
-            L'application sera bientôt disponible
-            sur les plateformes officielles.
-
-        </p>
-
-
-        <div class="stores">
-
-
-            <!-- GOOGLE PLAY -->
-
-            <button
-                class="store"
-                data-store="Google Play">
-
-                <div class="store-icon">
-
-                    <svg viewBox="0 0 24 24">
-
-                        <path d="
-                        M3.3 2.6c-.2.35-.3.78-.3
-                        1.28v16.24c0 .5.1.93.3
-                        1.28L12.2 12 3.3 2.6Z"/>
-
-                        <path d="
-                        M13.38 11.02 4.58 1.96c.23-.13
-                        .5-.2.79-.2.36 0 .69.1.98.27
-                        l10.36 5.9-3.33 3.09Z"/>
-
-                        <path d="
-                        m13.38 12.98 3.33 3.09-10.36
-                        5.9c-.29.17-.62.27-.98.27-.29
-                        0-.56-.07-.79-.2l8.8-9.06Z"/>
-
-                        <path d="
-                        m14.39 12 3.72-3.46 1.34.76
-                        c.75.43 1.2 1.04 1.2 1.71s-.45
-                        1.28-1.2 1.71l-1.34.76L14.39 12Z"/>
-
-                    </svg>
-
-                </div>
-
-                <div class="store-text">
-
-                    <small>
-                        DISPONIBLE BIENTÔT SUR
-                    </small>
-
-                    <strong>
-                        Google Play
-                    </strong>
-
-                </div>
-
-            </button>
-
-
-            <!-- APP STORE -->
-
-            <button
-                class="store"
-                data-store="App Store">
-
-                <div class="store-icon">
-
-                    <svg viewBox="0 0 24 24">
-
-                        <path d="
-                        M16.77 12.65c-.02-2.06
-                        1.68-3.06 1.76-3.11-.96-1.4
-                        -2.46-1.59-2.99-1.61-1.27-.13
-                        -2.5.75-3.15.75-.66 0-1.68
-                        -.73-2.75-.71-1.41.02-2.71
-                        .82-3.43 2.08-1.48 2.57-.38
-                        6.35 1.06 8.42.72 1.01 1.56
-                        2.14 2.67 2.1 1.07-.04 1.48
-                        -.68 2.78-.68 1.3 0 1.67.68
-                        2.8.65 1.16-.02 1.88-1.02
-                        2.58-2.04.81-1.18 1.15-2.32
-                        1.17-2.38-.03-.01-2.25-.86
-                        -2.27-3.47ZM14.69 6.57c.58-.7
-                        .97-1.67.86-2.64-.84.03-1.86
-                        .56-2.46 1.26-.54.62-1.01
-                        1.62-.88 2.57.94.07 1.9-.48
-                        2.48-1.19Z"/>
-
-                    </svg>
-
-                </div>
-
-                <div class="store-text">
-
-                    <small>
-                        TÉLÉCHARGER SUR
-                    </small>
-
-                    <strong>
-                        App Store
-                    </strong>
-
-                </div>
-
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     MODAL
-========================================================= -->
-
-<div
-    class="modal"
-    id="modal">
-
-    <div class="modal-box">
-
-        <img
-            src="https://i.imghos.co/ScqSjIHB.png"
-            alt="DALZON SHULE">
-
-        <h2>
-            Bientôt disponible
-        </h2>
-
-        <p id="modalText">
-
-            L'application DALZON SHULE
-            sera bientôt disponible.
-
-        </p>
-
-        <button
-            class="close-modal"
-            id="closeModal">
-
-            Compris
-
-        </button>
-
-    </div>
-
-</div>
+     SCRIPTS
+     ORDRE IMPORTANT
+     ========================================================= -->
+
+<script src="./data.js"></script>
+<script src="./auth.js"></script>
+<script src="./app.js"></script>
 
 
 <script>
 
-/* =========================================================
-   COMPTES DALZON SHULE
-   =========================================================
-
-   IMPORTANT :
-   Ceci est uniquement pour la démonstration.
-
-   Dans la vraie version, les comptes doivent être
-   vérifiés par une API côté serveur.
-
-========================================================= */
-
-const DALZON_ACCOUNTS = [
-
-    {
-        email: "salomon@dalzonshule.com",
-        code: "DZ-SHL-001",
-        name: "Salomon",
-        role: "Administration"
-    },
-
-    {
-        email: "eleve01@dalzonshule.com",
-        code: "DZ-SHL-002",
-        name: "Élève 01",
-        role: "Élève"
-    },
-
-    {
-        email: "eleve02@dalzonshule.com",
-        code: "DZ-SHL-003",
-        name: "Élève 02",
-        role: "Élève"
-    },
-
-    {
-        email: "eleve03@dalzonshule.com",
-        code: "DZ-SHL-004",
-        name: "Élève 03",
-        role: "Élève"
-    },
-
-    {
-        email: "eleve04@dalzonshule.com",
-        code: "DZ-SHL-005",
-        name: "Élève 04",
-        role: "Élève"
-    },
-
-    {
-        email: "eleve05@dalzonshule.com",
-        code: "DZ-SHL-006",
-        name: "Élève 05",
-        role: "Élève"
-    },
-
-    {
-        email: "prof01@dalzonshule.com",
-        code: "DZ-SHL-007",
-        name: "Professeur 01",
-        role: "Professeur"
-    },
-
-    {
-        email: "prof02@dalzonshule.com",
-        code: "DZ-SHL-008",
-        name: "Professeur 02",
-        role: "Professeur"
-    },
-
-    {
-        email: "prof03@dalzonshule.com",
-        code: "DZ-SHL-009",
-        name: "Professeur 03",
-        role: "Professeur"
-    },
-
-    {
-        email: "parent01@dalzonshule.com",
-        code: "DZ-SHL-010",
-        name: "Parent 01",
-        role: "Parent"
-    },
-
-    {
-        email: "parent02@dalzonshule.com",
-        code: "DZ-SHL-011",
-        name: "Parent 02",
-        role: "Parent"
-    },
-
-    {
-        email: "direction@dalzonshule.com",
-        code: "DZ-SHL-012",
-        name: "Direction",
-        role: "Direction"
-    },
-
-    {
-        email: "secretariat@dalzonshule.com",
-        code: "DZ-SHL-013",
-        name: "Secrétariat",
-        role: "Secrétariat"
-    },
-
-    {
-        email: "comptable@dalzonshule.com",
-        code: "DZ-SHL-014",
-        name: "Comptable",
-        role: "Comptabilité"
-    },
-
-    {
-        email: "support@dalzonshule.com",
-        code: "DZ-SHL-015",
-        name: "Support DALZON",
-        role: "Support"
-    }
-
-];
-
-
-/* =========================================================
-   ELEMENTS
-========================================================= */
-
-const loginScreen =
-    document.getElementById("loginScreen");
-
-const welcomeScreen =
-    document.getElementById("welcomeScreen");
-
-const downloadScreen =
-    document.getElementById("downloadScreen");
-
-const loginForm =
-    document.getElementById("loginForm");
-
-const identifier =
-    document.getElementById("identifier");
-
-const password =
-    document.getElementById("password");
-
-const loginButton =
-    document.getElementById("loginButton");
-
-const togglePassword =
-    document.getElementById("togglePassword");
-
-const loginMessage =
-    document.getElementById("loginMessage");
-
-const welcomeName =
-    document.getElementById("welcomeName");
-
-const welcomeRole =
-    document.getElementById("welcomeRole");
-
-const goDownload =
-    document.getElementById("goDownload");
-
-const modal =
-    document.getElementById("modal");
-
-const modalText =
-    document.getElementById("modalText");
-
-const closeModal =
-    document.getElementById("closeModal");
-
-
-/* =========================================================
-   UTILITAIRE : AFFICHER UNE PAGE
-========================================================= */
-
-function showScreen(screen){
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(item => {
-
-            item.classList.remove("active");
-
-        });
-
-    requestAnimationFrame(() => {
-
-        screen.classList.add("active");
-
-    });
-
-}
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(message, type){
-
-    loginMessage.textContent = message;
-
-    loginMessage.className =
-        "login-message " + type;
-
-}
-
-
-/* =========================================================
-   CACHER LE MESSAGE
-========================================================= */
-
-function clearMessage(){
-
-    loginMessage.textContent = "";
-
-    loginMessage.className =
-        "login-message";
-
-}
-
-
-/* =========================================================
-   AFFICHER / CACHER LE CODE
-========================================================= */
-
-togglePassword.addEventListener(
-    "click",
-    () => {
-
-        if(password.type === "password"){
-
-            password.type = "text";
-
-            togglePassword.textContent =
-                "Masquer";
-
-        }else{
-
-            password.type = "password";
-
-            togglePassword.textContent =
-                "Voir";
-
+    /*
+       Mise à jour de l'avatar utilisateur.
+    */
+
+    function updateAvatar() {
+
+        if (
+            typeof DALZON_AUTH ===
+            "undefined"
+        ) {
+            return;
         }
 
-    }
-);
+        const user =
+            DALZON_AUTH.getAuthenticatedUser();
 
+        if (!user) {
+            return;
+        }
 
-/* =========================================================
-   AUTHENTIFICATION
-========================================================= */
-
-loginForm.addEventListener(
-    "submit",
-    event => {
-
-        event.preventDefault();
-
-        clearMessage();
-
-        const email =
-            identifier.value
+        const initials =
+            (user.firstName || user.name || "U")
                 .trim()
-                .toLowerCase();
+                .split(/\s+/)
+                .map(
+                    part =>
+                        part.charAt(0)
+                            .toUpperCase()
+                )
+                .slice(0, 2)
+                .join("");
 
-        const code =
-            password.value.trim();
+        const avatars = [
+            document.getElementById(
+                "user-avatar"
+            ),
+            document.getElementById(
+                "profile-avatar"
+            )
+        ];
 
+        avatars.forEach(
+            avatar => {
 
-        /* ---------------------------------------------
-           Vérification du format
-        --------------------------------------------- */
-
-        if(!email || !code){
-
-            showMessage(
-                "Veuillez remplir tous les champs.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /* ---------------------------------------------
-           Vérification domaine
-        --------------------------------------------- */
-
-        if(!email.endsWith("@dalzonshule.com")){
-
-            showMessage(
-                "Veuillez utiliser une adresse @dalzonshule.com.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /* ---------------------------------------------
-           Recherche du compte
-        --------------------------------------------- */
-
-        const account =
-            DALZON_ACCOUNTS.find(
-                user =>
-                    user.email === email &&
-                    user.code === code
-            );
-
-
-        /* ---------------------------------------------
-           COMPTE INCONNU
-        --------------------------------------------- */
-
-        if(!account){
-
-            showMessage(
-                "Adresse ou code d'accès incorrect.",
-                "error"
-            );
-
-            password.value = "";
-
-            return;
-
-        }
-
-
-        /* ---------------------------------------------
-           COMPTE RECONNU
-        --------------------------------------------- */
-
-        loginButton.disabled = true;
-
-        loginButton.textContent =
-            "Compte reconnu...";
-
-        showMessage(
-            "Connexion réussie.",
-            "success"
-        );
-
-
-        /*
-         * IMPORTANT :
-         *
-         * Aucun localStorage.
-         * Aucun sessionStorage.
-         * Aucun cookie.
-         *
-         * Les données sont uniquement gardées
-         * temporairement dans les variables JavaScript
-         * pendant cette session de page.
-         */
-
-        setTimeout(() => {
-
-            welcomeName.textContent =
-                "Bienvenue, " + account.name;
-
-            welcomeRole.textContent =
-                account.role;
-
-
-            /*
-             * Nettoyage immédiat des champs.
-             */
-
-            identifier.value = "";
-
-            password.value = "";
-
-
-            loginButton.disabled =
-                false;
-
-            loginButton.textContent =
-                "Se connecter";
-
-            clearMessage();
-
-
-            showScreen(
-                welcomeScreen
-            );
-
-        }, 700);
-
-    }
-);
-
-
-/* =========================================================
-   CONTINUER VERS L'APPLICATION
-========================================================= */
-
-goDownload.addEventListener(
-    "click",
-    () => {
-
-        showScreen(
-            downloadScreen
-        );
-
-    }
-);
-
-
-/* =========================================================
-   BOUTONS STORE
-========================================================= */
-
-document
-    .querySelectorAll(".store")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                const store =
-                    button.dataset.store;
-
-                modalText.textContent =
-                    "DALZON SHULE sera bientôt disponible sur "
-                    + store
-                    + ". Le lien officiel sera activé dès la publication de l'application.";
-
-                modal.classList.add(
-                    "active"
-                );
+                if (avatar) {
+                    avatar.textContent =
+                        initials || "U";
+                }
 
             }
         );
 
-    });
-
-
-/* =========================================================
-   FERMER MODAL
-========================================================= */
-
-closeModal.addEventListener(
-    "click",
-    () => {
-
-        modal.classList.remove(
-            "active"
-        );
-
     }
-);
 
 
-/* =========================================================
-   CLIQUER EN DEHORS DU MODAL
-========================================================= */
-
-modal.addEventListener(
-    "click",
-    event => {
-
-        if(event.target === modal){
-
-            modal.classList.remove(
-                "active"
-            );
-
-        }
-
-    }
-);
+    document.addEventListener(
+        "DOMContentLoaded",
+        updateAvatar
+    );
 
 
-/* =========================================================
-   TOUCHE ESC
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if(event.key === "Escape"){
-
-            modal.classList.remove(
-                "active"
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   PROTECTION CONTRE LE RETOUR AUTOMATIQUE
-========================================================= */
-
-/*
- * Aucun compte n'est restauré au chargement.
- *
- * Donc si l'utilisateur :
- *
- * - actualise la page
- * - ferme l'onglet
- * - revient plus tard
- *
- * il devra se reconnecter.
- */
-
-window.addEventListener(
-    "pageshow",
-    () => {
-
-        showScreen(
-            loginScreen
-        );
-
-    }
-);
+    window.addEventListener(
+        "dalzon:authenticated",
+        updateAvatar
+    );
 
 </script>
+
 
 </body>
 </html>
