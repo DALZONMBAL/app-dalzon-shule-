@@ -5,24 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>DALZON SHULE — Connecter l’École à la Maison</title>
-  <meta name="description" content="DALZON SHULE — Plateforme numérique de gestion scolaire. Connecter l’École à la Maison.">
+
+  <meta
+    name="description"
+    content="DALZON SHULE — Plateforme numérique de gestion scolaire. Connecter l’École à la Maison."
+  >
+
   <meta name="theme-color" content="#08111f">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DALZON SHULE">
 
   <link rel="manifest" href="./manifest.json">
-  <link rel="icon" href="https://i.imghos.co/ScqSjIHB.png">
-  <link rel="apple-touch-icon" href="https://i.imghos.co/ScqSjIHB.png">
+
+  <link
+    rel="icon"
+    href="https://i.imghos.co/ScqSjIHB.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="https://i.imghos.co/ScqSjIHB.png"
+  >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
 
   <style>
+
     :root {
       --bg: #050b14;
       --bg-soft: #08111f;
@@ -80,9 +101,9 @@
       display: none !important;
     }
 
-    /* =========================
+    /* =====================================================
        LOGIN
-    ========================= */
+       ===================================================== */
 
     #login-screen {
       min-height: 100vh;
@@ -259,6 +280,12 @@
       box-shadow: 0 15px 35px rgba(37,137,255,.28);
     }
 
+    .login-button:disabled {
+      opacity: .7;
+      cursor: wait;
+      transform: none;
+    }
+
     .login-help {
       margin-top: 20px;
       text-align: center;
@@ -271,9 +298,9 @@
       color: #aebbd0;
     }
 
-    /* =========================
-       APP
-    ========================= */
+    /* =====================================================
+       APPLICATION
+       ===================================================== */
 
     #app-screen {
       min-height: 100vh;
@@ -289,7 +316,9 @@
       display: flex;
     }
 
-    /* SIDEBAR */
+    /* =====================================================
+       SIDEBAR
+       ===================================================== */
 
     .sidebar {
       width: 255px;
@@ -389,7 +418,9 @@
       border-top: 1px solid var(--border);
     }
 
-    /* MAIN */
+    /* =====================================================
+       MAIN
+       ===================================================== */
 
     .main-area {
       width: calc(100% - 255px);
@@ -477,9 +508,9 @@
       max-width: 1500px;
     }
 
-    /* =========================
+    /* =====================================================
        PAGES
-    ========================= */
+       ===================================================== */
 
     .page {
       display: none;
@@ -495,6 +526,7 @@
         opacity: 0;
         transform: translateY(5px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -641,7 +673,9 @@
       opacity: .5;
     }
 
-    /* TABLES */
+    /* =====================================================
+       TABLES
+       ===================================================== */
 
     .table-wrap {
       width: 100%;
@@ -702,7 +736,9 @@
       background: rgba(255,93,115,.09);
     }
 
-    /* PAGE HEAD */
+    /* =====================================================
+       PAGE HEAD
+       ===================================================== */
 
     .section-head {
       display: flex;
@@ -747,7 +783,9 @@
       color: white;
     }
 
-    /* PROFILE */
+    /* =====================================================
+       PROFILE
+       ===================================================== */
 
     .profile-card {
       padding: 28px;
@@ -811,7 +849,9 @@
       font-size: 13px;
     }
 
-    /* LOGOUT */
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
 
     .logout-button {
       color: #ff8191 !important;
@@ -821,7 +861,9 @@
       background: rgba(255,93,115,.08) !important;
     }
 
-    /* LOADING */
+    /* =====================================================
+       LOADING
+       ===================================================== */
 
     .loading {
       padding: 40px;
@@ -833,11 +875,12 @@
       margin-right: 8px;
     }
 
-    /* =========================
+    /* =====================================================
        MOBILE
-    ========================= */
+       ===================================================== */
 
     @media (max-width: 1100px) {
+
       .cards-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -845,9 +888,11 @@
       .two-columns {
         grid-template-columns: 1fr;
       }
+
     }
 
     @media (max-width: 800px) {
+
       .sidebar {
         transform: translateX(-100%);
         transition: transform .25s ease;
@@ -882,9 +927,11 @@
       .page-title {
         font-size: 17px;
       }
+
     }
 
     @media (max-width: 550px) {
+
       #login-screen {
         padding: 15px;
       }
@@ -920,7 +967,9 @@
       .search-box {
         width: 100%;
       }
+
     }
+
   </style>
 </head>
 
@@ -939,22 +988,31 @@
     <div class="login-card">
 
       <div class="login-brand">
+
         <img
           src="https://i.imghos.co/ScqSjIHB.png"
-          alt="DALZON SHULE">
+          alt="DALZON SHULE"
+        >
 
         <h1>DALZON SHULE</h1>
-        <p>Connecter l’École à la Maison</p>
+
+        <p>
+          Connecter l’École à la Maison
+        </p>
+
       </div>
+
 
       <form id="login-form">
 
         <div class="field">
+
           <label for="email">
             Adresse mail ou matricule
           </label>
 
           <div class="input-wrap">
+
             <i class="fa-solid fa-user"></i>
 
             <input
@@ -963,16 +1021,22 @@
               name="email"
               autocomplete="username"
               placeholder="Email ou matricule"
-              required>
+              required
+            >
+
           </div>
+
         </div>
 
+
         <div class="field">
+
           <label for="password">
             Code d'accès
           </label>
 
           <div class="input-wrap">
+
             <i class="fa-solid fa-lock"></i>
 
             <input
@@ -981,26 +1045,36 @@
               name="password"
               autocomplete="current-password"
               placeholder="Votre code d'accès"
-              required>
+              required
+            >
 
             <button
               type="button"
               class="password-toggle"
               data-password-toggle
-              aria-label="Afficher le mot de passe">
+              aria-label="Afficher le mot de passe"
+            >
 
               <i class="fa-solid fa-eye"></i>
 
             </button>
+
           </div>
+
         </div>
 
-        <div id="login-error" class="login-error"></div>
+
+        <div
+          id="login-error"
+          class="login-error"
+        ></div>
+
 
         <button
           type="submit"
           class="login-button"
-          id="login-button">
+          id="login-button"
+        >
 
           <i class="fa-solid fa-arrow-right-to-bracket"></i>
           &nbsp; Se connecter
@@ -1009,10 +1083,15 @@
 
       </form>
 
+
       <div class="login-help">
+
         <strong>Accès DALZON SHULE</strong><br>
-        En cas d'oubli du code d'accès, veuillez contacter
-        le secrétariat de votre établissement.
+
+        En cas d'oubli du code d'accès,
+        veuillez contacter le secrétariat
+        de votre établissement.
+
       </div>
 
     </div>
@@ -1030,17 +1109,28 @@
 
       <!-- SIDEBAR -->
 
-      <aside class="sidebar" id="sidebar">
+      <aside
+        class="sidebar"
+        id="sidebar"
+      >
 
         <div class="sidebar-brand">
 
           <img
             src="https://i.imghos.co/ScqSjIHB.png"
-            alt="DALZON SHULE">
+            alt="DALZON SHULE"
+          >
 
           <div>
-            <strong>DALZON SHULE</strong>
-            <span>École numérique</span>
+
+            <strong>
+              DALZON SHULE
+            </strong>
+
+            <span>
+              École numérique
+            </span>
+
           </div>
 
         </div>
@@ -1050,34 +1140,88 @@
           Principal
         </div>
 
-        <button class="nav-item active" data-route="dashboard">
+
+        <button
+          class="nav-item active"
+          data-route="dashboard"
+        >
+
           <i class="fa-solid fa-grid-2"></i>
-          <span>Tableau de bord</span>
+
+          <span>
+            Tableau de bord
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="grades">
+
+        <button
+          class="nav-item"
+          data-route="grades"
+        >
+
           <i class="fa-solid fa-chart-column"></i>
-          <span>Notes & résultats</span>
+
+          <span>
+            Notes & résultats
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="courses">
+
+        <button
+          class="nav-item"
+          data-route="courses"
+        >
+
           <i class="fa-solid fa-book-open"></i>
-          <span>Cours</span>
+
+          <span>
+            Cours
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="attendance">
+
+        <button
+          class="nav-item"
+          data-route="attendance"
+        >
+
           <i class="fa-solid fa-calendar-check"></i>
-          <span>Présences</span>
+
+          <span>
+            Présences
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="documents">
+
+        <button
+          class="nav-item"
+          data-route="documents"
+        >
+
           <i class="fa-solid fa-folder-open"></i>
-          <span>Documents</span>
+
+          <span>
+            Documents
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="calendar">
+
+        <button
+          class="nav-item"
+          data-route="calendar"
+        >
+
           <i class="fa-solid fa-calendar-days"></i>
-          <span>Calendrier</span>
+
+          <span>
+            Calendrier
+          </span>
+
         </button>
 
 
@@ -1085,42 +1229,104 @@
           Administration
         </div>
 
-        <button class="nav-item" data-route="students">
+
+        <button
+          class="nav-item"
+          data-route="students"
+        >
+
           <i class="fa-solid fa-users"></i>
-          <span>Élèves</span>
+
+          <span>
+            Élèves
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="teachers">
+
+        <button
+          class="nav-item"
+          data-route="teachers"
+        >
+
           <i class="fa-solid fa-chalkboard-user"></i>
-          <span>Enseignants</span>
+
+          <span>
+            Enseignants
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="classes">
+
+        <button
+          class="nav-item"
+          data-route="classes"
+        >
+
           <i class="fa-solid fa-school"></i>
-          <span>Classes</span>
+
+          <span>
+            Classes
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="subjects">
+
+        <button
+          class="nav-item"
+          data-route="subjects"
+        >
+
           <i class="fa-solid fa-book"></i>
-          <span>Matières</span>
+
+          <span>
+            Matières
+          </span>
+
         </button>
 
-        <button class="nav-item" data-route="payments">
+
+        <button
+          class="nav-item"
+          data-route="payments"
+        >
+
           <i class="fa-solid fa-money-bill-transfer"></i>
-          <span>Paiements</span>
+
+          <span>
+            Paiements
+          </span>
+
         </button>
 
 
         <div class="sidebar-bottom">
 
-          <button class="nav-item" data-route="profile">
+          <button
+            class="nav-item"
+            data-route="profile"
+          >
+
             <i class="fa-solid fa-user"></i>
-            <span>Mon profil</span>
+
+            <span>
+              Mon profil
+            </span>
+
           </button>
 
-          <button class="nav-item logout-button" data-action="logout">
+
+          <button
+            class="nav-item logout-button"
+            data-action="logout"
+          >
+
             <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Déconnexion</span>
+
+            <span>
+              Déconnexion
+            </span>
+
           </button>
 
         </div>
@@ -1140,13 +1346,18 @@
               class="mobile-menu"
               id="menu-toggle"
               data-action="menu"
-              aria-label="Menu">
+              aria-label="Menu"
+            >
 
               <i class="fa-solid fa-bars"></i>
 
             </button>
 
-            <div class="page-title" id="page-title">
+
+            <div
+              class="page-title"
+              id="page-title"
+            >
               Tableau de bord
             </div>
 
@@ -1157,9 +1368,13 @@
 
             <div class="user-mini">
 
-              <div class="avatar" id="top-avatar">
+              <div
+                class="avatar"
+                id="top-avatar"
+              >
                 DS
               </div>
+
 
               <div class="user-mini-info">
 
@@ -1182,14 +1397,12 @@
 
         <div class="content">
 
-
-          <!-- =========================
-               DASHBOARD
-               ========================= -->
+          <!-- DASHBOARD -->
 
           <section
             class="page active"
-            id="page-dashboard">
+            id="page-dashboard"
+          >
 
             <div class="welcome">
 
@@ -1212,7 +1425,9 @@
                   <i class="fa-solid fa-users"></i>
                 </div>
 
-                <span>Élèves</span>
+                <span>
+                  Élèves
+                </span>
 
                 <strong id="stat-students">
                   —
@@ -1227,7 +1442,9 @@
                   <i class="fa-solid fa-chalkboard-user"></i>
                 </div>
 
-                <span>Enseignants</span>
+                <span>
+                  Enseignants
+                </span>
 
                 <strong id="stat-teachers">
                   —
@@ -1242,7 +1459,9 @@
                   <i class="fa-solid fa-school"></i>
                 </div>
 
-                <span>Classes</span>
+                <span>
+                  Classes
+                </span>
 
                 <strong id="stat-classes">
                   —
@@ -1257,7 +1476,9 @@
                   <i class="fa-solid fa-book"></i>
                 </div>
 
-                <span>Matières</span>
+                <span>
+                  Matières
+                </span>
 
                 <strong id="stat-subjects">
                   —
@@ -1274,21 +1495,29 @@
 
                 <div class="panel-header">
 
-                  <h3>Accès rapide</h3>
+                  <h3>
+                    Accès rapide
+                  </h3>
 
-                  <span>DALZON SHULE</span>
+                  <span>
+                    DALZON SHULE
+                  </span>
 
                 </div>
+
 
                 <div class="quick-grid">
 
                   <button
                     class="quick-action"
-                    data-route="grades">
+                    data-route="grades"
+                  >
 
                     <i class="fa-solid fa-chart-column"></i>
 
-                    <strong>Notes</strong>
+                    <strong>
+                      Notes
+                    </strong>
 
                     <span>
                       Consulter les résultats
@@ -1299,11 +1528,14 @@
 
                   <button
                     class="quick-action"
-                    data-route="courses">
+                    data-route="courses"
+                  >
 
                     <i class="fa-solid fa-book-open"></i>
 
-                    <strong>Cours</strong>
+                    <strong>
+                      Cours
+                    </strong>
 
                     <span>
                       Voir les cours disponibles
@@ -1314,11 +1546,14 @@
 
                   <button
                     class="quick-action"
-                    data-route="attendance">
+                    data-route="attendance"
+                  >
 
                     <i class="fa-solid fa-calendar-check"></i>
 
-                    <strong>Présences</strong>
+                    <strong>
+                      Présences
+                    </strong>
 
                     <span>
                       Suivre les présences
@@ -1329,11 +1564,14 @@
 
                   <button
                     class="quick-action"
-                    data-route="documents">
+                    data-route="documents"
+                  >
 
                     <i class="fa-solid fa-folder-open"></i>
 
-                    <strong>Documents</strong>
+                    <strong>
+                      Documents
+                    </strong>
 
                     <span>
                       Accéder aux documents
@@ -1350,11 +1588,16 @@
 
                 <div class="panel-header">
 
-                  <h3>Mon espace</h3>
+                  <h3>
+                    Mon espace
+                  </h3>
 
-                  <span>Profil</span>
+                  <span>
+                    Profil
+                  </span>
 
                 </div>
+
 
                 <div class="empty-state">
 
@@ -1373,32 +1616,43 @@
           </section>
 
 
-          <!-- =========================
-               NOTES
-               ========================= -->
+          <!-- NOTES -->
 
           <section
             class="page"
-            id="page-grades">
+            id="page-grades"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Notes & résultats</h2>
-                <p>Consultez les résultats scolaires.</p>
+
+                <h2>
+                  Notes & résultats
+                </h2>
+
+                <p>
+                  Consultez les résultats scolaires.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div
                 id="grades-container"
-                class="table-wrap">
+                class="table-wrap"
+              >
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1408,31 +1662,40 @@
           </section>
 
 
-          <!-- =========================
-               COURS
-               ========================= -->
+          <!-- COURS -->
 
           <section
             class="page"
-            id="page-courses">
+            id="page-courses"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Cours</h2>
-                <p>Programme et contenus pédagogiques.</p>
+
+                <h2>
+                  Cours
+                </h2>
+
+                <p>
+                  Programme et contenus pédagogiques.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
-              <div
-                id="courses-container">
+              <div id="courses-container">
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1442,31 +1705,40 @@
           </section>
 
 
-          <!-- =========================
-               PRESENCES
-               ========================= -->
+          <!-- PRESENCES -->
 
           <section
             class="page"
-            id="page-attendance">
+            id="page-attendance"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Présences</h2>
-                <p>Suivi des présences et absences.</p>
+
+                <h2>
+                  Présences
+                </h2>
+
+                <p>
+                  Suivi des présences et absences.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
-              <div
-                id="attendance-container">
+              <div id="attendance-container">
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1476,30 +1748,40 @@
           </section>
 
 
-          <!-- =========================
-               DOCUMENTS
-               ========================= -->
+          <!-- DOCUMENTS -->
 
           <section
             class="page"
-            id="page-documents">
+            id="page-documents"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Documents</h2>
-                <p>Documents scolaires disponibles.</p>
+
+                <h2>
+                  Documents
+                </h2>
+
+                <p>
+                  Documents scolaires disponibles.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div id="documents-container">
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1509,30 +1791,40 @@
           </section>
 
 
-          <!-- =========================
-               CALENDRIER
-               ========================= -->
+          <!-- CALENDRIER -->
 
           <section
             class="page"
-            id="page-calendar">
+            id="page-calendar"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Calendrier</h2>
-                <p>Événements et activités scolaires.</p>
+
+                <h2>
+                  Calendrier
+                </h2>
+
+                <p>
+                  Événements et activités scolaires.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div id="calendar-container">
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1542,20 +1834,27 @@
           </section>
 
 
-          <!-- =========================
-               ÉLÈVES
-               ========================= -->
+          <!-- ÉLÈVES -->
 
           <section
             class="page"
-            id="page-students">
+            id="page-students"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Élèves</h2>
-                <p>Gestion des élèves.</p>
+
+                <h2>
+                  Élèves
+                </h2>
+
+                <p>
+                  Gestion des élèves.
+                </p>
+
               </div>
+
 
               <div class="search-box">
 
@@ -1565,21 +1864,27 @@
                   type="search"
                   id="student-search"
                   data-student-search
-                  placeholder="Rechercher...">
+                  placeholder="Rechercher..."
+                >
 
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div
                 id="students-container"
-                class="table-wrap">
+                class="table-wrap"
+              >
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1589,32 +1894,43 @@
           </section>
 
 
-          <!-- =========================
-               ENSEIGNANTS
-               ========================= -->
+          <!-- ENSEIGNANTS -->
 
           <section
             class="page"
-            id="page-teachers">
+            id="page-teachers"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Enseignants</h2>
-                <p>Gestion des enseignants.</p>
+
+                <h2>
+                  Enseignants
+                </h2>
+
+                <p>
+                  Gestion des enseignants.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div
                 id="teachers-container"
-                class="table-wrap">
+                class="table-wrap"
+              >
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1624,32 +1940,43 @@
           </section>
 
 
-          <!-- =========================
-               CLASSES
-               ========================= -->
+          <!-- CLASSES -->
 
           <section
             class="page"
-            id="page-classes">
+            id="page-classes"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Classes</h2>
-                <p>Organisation des classes.</p>
+
+                <h2>
+                  Classes
+                </h2>
+
+                <p>
+                  Organisation des classes.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div
                 id="classes-container"
-                class="table-wrap">
+                class="table-wrap"
+              >
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1659,32 +1986,43 @@
           </section>
 
 
-          <!-- =========================
-               MATIÈRES
-               ========================= -->
+          <!-- MATIÈRES -->
 
           <section
             class="page"
-            id="page-subjects">
+            id="page-subjects"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Matières</h2>
-                <p>Liste des matières enseignées.</p>
+
+                <h2>
+                  Matières
+                </h2>
+
+                <p>
+                  Liste des matières enseignées.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div
                 id="subjects-container"
-                class="table-wrap">
+                class="table-wrap"
+              >
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1694,31 +2032,42 @@
           </section>
 
 
-          <!-- =========================
-               PAIEMENTS
-               ========================= -->
+          <!-- PAIEMENTS -->
 
           <section
             class="page"
-            id="page-payments">
+            id="page-payments"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Paiements</h2>
-                <p>Suivi des frais et paiements scolaires.</p>
+
+                <h2>
+                  Paiements
+                </h2>
+
+                <p>
+                  Suivi des frais et paiements scolaires.
+                </p>
+
               </div>
 
             </div>
+
 
             <div class="panel">
 
               <div
-                id="payments-container">
+                id="payments-container"
+              >
 
                 <div class="loading">
+
                   <i class="fa-solid fa-spinner fa-spin"></i>
+
                   Chargement...
+
                 </div>
 
               </div>
@@ -1728,19 +2077,25 @@
           </section>
 
 
-          <!-- =========================
-               PROFIL
-               ========================= -->
+          <!-- PROFIL -->
 
           <section
             class="page"
-            id="page-profile">
+            id="page-profile"
+          >
 
             <div class="section-head">
 
               <div>
-                <h2>Mon profil</h2>
-                <p>Informations de votre compte DALZON SHULE.</p>
+
+                <h2>
+                  Mon profil
+                </h2>
+
+                <p>
+                  Informations de votre compte DALZON SHULE.
+                </p>
+
               </div>
 
             </div>
@@ -1752,9 +2107,11 @@
 
                 <div
                   class="profile-avatar"
-                  id="profile-avatar">
+                  id="profile-avatar"
+                >
                   DS
                 </div>
+
 
                 <div>
 
@@ -1830,7 +2187,6 @@
 
           </section>
 
-
         </div>
 
       </main>
@@ -1841,7 +2197,14 @@
 
 
   <!-- =====================================================
-       LOGIQUE DALZON SHULE
+       SUPABASE
+       ===================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- =====================================================
+       DALZON SHULE
        ===================================================== -->
 
   <script src="./data.js"></script>
@@ -1850,463 +2213,685 @@
 
 
   <!-- =====================================================
-       LOGIQUE DE CONNEXION / INTERFACE
+       LOGIQUE INTERFACE
        ===================================================== -->
 
   <script>
 
-    document.addEventListener("DOMContentLoaded", function () {
-
-      const loginScreen = document.getElementById("login-screen");
-      const appScreen = document.getElementById("app-screen");
-      const loginForm = document.getElementById("login-form");
-      const loginError = document.getElementById("login-error");
-      const loginButton = document.getElementById("login-button");
-
-      const passwordInput = document.getElementById("password");
-      const passwordToggle = document.querySelector("[data-password-toggle]");
-
-      /*
-       * Afficher / cacher le code d'accès
-       */
-
-      if (passwordToggle && passwordInput) {
-
-        passwordToggle.addEventListener("click", function () {
-
-          const icon = passwordToggle.querySelector("i");
-
-          if (passwordInput.type === "password") {
-
-            passwordInput.type = "text";
-
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-
-          } else {
-
-            passwordInput.type = "password";
-
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-
-          }
-
-        });
-
-      }
-
-
-      /*
-       * Fonction pour afficher l'application
-       *
-       * IMPORTANT :
-       * Il n'y a PAS de deuxième page.
-       * Dès que l'utilisateur est authentifié,
-       * l'écran de connexion disparaît et
-       * l'application apparaît directement.
-       */
-
-      function showApplication(user) {
-
-        loginScreen.style.display = "none";
-
-        appScreen.classList.add("active");
-
-        document.body.style.overflow = "auto";
-
-        updateUserInterface(user);
-
-        /*
-         * Charge le dashboard immédiatement.
-         */
-
-        if (window.DALZON_APP &&
-            typeof window.DALZON_APP.init === "function") {
-
-          window.DALZON_APP.init(user);
-
-        }
-
-      }
-
-
-      /*
-       * Mettre à jour le nom et l'avatar
-       */
-
-      function updateUserInterface(user) {
-
-        if (!user) return;
-
-        const name =
-          user.name ||
-          user.fullName ||
-          user.nom ||
-          "Utilisateur";
-
-        const role =
-          user.role ||
-          user.type ||
-          "Utilisateur";
-
-        const email =
-          user.email ||
-          "—";
-
-        const matricule =
-          user.matricule ||
-          user.id ||
-          "—";
-
-        const classe =
-          user.className ||
-          user.class ||
-          user.classe ||
-          "—";
-
-        const initials =
-          name
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(word => word.charAt(0).toUpperCase())
-            .join("") || "DS";
-
-
-        const topName =
-          document.getElementById("top-user-name");
-
-        const topRole =
-          document.getElementById("top-user-role");
-
-        const topAvatar =
-          document.getElementById("top-avatar");
-
-        const greeting =
-          document.getElementById("dashboard-greeting");
-
-        const summary =
-          document.getElementById("dashboard-user-summary");
-
-
-        if (topName)
-          topName.textContent = name;
-
-        if (topRole)
-          topRole.textContent = role;
-
-        if (topAvatar)
-          topAvatar.textContent = initials;
-
-        if (greeting)
-          greeting.textContent = "Bonjour " + name;
-
-        if (summary)
-          summary.textContent =
-            name + " · " + role;
-
-
-        const profileAvatar =
-          document.getElementById("profile-avatar");
-
-        const profileName =
-          document.getElementById("profile-name");
-
-        const profileRoleTitle =
-          document.getElementById("profile-role-title");
-
-        const profileEmail =
-          document.getElementById("profile-email");
-
-        const profileMatricule =
-          document.getElementById("profile-matricule");
-
-        const profileRoleValue =
-          document.getElementById("profile-role-value");
-
-        const profileClass =
-          document.getElementById("profile-class");
-
-
-        if (profileAvatar)
-          profileAvatar.textContent = initials;
-
-        if (profileName)
-          profileName.textContent = name;
-
-        if (profileRoleTitle)
-          profileRoleTitle.textContent = role;
-
-        if (profileEmail)
-          profileEmail.textContent = email;
-
-        if (profileMatricule)
-          profileMatricule.textContent = matricule;
-
-        if (profileRoleValue)
-          profileRoleValue.textContent = role;
-
-        if (profileClass)
-          profileClass.textContent = classe;
-
-      }
-
-
-      /*
-       * Connexion
-       */
-
-      if (loginForm) {
-
-        loginForm.addEventListener("submit", async function (event) {
-
-          event.preventDefault();
-
-          loginError.classList.remove("show");
-          loginError.textContent = "";
-
-          const identifier =
-            document.getElementById("email").value.trim();
-
-          const password =
-            document.getElementById("password").value;
-
-
-          if (!identifier || !password) {
-
-            loginError.textContent =
-              "Veuillez remplir tous les champs.";
-
-            loginError.classList.add("show");
-
-            return;
-          }
-
-
-          loginButton.disabled = true;
-
-          loginButton.innerHTML =
-            '<i class="fa-solid fa-spinner fa-spin"></i> Connexion...';
-
-
-          try {
-
-            /*
-             * Utilisation du système auth.js
-             */
-
-            if (window.DALZON_AUTH &&
-                typeof window.DALZON_AUTH.login === "function") {
-
-              const result =
-                await window.DALZON_AUTH.login(
-                  identifier,
-                  password
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+
+        const loginScreen =
+          document.getElementById(
+            "login-screen"
+          );
+
+        const appScreen =
+          document.getElementById(
+            "app-screen"
+          );
+
+        const loginForm =
+          document.getElementById(
+            "login-form"
+          );
+
+        const loginError =
+          document.getElementById(
+            "login-error"
+          );
+
+        const loginButton =
+          document.getElementById(
+            "login-button"
+          );
+
+        const emailInput =
+          document.getElementById(
+            "email"
+          );
+
+        const passwordInput =
+          document.getElementById(
+            "password"
+          );
+
+        const passwordToggle =
+          document.querySelector(
+            "[data-password-toggle]"
+          );
+
+
+        /* =================================================
+           PASSWORD
+           ================================================= */
+
+        if (
+          passwordToggle &&
+          passwordInput
+        ) {
+
+          passwordToggle.addEventListener(
+            "click",
+            function () {
+
+              const icon =
+                passwordToggle.querySelector(
+                  "i"
                 );
 
+              if (
+                passwordInput.type ===
+                "password"
+              ) {
 
-              if (result && result.success) {
+                passwordInput.type =
+                  "text";
 
-                /*
-                 * DIRECTEMENT L'APPLICATION
-                 */
+                icon.classList.remove(
+                  "fa-eye"
+                );
 
-                showApplication(
-                  result.user ||
-                  result.data ||
-                  result
+                icon.classList.add(
+                  "fa-eye-slash"
                 );
 
               } else {
 
-                throw new Error(
-                  result?.message ||
-                  "Identifiants incorrects."
+                passwordInput.type =
+                  "password";
+
+                icon.classList.remove(
+                  "fa-eye-slash"
+                );
+
+                icon.classList.add(
+                  "fa-eye"
                 );
 
               }
 
-            } else {
+            }
+          );
 
-              throw new Error(
-                "Le système d'authentification n'est pas chargé."
+        }
+
+
+        /* =================================================
+           AFFICHER APPLICATION
+           ================================================= */
+
+        function showApplication(user) {
+
+          if (!user) {
+            return;
+          }
+
+          loginScreen.style.display =
+            "none";
+
+          appScreen.classList.add(
+            "active"
+          );
+
+          document.body.style.overflow =
+            "auto";
+
+
+          updateUserInterface(
+            user
+          );
+
+
+          if (
+            window.DALZON_APP &&
+            typeof window.DALZON_APP.init ===
+              "function"
+          ) {
+
+            window.DALZON_APP.init(
+              user
+            );
+
+          }
+
+        }
+
+
+        /* =================================================
+           INTERFACE UTILISATEUR
+           ================================================= */
+
+        function updateUserInterface(user) {
+
+          if (!user) {
+            return;
+          }
+
+
+          const name =
+            user.name ||
+            user.fullName ||
+            `${user.firstName || ""} ${user.lastName || ""}`
+              .trim() ||
+            "Utilisateur";
+
+
+          const role =
+            user.roleLabel ||
+            user.role ||
+            "Utilisateur";
+
+
+          const email =
+            user.email ||
+            "—";
+
+
+          const matricule =
+            user.matricule ||
+            "—";
+
+
+          const classe =
+            user.className ||
+            user.class ||
+            user.classe ||
+            "—";
+
+
+          const initials =
+            name
+              .split(" ")
+              .filter(Boolean)
+              .slice(0, 2)
+              .map(
+                word =>
+                  word
+                    .charAt(0)
+                    .toUpperCase()
+              )
+              .join("") ||
+            "DS";
+
+
+          const topName =
+            document.getElementById(
+              "top-user-name"
+            );
+
+          const topRole =
+            document.getElementById(
+              "top-user-role"
+            );
+
+          const topAvatar =
+            document.getElementById(
+              "top-avatar"
+            );
+
+          const greeting =
+            document.getElementById(
+              "dashboard-greeting"
+            );
+
+          const summary =
+            document.getElementById(
+              "dashboard-user-summary"
+            );
+
+
+          if (topName) {
+            topName.textContent =
+              name;
+          }
+
+
+          if (topRole) {
+            topRole.textContent =
+              role;
+          }
+
+
+          if (topAvatar) {
+            topAvatar.textContent =
+              initials;
+          }
+
+
+          if (greeting) {
+            greeting.textContent =
+              "Bonjour " + name;
+          }
+
+
+          if (summary) {
+            summary.textContent =
+              name + " · " + role;
+          }
+
+
+          const profileAvatar =
+            document.getElementById(
+              "profile-avatar"
+            );
+
+          const profileName =
+            document.getElementById(
+              "profile-name"
+            );
+
+          const profileRoleTitle =
+            document.getElementById(
+              "profile-role-title"
+            );
+
+          const profileEmail =
+            document.getElementById(
+              "profile-email"
+            );
+
+          const profileMatricule =
+            document.getElementById(
+              "profile-matricule"
+            );
+
+          const profileRoleValue =
+            document.getElementById(
+              "profile-role-value"
+            );
+
+          const profileClass =
+            document.getElementById(
+              "profile-class"
+            );
+
+
+          if (profileAvatar) {
+            profileAvatar.textContent =
+              initials;
+          }
+
+
+          if (profileName) {
+            profileName.textContent =
+              name;
+          }
+
+
+          if (profileRoleTitle) {
+            profileRoleTitle.textContent =
+              role;
+          }
+
+
+          if (profileEmail) {
+            profileEmail.textContent =
+              email;
+          }
+
+
+          if (profileMatricule) {
+            profileMatricule.textContent =
+              matricule;
+          }
+
+
+          if (profileRoleValue) {
+            profileRoleValue.textContent =
+              role;
+          }
+
+
+          if (profileClass) {
+            profileClass.textContent =
+              classe;
+          }
+
+        }
+
+
+        /* =================================================
+           CONNEXION
+           ================================================= */
+
+        if (loginForm) {
+
+          loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+              event.preventDefault();
+
+
+              loginError.classList.remove(
+                "show"
+              );
+
+              loginError.textContent =
+                "";
+
+
+              const identifier =
+                emailInput.value.trim();
+
+
+              const password =
+                passwordInput.value;
+
+
+              if (
+                !identifier ||
+                !password
+              ) {
+
+                loginError.textContent =
+                  "Veuillez remplir tous les champs.";
+
+                loginError.classList.add(
+                  "show"
+                );
+
+                return;
+              }
+
+
+              loginButton.disabled =
+                true;
+
+
+              loginButton.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i> Connexion...';
+
+
+              try {
+
+                if (
+                  !window.DALZON_AUTH ||
+                  typeof window.DALZON_AUTH.login !==
+                    "function"
+                ) {
+
+                  throw new Error(
+                    "Le système d'authentification n'est pas chargé."
+                  );
+
+                }
+
+
+                const result =
+                  await window.DALZON_AUTH.login(
+                    identifier,
+                    password
+                  );
+
+
+                if (
+                  !result ||
+                  !result.success
+                ) {
+
+                  throw new Error(
+                    result?.message ||
+                    "Identifiants incorrects."
+                  );
+
+                }
+
+
+                /*
+                 * CONNEXION DIRECTE
+                 * À L'APPLICATION
+                 */
+
+                showApplication(
+                  result.user
+                );
+
+
+              } catch (error) {
+
+                console.error(
+                  "DALZON SHULE Auth :",
+                  error
+                );
+
+
+                loginError.textContent =
+                  error?.message ||
+                  "Impossible de se connecter.";
+
+
+                loginError.classList.add(
+                  "show"
+                );
+
+              } finally {
+
+                loginButton.disabled =
+                  false;
+
+
+                loginButton.innerHTML =
+                  '<i class="fa-solid fa-arrow-right-to-bracket"></i> &nbsp; Se connecter';
+
+              }
+
+            }
+          );
+
+        }
+
+
+        /* =================================================
+           SESSION EXISTANTE
+           ================================================= */
+
+        async function restoreSession() {
+
+          try {
+
+            if (
+              !window.DALZON_AUTH ||
+              typeof window.DALZON_AUTH
+                .getAuthenticatedUserAsync !==
+                "function"
+            ) {
+
+              return;
+
+            }
+
+
+            const user =
+              await window.DALZON_AUTH
+                .getAuthenticatedUserAsync();
+
+
+            if (user) {
+
+              showApplication(
+                user
               );
 
             }
 
           } catch (error) {
 
-            console.error(error);
-
-            loginError.textContent =
-              error.message ||
-              "Impossible de se connecter.";
-
-            loginError.classList.add("show");
-
-          } finally {
-
-            loginButton.disabled = false;
-
-            loginButton.innerHTML =
-              '<i class="fa-solid fa-arrow-right-to-bracket"></i> &nbsp; Se connecter';
-
-          }
-
-        });
-
-      }
-
-
-      /*
-       * Vérifier si une session existe déjà.
-       *
-       * Si l'utilisateur était déjà connecté :
-       *
-       * connexion automatique → application directement
-       */
-
-      try {
-
-        if (window.DALZON_AUTH &&
-            typeof window.DALZON_AUTH.getAuthenticatedUser === "function") {
-
-          const currentUser =
-            window.DALZON_AUTH.getAuthenticatedUser();
-
-          if (currentUser) {
-
-            showApplication(currentUser);
+            console.error(
+              "Erreur restauration session :",
+              error
+            );
 
           }
 
         }
 
-      } catch (error) {
 
-        console.warn(
-          "Session non récupérée :",
-          error
+        restoreSession();
+
+
+        /* =================================================
+           ÉVÉNEMENT AUTHENTIFICATION
+           ================================================= */
+
+        window.addEventListener(
+          "dalzon:authenticated",
+          function (event) {
+
+            const user =
+              event.detail?.user ||
+              event.detail;
+
+
+            if (user) {
+
+              showApplication(
+                user
+              );
+
+            }
+
+          }
         );
 
-      }
 
+        /* =================================================
+           DÉCONNEXION
+           ================================================= */
 
-      /*
-       * Événement envoyé par auth.js après authentification.
-       */
-
-      window.addEventListener(
-        "dalzon:authenticated",
-        function (event) {
-
-          const user =
-            event.detail?.user ||
-            event.detail;
-
-          if (user) {
-            showApplication(user);
-          }
-
-        }
-      );
-
-
-      /*
-       * Déconnexion
-       */
-
-      document.addEventListener(
-        "click",
-        function (event) {
-
-          const logout =
-            event.target.closest(
-              '[data-action="logout"]'
-            );
-
-          if (!logout) return;
-
-          if (window.DALZON_AUTH &&
-              typeof window.DALZON_AUTH.logout === "function") {
-
-            window.DALZON_AUTH.logout();
-
-          } else {
-
-            sessionStorage.removeItem(
-              "dalzon_authenticated_user"
-            );
-
-          }
-
-          appScreen.classList.remove("active");
-
-          appScreen.style.display = "none";
-
-          loginScreen.style.display = "flex";
-
-          document.getElementById("email").value = "";
-          document.getElementById("password").value = "";
-
-          loginError.classList.remove("show");
-
-          document.body.style.overflow = "auto";
-
-        }
-      );
-
-
-      /*
-       * Menu mobile
-       */
-
-      const menuToggle =
-        document.getElementById("menu-toggle");
-
-      const sidebar =
-        document.getElementById("sidebar");
-
-
-      if (menuToggle && sidebar) {
-
-        menuToggle.addEventListener(
-          "click",
+        window.addEventListener(
+          "dalzon:logout",
           function () {
 
-            sidebar.classList.toggle("open");
+            appScreen.classList.remove(
+              "active"
+            );
+
+            appScreen.style.display =
+              "none";
+
+            loginScreen.style.display =
+              "flex";
+
+
+            emailInput.value =
+              "";
+
+            passwordInput.value =
+              "";
+
+
+            loginError.textContent =
+              "";
+
+            loginError.classList.remove(
+              "show"
+            );
+
+          }
+        );
+
+
+        document.addEventListener(
+          "click",
+          function (event) {
+
+            const logoutButton =
+              event.target.closest(
+                '[data-action="logout"]'
+              );
+
+
+            if (!logoutButton) {
+              return;
+            }
+
+
+            if (
+              window.DALZON_AUTH &&
+              typeof window.DALZON_AUTH.logout ===
+                "function"
+            ) {
+
+              window.DALZON_AUTH.logout();
+
+            }
+
+          }
+        );
+
+
+        /* =================================================
+           MENU MOBILE
+           ================================================= */
+
+        const menuToggle =
+          document.getElementById(
+            "menu-toggle"
+          );
+
+        const sidebar =
+          document.getElementById(
+            "sidebar"
+          );
+
+
+        if (
+          menuToggle &&
+          sidebar
+        ) {
+
+          menuToggle.addEventListener(
+            "click",
+            function () {
+
+              sidebar.classList.toggle(
+                "open"
+              );
+
+            }
+          );
+
+        }
+
+
+        /* =================================================
+           FERMER MENU MOBILE
+           ================================================= */
+
+        document.addEventListener(
+          "click",
+          function (event) {
+
+            const nav =
+              event.target.closest(
+                "[data-route]"
+              );
+
+
+            if (!nav) {
+              return;
+            }
+
+
+            if (
+              window.innerWidth <= 800 &&
+              sidebar
+            ) {
+
+              sidebar.classList.remove(
+                "open"
+              );
+
+            }
 
           }
         );
 
       }
-
-
-      /*
-       * Fermer le menu mobile après sélection.
-       */
-
-      document.addEventListener(
-        "click",
-        function (event) {
-
-          const nav =
-            event.target.closest("[data-route]");
-
-          if (!nav) return;
-
-          if (window.innerWidth <= 800 &&
-              sidebar) {
-
-            sidebar.classList.remove("open");
-
-          }
-
-        }
-      );
-
-    });
+    );
 
   </script>
 
