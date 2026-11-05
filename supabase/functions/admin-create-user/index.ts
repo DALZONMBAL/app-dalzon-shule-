@@ -127,32 +127,44 @@ Deno.serve(async (req: Request) => {
       : [];
     const linkedTeacherId = String(body.linked_teacher_id || "").trim();
 
+    if (
+      (role === "student" && linkedStudentIds.length !== 1) ||
+      (role === "parent" && linkedStudentIds.length < 1) ||
+      (role === "teacher" && !linkedTeacherId)
+    ) {
+      await adminClient.from("profiles").delete().eq("id", created.user.id);
+      await adminClient.auth.admin.deleteUser(created.user.id);
+      throw new Error("Associez le compte à sa fiche élève, parent ou enseignant avant de continuer.");
+    }
+
     let linkError: string | null = null;
-    if (role === "student" && linkedStudentIds.length) {
-      if (linkedStudentIds.length !== 1) {
-        linkError = "Un compte élève doit être associé à une seule fiche élève.";
-      } else {
-        const { error } = await adminClient
-          .from("students")
-          .update({ user_id: created.user.id })
-          .eq("id", linkedStudentIds[0])
-          .eq("school_id", adminProfile.school_id);
-        if (error) linkError = error.message;
-      }
-    } else if (role === "parent" && linkedStudentIds.length) {
-      const { error } = await adminClient
+    if (role === "student") {
+      const { data, error } = await adminClient
+        .from("students")
+        .update({ user_id: created.user.id })
+        .eq("id", linkedStudentIds[0])
+        .eq("school_id", adminProfile.school_id)
+        .select("id");
+      if (error) linkError = error.message;
+      else if (!data?.length) linkError = "La fiche élève sélectionnée est introuvable dans votre établissement.";
+    } else if (role === "parent") {
+      const { data, error } = await adminClient
         .from("students")
         .update({ parent_user_id: created.user.id })
         .in("id", linkedStudentIds)
-        .eq("school_id", adminProfile.school_id);
+        .eq("school_id", adminProfile.school_id)
+        .select("id");
       if (error) linkError = error.message;
-    } else if (role === "teacher" && linkedTeacherId) {
-      const { error } = await adminClient
+      else if (!data || data.length !== linkedStudentIds.length) linkError = "Une ou plusieurs fiches élèves n'ont pas pu être associées.";
+    } else if (role === "teacher") {
+      const { data, error } = await adminClient
         .from("teachers")
         .update({ user_id: created.user.id })
         .eq("id", linkedTeacherId)
-        .eq("school_id", adminProfile.school_id);
+        .eq("school_id", adminProfile.school_id)
+        .select("id");
       if (error) linkError = error.message;
+      else if (!data?.length) linkError = "La fiche enseignant sélectionnée est introuvable dans votre établissement.";
     }
 
     if (linkError) {
