@@ -2034,6 +2034,8 @@ function renderUsers() {
           <div><label class="form-label" for="account-role">Rôle</label><select class="app-input" id="account-role" name="role" required>
             <option value="direction">Direction</option><option value="secretariat">Secrétariat</option><option value="teacher">Enseignant</option><option value="student">Élève</option><option value="parent">Parent</option><option value="gestion">Comptabilité</option><option value="admin">Administrateur</option>
           </select></div>
+          <div id="account-student-link" style="grid-column:1/-1;display:none"><label class="form-label" for="account-student-ids">Associer à un ou plusieurs élèves</label><select class="app-input" id="account-student-ids" name="linked_student_ids" multiple size="4">${filterBySchool(state.students).map(student => `<option value="${escapeHTML(student.id)}">${escapeHTML(getStudentLabel(student))}</option>`).join("")}</select><small style="color:var(--muted)">Pour un compte élève, sélectionnez un seul élève. Pour un parent, vous pouvez sélectionner plusieurs enfants.</small></div>
+          <div id="account-teacher-link" style="grid-column:1/-1;display:none"><label class="form-label" for="account-teacher-id">Associer à la fiche enseignant</label><select class="app-input" id="account-teacher-id" name="linked_teacher_id"><option value="">Choisir un enseignant</option>${filterBySchool(state.teachers).map(teacher => `<option value="${escapeHTML(teacher.id)}">${escapeHTML([teacher.first_name,teacher.last_name].filter(Boolean).join(" ") || teacher.email || "Enseignant")}</option>`).join("")}</select></div>
           <div style="grid-column:1/-1"><label class="form-label" for="account-password">Mot de passe provisoire (8 caractères minimum)</label><input class="app-input" id="account-password" name="password" type="password" minlength="8" required autocomplete="new-password"></div>
         </div>
         <p id="user-account-error" role="alert" style="display:none;color:#ff91a0;margin-top:10px"></p>
@@ -2058,6 +2060,17 @@ function renderUsers() {
   `);
 
   const form = getElement("user-account-form");
+  const roleSelect = getElement("account-role");
+  const studentLink = getElement("account-student-link");
+  const teacherLink = getElement("account-teacher-link");
+  const refreshLinkFields = () => {
+    const role = normalizeRole(roleSelect?.value);
+    if (studentLink) studentLink.style.display = role === "student" || role === "parent" ? "block" : "none";
+    if (teacherLink) teacherLink.style.display = role === "teacher" ? "block" : "none";
+  };
+  if (roleSelect) roleSelect.addEventListener("change", refreshLinkFields);
+  refreshLinkFields();
+
   if (form) form.addEventListener("submit", async event => {
     event.preventDefault();
     const data = new FormData(form);
@@ -2066,7 +2079,9 @@ function renderUsers() {
       last_name: String(data.get("last_name") || "").trim(),
       email: String(data.get("email") || "").trim(),
       role: String(data.get("role") || "").trim(),
-      password: String(data.get("password") || "")
+      password: String(data.get("password") || ""),
+      linked_student_ids: data.getAll("linked_student_ids").map(value => String(value)).filter(Boolean),
+      linked_teacher_id: String(data.get("linked_teacher_id") || "").trim()
     };
     const errorBox = getElement("user-account-error");
     const successBox = getElement("user-account-success");
