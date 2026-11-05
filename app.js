@@ -237,6 +237,8 @@ function hasPermission(route) {
       "parent"
     ],
 
+    users: [],
+
     courses: [
       "direction",
       "secretariat",
@@ -617,6 +619,7 @@ function navigate(route) {
     dashboard: "Tableau de bord",
     grades: "Notes",
     bulletins: "Bulletins",
+    users: "Comptes utilisateurs",
     courses: "Cours",
     attendance: "Présences",
     documents: "Documents",
@@ -645,6 +648,10 @@ function navigate(route) {
 
     case "bulletins":
       renderBulletins();
+      break;
+
+    case "users":
+      renderUsers();
       break;
 
     case "courses":
@@ -1995,6 +2002,103 @@ function renderBulletins() {
     const rows = subjects.map(subject => `<tr><td>${escapeHTML(subject.name)}</td><td>${subject.count}</td><td>${subject.coefficients.toLocaleString("fr-FR")}</td><td>${subject.average === null ? "—" : subject.average.toLocaleString("fr-FR",{maximumFractionDigits:2})}</td></tr>`).join("");
     popup.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bulletin — ${escapeHTML(getStudentLabel(student))}</title><style>body{font-family:Arial,sans-serif;color:#172033;padding:32px}header{text-align:center;border-bottom:2px solid #172033;padding-bottom:18px;margin-bottom:22px}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #cbd5e1;padding:10px;text-align:left}th{background:#eef2f7}.meta{display:flex;gap:30px;flex-wrap:wrap}.average{text-align:right;font-size:20px;font-weight:bold;margin-top:25px}.muted{color:#64748b;font-size:12px}@media print{body{padding:0}}</style></head><body><header><div class="muted">DOCUMENT SCOLAIRE</div><h1>DALZON SHULE</h1><h2>Bulletin de résultats</h2><p>Période : ${escapeHTML(fromLabel)} — ${escapeHTML(toLabel)}</p></header><div class="meta"><div><b>Élève :</b> ${escapeHTML(getStudentLabel(student))}</div><div><b>Matricule :</b> ${escapeHTML(student.matricule || "—")}</div><div><b>Classe :</b> ${escapeHTML(student.class_name || student.class_id || "—")}</div></div><table><thead><tr><th>Matière</th><th>Évaluations</th><th>Coefficients</th><th>Moyenne</th></tr></thead><tbody>${rows || "<tr><td colspan='4'>Aucune note</td></tr>"}</tbody></table><div class="average">Moyenne générale pondérée : ${average === null ? "—" : average.toLocaleString("fr-FR",{maximumFractionDigits:2})}</div><p class="muted">Généré par DALZON SHULE</p><script>window.onload=()=>window.print()<\/script></body></html>`);
     popup.document.close();
+  });
+}
+
+function renderUsers() {
+  if (!isAdmin()) {
+    setContent(emptyState("fa-solid fa-lock","Accès réservé","Seul l'administrateur peut gérer les comptes."));
+    return;
+  }
+
+  const profiles = filterBySchool(state.profiles);
+  const roleLabels = {
+    admin: "Administrateur",
+    direction: "Direction",
+    secretariat: "Secrétariat",
+    teacher: "Enseignant",
+    student: "Élève",
+    parent: "Parent",
+    gestion: "Comptabilité"
+  };
+
+  setContent(`
+    ${pageHeader("Comptes utilisateurs","Créer les accès individuels de chaque membre de l’établissement.")}
+    <div class="card" style="margin-bottom:18px">
+      <h3 style="font-family:'Space Grotesk',sans-serif;margin-bottom:14px">Créer un compte</h3>
+      <form id="user-account-form">
+        <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+          <div><label class="form-label" for="account-first-name">Prénom</label><input class="app-input" id="account-first-name" name="first_name" required maxlength="100"></div>
+          <div><label class="form-label" for="account-last-name">Nom</label><input class="app-input" id="account-last-name" name="last_name" required maxlength="100"></div>
+          <div><label class="form-label" for="account-email">Adresse e-mail</label><input class="app-input" id="account-email" name="email" type="email" required maxlength="180"></div>
+          <div><label class="form-label" for="account-role">Rôle</label><select class="app-input" id="account-role" name="role" required>
+            <option value="direction">Direction</option><option value="secretariat">Secrétariat</option><option value="teacher">Enseignant</option><option value="student">Élève</option><option value="parent">Parent</option><option value="gestion">Comptabilité</option><option value="admin">Administrateur</option>
+          </select></div>
+          <div style="grid-column:1/-1"><label class="form-label" for="account-password">Mot de passe provisoire (8 caractères minimum)</label><input class="app-input" id="account-password" name="password" type="password" minlength="8" required autocomplete="new-password"></div>
+        </div>
+        <p id="user-account-error" role="alert" style="display:none;color:#ff91a0;margin-top:10px"></p>
+        <p id="user-account-success" role="status" style="display:none;color:#24d18b;margin-top:10px"></p>
+        <button class="btn btn-primary" type="submit" style="margin-top:14px"><i class="fa-solid fa-user-plus"></i> Créer le compte</button>
+      </form>
+      <p style="font-size:12px;color:var(--muted);margin-top:12px">La création utilise une fonction sécurisée côté serveur. Ne placez jamais la clé service_role dans le site web.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-family:'Space Grotesk',sans-serif;margin-bottom:14px">Comptes existants (${profiles.length})</h3>
+      ${profiles.length ? `
+        <div class="table-container"><table>
+          <thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Matricule</th></tr></thead>
+          <tbody>${profiles.map(profile => {
+            const fullName = [profile.first_name,profile.last_name].filter(Boolean).join(" ") || profile.email || "Utilisateur";
+            const role = normalizeRole(profile.role);
+            return `<tr><td>${escapeHTML(fullName)}</td><td>${escapeHTML(profile.email || "—")}</td><td>${escapeHTML(roleLabels[role] || profile.role || "—")}</td><td>${escapeHTML(profile.matricule || "—")}</td></tr>`;
+          }).join("")}</tbody>
+        </table></div>
+      ` : emptyState("fa-solid fa-users","Aucun compte listé","Les profils autorisés apparaîtront ici.")}
+    </div>
+  `);
+
+  const form = getElement("user-account-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const payload = {
+      first_name: String(data.get("first_name") || "").trim(),
+      last_name: String(data.get("last_name") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      role: String(data.get("role") || "").trim(),
+      password: String(data.get("password") || "")
+    };
+    const errorBox = getElement("user-account-error");
+    const successBox = getElement("user-account-success");
+    if (errorBox) errorBox.style.display = "none";
+    if (successBox) successBox.style.display = "none";
+
+    if (!payload.first_name || !payload.last_name || !payload.email || payload.password.length < 8) {
+      if (errorBox) {
+        errorBox.textContent = "Complétez tous les champs et utilisez un mot de passe d'au moins 8 caractères.";
+        errorBox.style.display = "block";
+      }
+      return;
+    }
+
+    try {
+      const { data: result, error } = await getSupabase().functions.invoke("admin-create-user", { body: payload });
+      if (error) throw error;
+      if (result?.error) throw new Error(result.error);
+      if (successBox) {
+        successBox.textContent = "Compte créé. Communiquez les identifiants à la personne concernée de manière privée.";
+        successBox.style.display = "block";
+      }
+      form.reset();
+      await loadData();
+      renderUsers();
+    } catch (error) {
+      console.error("Erreur création compte :", error);
+      if (errorBox) {
+        errorBox.textContent = error.message || "La fonction admin-create-user n'est pas encore déployée ou la création a échoué.";
+        errorBox.style.display = "block";
+      }
+    }
   });
 }
 
