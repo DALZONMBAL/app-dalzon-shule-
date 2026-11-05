@@ -9,6 +9,9 @@ ALTER TABLE public.students
 ALTER TABLE public.teachers
   ADD COLUMN IF NOT EXISTS user_id uuid;
 
+ALTER TABLE public.classes
+  ADD COLUMN IF NOT EXISTS teacher_id uuid;
+
 CREATE INDEX IF NOT EXISTS students_user_id_idx ON public.students(user_id);
 CREATE INDEX IF NOT EXISTS students_parent_user_id_idx ON public.students(parent_user_id);
 CREATE INDEX IF NOT EXISTS teachers_user_id_idx ON public.teachers(user_id);
