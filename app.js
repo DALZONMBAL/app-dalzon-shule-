@@ -2222,74 +2222,182 @@ function renderTeachers() {
    CLASSES
    ========================================================= */
 
+function canManageClasses() {
+  return isAdmin() || isDirection() || isSecretariat();
+}
+
+function canDeleteClasses() {
+  return isAdmin() || isDirection();
+}
+
 function renderClasses() {
-  const classes =
-    filterBySchool(
-      state.classes
-    );
+  const classes = filterBySchool(state.classes);
+  const canManage = canManageClasses();
 
   setContent(`
     ${pageHeader(
       "Classes",
-      "Classes et groupes scolaires."
+      "Création et organisation des classes scolaires.",
+      canManage ? `
+        <button class="btn btn-primary" id="add-class-button">
+          <i class="fa-solid fa-plus"></i> Ajouter une classe
+        </button>
+      ` : ""
     )}
 
-    <div class="cards-grid">
+    <div id="class-form-container" style="margin-bottom:18px;"></div>
 
+    <div class="cards-grid">
       ${
         classes.length
-          ? classes
-              .map(cls => `
-                <div class="card">
-
-                  <div class="stat-icon">
-                    <i class="fa-solid fa-school"></i>
-                  </div>
-
-                  <h3 style="
-                    font-family:'Space Grotesk',sans-serif;
-                    font-size:18px;
-                    margin-bottom:8px;
-                  ">
-                    ${escapeHTML(
-                      cls.name ||
-                      cls.class_name ||
-                      "Classe"
-                    )}
-                  </h3>
-
-                  <p style="
-                    color:var(--muted);
-                    font-size:12px;
-                  ">
-                    ${
-                      cls.level
-                        ? `Niveau : ${escapeHTML(
-                            cls.level
-                          )}`
-                        : "Classe scolaire"
-                    }
-                  </p>
-
+          ? classes.map(cls => `
+              <div class="card">
+                <div class="stat-icon">
+                  <i class="fa-solid fa-school"></i>
                 </div>
-              `)
-              .join("")
-          : `
-            <div
-              class="card"
-              style="grid-column:1/-1"
-            >
-              ${emptyState(
-                "fa-solid fa-school",
-                "Aucune classe",
-                "Aucune classe n'est actuellement disponible."
-              )}
-            </div>
-          `
+                <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;margin-bottom:8px;">
+                  ${escapeHTML(cls.name || cls.class_name || "Classe")}
+                </h3>
+                <p style="color:var(--muted);font-size:12px;">
+                  ${cls.level ? `Niveau : ${escapeHTML(cls.level)}` : "Classe scolaire"}
+                </p>
+                ${canManage ? `
+                  <div style="display:flex;gap:8px;margin-top:15px;">
+                    <button class="btn" data-edit-class="${escapeHTML(cls.id)}">
+                      <i class="fa-solid fa-pen"></i> Modifier
+                    </button>
+                    ${canDeleteClasses() ? `
+                      <button class="btn btn-danger" data-delete-class="${escapeHTML(cls.id)}">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                      </button>
+                    ` : ""}
+                  </div>
+                ` : ""}
+              </div>
+            `).join("")
+          : `<div class="card" style="grid-column:1/-1;">${emptyState("fa-solid fa-school","Aucune classe","Ajoutez la première classe de votre établissement.")}</div>`
       }
-
     </div>
   `);
+
+  const addButton = getElement("add-class-button");
+  if (addButton) addButton.addEventListener("click", () => renderClassForm());
+
+  document.querySelectorAll("[data-edit-class]").forEach(button => {
+    button.addEventListener("click", () => {
+      const cls = state.classes.find(item => String(item.id) === String(button.dataset.editClass));
+      if (cls) renderClassForm(cls);
+    });
+  });
+
+  document.querySelectorAll("[data-delete-class]").forEach(button => {
+    button.addEventListener("click", () => deleteClass(button.dataset.deleteClass));
+  });
+}
+
+function renderClassForm(existingClass = null) {
+  if (!canManageClasses()) return;
+  const container = getElement("class-form-container");
+  if (!container) return;
+
+  const editing = Boolean(existingClass);
+  container.innerHTML = `
+    <div class="card">
+      <div class="modal-header">
+        <div class="modal-title">${editing ? "Modifier la classe" : "Nouvelle classe"}</div>
+        <button class="modal-close" id="close-class-form" type="button" aria-label="Fermer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="class-form">
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Nom de la classe</label>
+            <input class="app-input" name="name" required maxlength="100"
+              value="${escapeHTML(existingClass?.name || existingClass?.class_name || "")}"
+              placeholder="Ex. 1ère scientifique">
+          </div>
+          <div>
+            <label class="form-label">Niveau / section</label>
+            <input class="app-input" name="level" maxlength="100"
+              value="${escapeHTML(existingClass?.level || "")}"
+              placeholder="Ex. Secondaire">
+          </div>
+        </div>
+        <div id="class-form-error" style="display:none;margin-top:12px;color:#ff91a0;"></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+          <button type="button" class="btn" id="cancel-class-form">Annuler</button>
+          <button type="submit" class="btn btn-primary">${editing ? "Enregistrer" : "Créer la classe"}</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  ["close-class-form","cancel-class-form"].forEach(id => {
+    const button = getElement(id);
+    if (button) button.addEventListener("click", () => container.innerHTML = "");
+  });
+
+  const form = getElement("class-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    await saveClass(form, existingClass);
+  });
+}
+
+async function saveClass(form, existingClass = null) {
+  if (!canManageClasses()) return;
+  const supabase = getSupabase();
+  const formData = new FormData(form);
+  const className = String(formData.get("name") || "").trim();
+  const level = String(formData.get("level") || "").trim();
+  const errorBox = getElement("class-form-error");
+
+  if (!className) {
+    if (errorBox) {
+      errorBox.textContent = "Le nom de la classe est obligatoire.";
+      errorBox.style.display = "block";
+    }
+    return;
+  }
+
+  const sample = state.classes[0] || {};
+  const nameColumn = Object.prototype.hasOwnProperty.call(sample, "class_name") &&
+    !Object.prototype.hasOwnProperty.call(sample, "name") ? "class_name" : "name";
+  const payload = { [nameColumn]: className, level: level || null };
+  const schoolId = getCurrentSchoolId();
+  if (schoolId) payload.school_id = schoolId;
+
+  try {
+    const result = existingClass
+      ? await supabase.from("classes").update(payload).eq("id", existingClass.id)
+      : await supabase.from("classes").insert(payload);
+
+    if (result.error) throw result.error;
+    await loadData();
+    renderClasses();
+  } catch (error) {
+    console.error("Erreur enregistrement classe :", error);
+    if (errorBox) {
+      errorBox.textContent = error.message || "Impossible d'enregistrer la classe.";
+      errorBox.style.display = "block";
+    }
+  }
+}
+
+async function deleteClass(classId) {
+  if (!canDeleteClasses()) return;
+  if (!window.confirm("Supprimer cette classe ? Les élèves déjà associés peuvent empêcher cette opération.")) return;
+
+  try {
+    const { error } = await getSupabase().from("classes").delete().eq("id", classId);
+    if (error) throw error;
+    await loadData();
+    renderClasses();
+  } catch (error) {
+    console.error("Erreur suppression classe :", error);
+    window.alert(error.message || "Impossible de supprimer cette classe.");
+  }
 }
 
 /* =========================================================
