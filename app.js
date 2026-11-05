@@ -1813,126 +1813,137 @@ function renderCourses() {
    PRÉSENCES
    ========================================================= */
 
+function canRecordAttendance() {
+  return isAdmin() || isDirection() || isSecretariat() || isTeacher();
+}
+
 function renderAttendance() {
-  const attendance =
-    filterBySchool(
-      state.attendance
-    );
+  const attendance = filterBySchool(state.attendance);
+  const students = filterBySchool(state.students);
+  const today = new Date();
+  const todayValue = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+  ].join("-");
 
   setContent(`
-    ${pageHeader(
-      "Présences",
-      "Suivi des présences et absences."
-    )}
-
-    <div class="card">
-
-      ${
-        attendance.length
-          ? `
-            <div class="table-container">
-
-              <table>
-
-                <thead>
-                  <tr>
-                    <th>Élève</th>
-                    <th>Date</th>
-                    <th>Statut</th>
-                    <th>Observation</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  ${attendance
-                    .map(item => {
-
-                      const status =
-                        String(
-                          item.status ||
-                          item.statut ||
-                          ""
-                        ).toLowerCase();
-
-                      let badge =
-                        "badge";
-
-                      if (
-                        status.includes(
-                          "present"
-                        )
-                      ) {
-                        badge +=
-                          " badge-success";
-                      } else if (
-                        status.includes(
-                          "abs"
-                        )
-                      ) {
-                        badge +=
-                          " badge-danger";
-                      } else {
-                        badge +=
-                          " badge-warning";
-                      }
-
-                      return `
-                        <tr>
-
-                          <td>
-                            ${escapeHTML(
-                              item.student_name ||
-                              item.student_id ||
-                              "—"
-                            )}
-                          </td>
-
-                          <td>
-                            ${formatDate(
-                              item.date ||
-                              item.created_at
-                            )}
-                          </td>
-
-                          <td>
-                            <span class="${badge}">
-                              ${escapeHTML(
-                                item.status ||
-                                item.statut ||
-                                "—"
-                              )}
-                            </span>
-                          </td>
-
-                          <td>
-                            ${escapeHTML(
-                              item.note ||
-                              item.observation ||
-                              "—"
-                            )}
-                          </td>
-
-                        </tr>
-                      `;
-                    })
-                    .join("")}
-
-                </tbody>
-
-              </table>
-
+    ${pageHeader("Présences","Suivi des présences et absences.")}
+    ${canRecordAttendance() ? `
+      <div class="card" style="margin-bottom:18px">
+        <h3 style="margin:0 0 14px;font-family:'Space Grotesk',sans-serif">Enregistrer une présence</h3>
+        ${students.length ? `
+          <form id="attendance-form">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+              <div>
+                <label class="form-label" for="attendance-student">Élève</label>
+                <select class="app-input" id="attendance-student" name="student_id" required>
+                  <option value="">Choisir un élève</option>
+                  ${students.map(student => {
+                    const label = [student.first_name,student.last_name].filter(Boolean).join(" ") || student.name || student.matricule || "Élève";
+                    return `<option value="${escapeHTML(student.id)}">${escapeHTML(label)}</option>`;
+                  }).join("")}
+                </select>
+              </div>
+              <div>
+                <label class="form-label" for="attendance-date">Date</label>
+                <input class="app-input" id="attendance-date" type="date" name="date" value="${todayValue}" required>
+              </div>
+              <div>
+                <label class="form-label" for="attendance-status">Statut</label>
+                <select class="app-input" id="attendance-status" name="status" required>
+                  <option value="present">Présent</option>
+                  <option value="absent">Absent</option>
+                  <option value="late">En retard</option>
+                  <option value="justified">Absence justifiée</option>
+                </select>
+              </div>
             </div>
-          `
-          : emptyState(
-              "fa-solid fa-calendar-check",
-              "Aucune présence",
-              "Aucune donnée de présence n'est actuellement disponible."
-            )
+            <div style="margin-top:12px">
+              <label class="form-label" for="attendance-note">Observation (facultatif)</label>
+              <textarea class="app-input" id="attendance-note" name="note" rows="2" placeholder="Ajouter une observation..."></textarea>
+            </div>
+            <p id="attendance-form-error" role="alert" style="display:none;color:var(--danger,#dc2626);margin-top:10px"></p>
+            <button class="btn btn-primary" type="submit" style="margin-top:12px">
+              <i class="fa-solid fa-check"></i> Enregistrer
+            </button>
+          </form>
+        ` : `
+          <p style="color:var(--muted)">Ajoute d'abord des élèves pour pouvoir enregistrer leurs présences.</p>
+        `}
+      </div>
+    ` : ""}
+    <div class="card">
+      <h3 style="margin:0 0 14px;font-family:'Space Grotesk',sans-serif">Historique des présences</h3>
+      ${
+        attendance.length ? `
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Élève</th><th>Date</th><th>Statut</th><th>Observation</th></tr></thead>
+              <tbody>
+                ${attendance.slice().sort((a,b) => String(b.date || b.created_at || "").localeCompare(String(a.date || a.created_at || ""))).map(item => {
+                  const student = students.find(s => String(s.id) === String(item.student_id));
+                  const studentLabel = item.student_name || (student ? [student.first_name,student.last_name].filter(Boolean).join(" ") || student.name : null) || item.student_id || "—";
+                  const status = String(item.status || item.statut || "").toLowerCase();
+                  const badge = status.includes("present") ? "badge badge-success" : status.includes("abs") ? "badge badge-danger" : "badge badge-warning";
+                  const statusLabel = ({present:"Présent",absent:"Absent",late:"En retard",justified:"Absence justifiée"})[status] || item.status || item.statut || "—";
+                  return `
+                    <tr>
+                      <td>${escapeHTML(studentLabel)}</td>
+                      <td>${formatDate(item.date || item.created_at)}</td>
+                      <td><span class="${badge}">${escapeHTML(statusLabel)}</span></td>
+                      <td>${escapeHTML(item.note || item.observation || "—")}</td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : emptyState("fa-solid fa-calendar-check","Aucune présence","Les enregistrements apparaîtront ici.")
       }
-
     </div>
   `);
+
+  const form = getElement("attendance-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    await saveAttendance(form);
+  });
+}
+
+async function saveAttendance(form) {
+  if (!canRecordAttendance()) return;
+  const data = new FormData(form);
+  const studentId = String(data.get("student_id") || "").trim();
+  const date = String(data.get("date") || "").trim();
+  const status = String(data.get("status") || "").trim();
+  const note = String(data.get("note") || "").trim();
+  const errorBox = getElement("attendance-form-error");
+
+  if (!studentId || !date || !status) {
+    if (errorBox) {
+      errorBox.textContent = "Sélectionne un élève, une date et un statut.";
+      errorBox.style.display = "block";
+    }
+    return;
+  }
+
+  const payload = { student_id: studentId, date, status, note: note || null };
+  const schoolId = getCurrentSchoolId();
+  if (schoolId) payload.school_id = schoolId;
+
+  try {
+    const { error } = await getSupabase().from("attendance").insert(payload);
+    if (error) throw error;
+    await loadData();
+    renderAttendance();
+  } catch (error) {
+    console.error("Erreur enregistrement présence :", error);
+    if (errorBox) {
+      errorBox.textContent = error.message || "Impossible d'enregistrer cette présence.";
+      errorBox.style.display = "block";
+    }
+  }
 }
 
 /* =========================================================
