@@ -2799,6 +2799,10 @@ function renderClassForm(existingClass = null) {
   if (!container) return;
 
   const editing = Boolean(existingClass);
+  const teacherOptions = filterBySchool(state.teachers).map(teacher => {
+    const label = [teacher.first_name, teacher.last_name].filter(Boolean).join(" ") || teacher.email || "Enseignant";
+    return `<option value="${escapeHTML(teacher.id)}" ${String(existingClass?.teacher_id || "") === String(teacher.id) ? "selected" : ""}>${escapeHTML(label)}</option>`;
+  }).join("");
   container.innerHTML = `
     <div class="card">
       <div class="modal-header">
@@ -2820,6 +2824,13 @@ function renderClassForm(existingClass = null) {
             <input class="app-input" name="level" maxlength="100"
               value="${escapeHTML(existingClass?.level || "")}"
               placeholder="Ex. Secondaire">
+          </div>
+          <div>
+            <label class="form-label">Enseignant titulaire</label>
+            <select class="app-input" name="teacher_id">
+              <option value="">Non attribué</option>
+              ${teacherOptions}
+            </select>
           </div>
         </div>
         <div id="class-form-error" style="display:none;margin-top:12px;color:#ff91a0;"></div>
@@ -2849,6 +2860,7 @@ async function saveClass(form, existingClass = null) {
   const formData = new FormData(form);
   const className = String(formData.get("name") || "").trim();
   const level = String(formData.get("level") || "").trim();
+  const teacherId = String(formData.get("teacher_id") || "").trim();
   const errorBox = getElement("class-form-error");
 
   if (!className) {
@@ -2862,7 +2874,7 @@ async function saveClass(form, existingClass = null) {
   const sample = state.classes[0] || {};
   const nameColumn = Object.prototype.hasOwnProperty.call(sample, "class_name") &&
     !Object.prototype.hasOwnProperty.call(sample, "name") ? "class_name" : "name";
-  const payload = { [nameColumn]: className, level: level || null };
+  const payload = { [nameColumn]: className, level: level || null, teacher_id: teacherId || null };
   const schoolId = getCurrentSchoolId();
   if (schoolId) payload.school_id = schoolId;
 
