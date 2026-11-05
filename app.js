@@ -295,7 +295,9 @@ function hasPermission(route) {
     payments: [
       "direction",
       "secretariat",
-      "gestion"
+      "gestion",
+      "student",
+      "parent"
     ],
 
     profile: [
@@ -708,25 +710,25 @@ function navigate(route) {
    ========================================================= */
 
 function renderDashboard() {
-  const students =
-    filterBySchool(
-      state.students
-    );
+  const personalView = isStudent() || isParent();
+  const students = personalView
+    ? getVisibleStudents()
+    : filterBySchool(state.students);
 
-  const teachers =
-    filterBySchool(
-      state.teachers
-    );
+  const teachers = personalView
+    ? []
+    : filterBySchool(state.teachers);
 
-  const classes =
-    filterBySchool(
-      state.classes
-    );
+  const personalClassIds = new Set(students.map(student => String(student.class_id || "")));
+  const classes = personalView
+    ? filterBySchool(state.classes).filter(cls => personalClassIds.has(String(cls.id)))
+    : filterBySchool(state.classes);
 
-  const subjects =
-    filterBySchool(
-      state.subjects
-    );
+  const subjects = personalView
+    ? filterBySchool(state.subjects).filter(subject =>
+        getVisibleGrades().some(grade => String(grade.subject_id) === String(subject.id))
+      )
+    : filterBySchool(state.subjects);
 
   const name =
     currentUser?.firstName ||
@@ -2077,8 +2079,12 @@ function canRecordAttendance() {
 }
 
 function renderAttendance() {
-  const attendance = filterBySchool(state.attendance);
-  const students = filterBySchool(state.students);
+  const personalView = isStudent() || isParent();
+  const students = getVisibleStudents();
+  const visibleStudentIds = new Set(students.map(student => String(student.id)));
+  const attendance = filterBySchool(state.attendance).filter(item =>
+    !personalView || visibleStudentIds.has(String(item.student_id || ""))
+  );
   const today = new Date();
   const todayValue = [
     today.getFullYear(),
@@ -2947,126 +2953,97 @@ async function deleteSubject(subjectId) {
    PAIEMENTS
    ========================================================= */
 
+function canManagePayments() {
+  return isAdmin() || isDirection() || isSecretariat() || isGestion();
+}
+
+function getVisiblePayments() {
+  const payments = filterBySchool(state.payments);
+  if (canManagePayments()) return payments;
+  const ids = new Set(getVisibleStudents().map(student => String(student.id)));
+  return payments.filter(payment => ids.has(String(payment.student_id || "")));
+}
+
 function renderPayments() {
-  const payments =
-    filterBySchool(
-      state.payments
-    );
+  const payments = getVisiblePayments();
+  const students = getVisibleStudents();
+  const canManage = canManagePayments();
 
   setContent(`
-    ${pageHeader(
-      "Paiements",
-      "Suivi des paiements scolaires."
-    )}
-
-    <div class="card">
-
-      ${
-        payments.length
-          ? `
-            <div class="table-container">
-
-              <table>
-
-                <thead>
-                  <tr>
-                    <th>Élève</th>
-                    <th>Montant</th>
-                    <th>Devise</th>
-                    <th>Statut</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  ${payments
-                    .map(payment => {
-
-                      const status =
-                        String(
-                          payment.status ||
-                          payment.statut ||
-                          ""
-                        ).toLowerCase();
-
-                      const success =
-                        status.includes(
-                          "paid"
-                        ) ||
-                        status.includes(
-                          "payé"
-                        ) ||
-                        status.includes(
-                          "complete"
-                        );
-
-                      return `
-                        <tr>
-
-                          <td>
-                            ${escapeHTML(
-                              payment.student_name ||
-                              payment.student_id ||
-                              "—"
-                            )}
-                          </td>
-
-                          <td>
-                            ${escapeHTML(
-                              payment.amount ||
-                              "—"
-                            )}
-                          </td>
-
-                          <td>
-                            ${escapeHTML(
-                              payment.currency ||
-                              "—"
-                            )}
-                          </td>
-
-                          <td>
-                            <span class="badge ${
-                              success
-                                ? "badge-success"
-                                : "badge-warning"
-                            }">
-                              ${escapeHTML(
-                                payment.status ||
-                                payment.statut ||
-                                "—"
-                              )}
-                            </span>
-                          </td>
-
-                          <td>
-                            ${formatDate(
-                              payment.created_at ||
-                              payment.date
-                            )}
-                          </td>
-
-                        </tr>
-                      `;
-                    })
-                    .join("")}
-
-                </tbody>
-
-              </table>
-
+    ${pageHeader("Paiements","Suivi des frais et paiements scolaires.")}
+    ${canManage ? `
+      <div class="card" style="margin-bottom:18px">
+        <h3 style="font-family:'Space Grotesk',sans-serif;margin-bottom:14px">Enregistrer un paiement</h3>
+        ${students.length ? `
+          <form id="payment-form">
+            <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+              <div><label class="form-label" for="payment-student">Élève</label><select class="app-input" id="payment-student" name="student_id" required><option value="">Choisir un élève</option>${students.map(student => `<option value="${escapeHTML(student.id)}">${escapeHTML(getStudentLabel(student))}</option>`).join("")}</select></div>
+              <div><label class="form-label" for="payment-amount">Montant</label><input class="app-input" id="payment-amount" name="amount" type="number" min="0.01" step="0.01" required></div>
+              <div><label class="form-label" for="payment-currency">Devise</label><select class="app-input" id="payment-currency" name="currency"><option value="USD">USD</option><option value="CDF">CDF</option></select></div>
+              <div><label class="form-label" for="payment-status">Statut</label><select class="app-input" id="payment-status" name="status"><option value="paid">Payé</option><option value="pending">En attente</option><option value="partial">Partiel</option></select></div>
             </div>
-          `
-          : emptyState(
-              "fa-solid fa-wallet",
-              "Aucun paiement",
-              "Aucun paiement n'est actuellement enregistré."
-            )
-      }
-
+            <p id="payment-form-error" role="alert" style="display:none;color:#ff91a0;margin-top:10px"></p>
+            <button class="btn btn-primary" type="submit" style="margin-top:14px"><i class="fa-solid fa-receipt"></i> Enregistrer le paiement</button>
+          </form>
+        ` : '<p style="color:var(--muted)">Aucun élève disponible.</p>'}
+      </div>
+    ` : ""}
+    <div class="card">
+      ${payments.length ? `
+        <div class="table-container"><table>
+          <thead><tr><th>Élève</th><th>Montant</th><th>Devise</th><th>Statut</th><th>Date</th></tr></thead>
+          <tbody>${payments.slice().sort((a,b) => String(b.created_at || b.date || "").localeCompare(String(a.created_at || a.date || ""))).map(payment => {
+            const student = students.find(item => String(item.id) === String(payment.student_id));
+            const status = String(payment.status || payment.statut || "").toLowerCase();
+            const success = status.includes("paid") || status.includes("payé") || status.includes("complete");
+            const label = payment.student_name || (student ? getStudentLabel(student) : payment.student_id || "—");
+            return `<tr><td>${escapeHTML(label)}</td><td>${escapeHTML(payment.amount ?? "—")}</td><td>${escapeHTML(payment.currency || "—")}</td><td><span class="badge ${success ? "badge-success" : "badge-warning"}">${escapeHTML(payment.status || payment.statut || "—")}</span></td><td>${formatDate(payment.created_at || payment.date)}</td></tr>`;
+          }).join("")}</tbody>
+        </table></div>
+      ` : emptyState("fa-solid fa-wallet","Aucun paiement","Les paiements autorisés pour votre compte apparaîtront ici.")}
     </div>
   `);
+
+  const form = getElement("payment-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    await savePayment(form);
+  });
+}
+
+async function savePayment(form) {
+  if (!canManagePayments()) return;
+  const data = new FormData(form);
+  const studentId = String(data.get("student_id") || "").trim();
+  const amount = Number(data.get("amount"));
+  const currency = String(data.get("currency") || "USD");
+  const status = String(data.get("status") || "paid");
+  const errorBox = getElement("payment-form-error");
+
+  if (!studentId || !Number.isFinite(amount) || amount <= 0) {
+    if (errorBox) {
+      errorBox.textContent = "Sélectionnez un élève et saisissez un montant valide.";
+      errorBox.style.display = "block";
+    }
+    return;
+  }
+
+  const payload = { student_id: studentId, amount, currency, status };
+  const schoolId = getCurrentSchoolId();
+  if (schoolId) payload.school_id = schoolId;
+
+  try {
+    const { error } = await getSupabase().from("payments").insert(payload);
+    if (error) throw error;
+    await loadData();
+    renderPayments();
+  } catch (error) {
+    console.error("Erreur enregistrement paiement :", error);
+    if (errorBox) {
+      errorBox.textContent = error.message || "Impossible d'enregistrer ce paiement. Vérifiez les colonnes et les autorisations de la table payments.";
+      errorBox.style.display = "block";
+    }
+  }
 }
 
 /* =========================================================
