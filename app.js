@@ -2126,96 +2126,199 @@ function renderCalendar() {
    ENSEIGNANTS
    ========================================================= */
 
+function canManageTeachers() {
+  return isAdmin() || isDirection() || isSecretariat();
+}
+
+function canDeleteTeachers() {
+  return isAdmin() || isDirection();
+}
+
 function renderTeachers() {
-  const teachers =
-    filterBySchool(
-      state.teachers
-    );
+  const teachers = filterBySchool(state.teachers);
+  const canManage = canManageTeachers();
 
   setContent(`
-    ${pageHeader(
-      "Enseignants",
-      "Liste des enseignants de l'établissement."
-    )}
-
+    ${pageHeader("Enseignants","Gestion des enseignants de l'établissement.")}
+    ${canManage ? `
+      <div style="display:flex;justify-content:flex-end;margin:0 0 16px">
+        <button class="btn btn-primary" id="add-teacher-btn" type="button">
+          <i class="fa-solid fa-plus"></i> Ajouter un enseignant
+        </button>
+      </div>
+    ` : ""}
     <div class="card">
-
       ${
-        teachers.length
-          ? `
-            <div class="table-container">
-
-              <table>
-
-                <thead>
-                  <tr>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Téléphone</th>
-                    <th>Matière</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  ${teachers
-                    .map(teacher => `
-                      <tr>
-
+        teachers.length ? `
+          <div class="table-container">
+            <table>
+              <thead><tr>
+                <th>Nom</th><th>Email</th><th>Téléphone</th><th>Matière</th>
+                ${canManage ? "<th>Actions</th>" : ""}
+              </tr></thead>
+              <tbody>
+                ${teachers.map(teacher => {
+                  const subject = state.subjects.find(item =>
+                    String(item.id) === String(teacher.subject_id)
+                  );
+                  return `
+                    <tr>
+                      <td>${escapeHTML([teacher.first_name,teacher.last_name].filter(Boolean).join(" ") || teacher.name || "—")}</td>
+                      <td>${escapeHTML(teacher.email || "—")}</td>
+                      <td>${escapeHTML(teacher.phone || "—")}</td>
+                      <td>${escapeHTML(teacher.subject_name || subject?.name || subject?.title || teacher.subject_id || "—")}</td>
+                      ${canManage ? `
                         <td>
-                          ${escapeHTML(
-                            [
-                              teacher.first_name,
-                              teacher.last_name
-                            ]
-                              .filter(Boolean)
-                              .join(" ") ||
-                            teacher.name ||
-                            "—"
-                          )}
+                          <div style="display:flex;gap:7px;flex-wrap:wrap">
+                            <button class="btn btn-secondary" type="button" data-edit-teacher="${escapeHTML(teacher.id)}">
+                              <i class="fa-solid fa-pen"></i> Modifier
+                            </button>
+                            ${canDeleteTeachers() ? `
+                              <button class="btn btn-danger" type="button" data-delete-teacher="${escapeHTML(teacher.id)}">
+                                <i class="fa-solid fa-trash"></i> Supprimer
+                              </button>
+                            ` : ""}
+                          </div>
                         </td>
-
-                        <td>
-                          ${escapeHTML(
-                            teacher.email ||
-                            "—"
-                          )}
-                        </td>
-
-                        <td>
-                          ${escapeHTML(
-                            teacher.phone ||
-                            "—"
-                          )}
-                        </td>
-
-                        <td>
-                          ${escapeHTML(
-                            teacher.subject_name ||
-                            teacher.subject_id ||
-                            "—"
-                          )}
-                        </td>
-
-                      </tr>
-                    `)
-                    .join("")}
-
-                </tbody>
-
-              </table>
-
-            </div>
-          `
-          : emptyState(
-              "fa-solid fa-chalkboard-user",
-              "Aucun enseignant",
-              "Aucun enseignant n'est actuellement disponible."
-            )
+                      ` : ""}
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : emptyState("fa-solid fa-chalkboard-user","Aucun enseignant","Ajoute le premier enseignant de ton établissement.")
       }
-
     </div>
   `);
+
+  const addButton = getElement("add-teacher-btn");
+  if (addButton) addButton.addEventListener("click", () => renderTeacherForm());
+  document.querySelectorAll("[data-edit-teacher]").forEach(button => {
+    button.addEventListener("click", () => {
+      const teacher = state.teachers.find(item => String(item.id) === button.dataset.editTeacher);
+      if (teacher) renderTeacherForm(teacher);
+    });
+  });
+  document.querySelectorAll("[data-delete-teacher]").forEach(button => {
+    button.addEventListener("click", () => deleteTeacher(button.dataset.deleteTeacher));
+  });
+}
+
+function renderTeacherForm(existingTeacher = null) {
+  if (!canManageTeachers()) return;
+  const teacher = existingTeacher || {};
+  const selectedSubject = teacher.subject_id || "";
+  const subjectOptions = state.subjects.map(subject => {
+    const id = String(subject.id);
+    const label = subject.name || subject.title || "Matière";
+    return `<option value="${escapeHTML(id)}" ${String(selectedSubject) === id ? "selected" : ""}>${escapeHTML(label)}</option>`;
+  }).join("");
+
+  setContent(`
+    ${pageHeader(existingTeacher ? "Modifier un enseignant" : "Ajouter un enseignant","Renseigne les informations professionnelles.")}
+    <div class="card" style="max-width:680px">
+      <form id="teacher-form">
+        <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+          <div class="form-group">
+            <label class="form-label" for="teacher-first-name">Prénom</label>
+            <input class="app-input" id="teacher-first-name" name="first_name" maxlength="100" value="${escapeHTML(teacher.first_name || "")}" placeholder="Prénom">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="teacher-last-name">Nom</label>
+            <input class="app-input" id="teacher-last-name" name="last_name" maxlength="100" value="${escapeHTML(teacher.last_name || "")}" placeholder="Nom" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="teacher-email">Adresse e-mail</label>
+            <input class="app-input" id="teacher-email" name="email" type="email" maxlength="180" value="${escapeHTML(teacher.email || "")}" placeholder="enseignant@exemple.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="teacher-phone">Téléphone</label>
+            <input class="app-input" id="teacher-phone" name="phone" maxlength="40" value="${escapeHTML(teacher.phone || "")}" placeholder="+243...">
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="teacher-subject">Matière principale</label>
+            <select class="app-input" id="teacher-subject" name="subject_id">
+              <option value="">Non attribuée</option>
+              ${subjectOptions}
+            </select>
+          </div>
+        </div>
+        <p id="teacher-form-error" role="alert" style="display:none;color:var(--danger,#dc2626);margin-top:12px"></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Enregistrer</button>
+          <button class="btn btn-secondary" id="cancel-teacher" type="button">Annuler</button>
+        </div>
+      </form>
+    </div>
+  `);
+
+  const form = getElement("teacher-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    await saveTeacher(form, existingTeacher);
+  });
+  const cancel = getElement("cancel-teacher");
+  if (cancel) cancel.addEventListener("click", renderTeachers);
+}
+
+async function saveTeacher(form, existingTeacher = null) {
+  if (!canManageTeachers()) return;
+  const formData = new FormData(form);
+  const firstName = String(formData.get("first_name") || "").trim();
+  const lastName = String(formData.get("last_name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const subjectId = String(formData.get("subject_id") || "").trim();
+  const errorBox = getElement("teacher-form-error");
+
+  if (!lastName) {
+    if (errorBox) {
+      errorBox.textContent = "Le nom de l'enseignant est obligatoire.";
+      errorBox.style.display = "block";
+    }
+    return;
+  }
+
+  const payload = {
+    first_name: firstName || null,
+    last_name: lastName,
+    email: email || null,
+    phone: phone || null,
+    subject_id: subjectId || null
+  };
+  const schoolId = getCurrentSchoolId();
+  if (schoolId) payload.school_id = schoolId;
+
+  try {
+    const supabase = getSupabase();
+    const result = existingTeacher
+      ? await supabase.from("teachers").update(payload).eq("id", existingTeacher.id)
+      : await supabase.from("teachers").insert(payload);
+    if (result.error) throw result.error;
+    await loadData();
+    renderTeachers();
+  } catch (error) {
+    console.error("Erreur enregistrement enseignant :", error);
+    if (errorBox) {
+      errorBox.textContent = error.message || "Impossible d'enregistrer l'enseignant. Vérifie les colonnes de la table teachers.";
+      errorBox.style.display = "block";
+    }
+  }
+}
+
+async function deleteTeacher(teacherId) {
+  if (!canDeleteTeachers()) return;
+  if (!window.confirm("Supprimer cet enseignant ?")) return;
+  try {
+    const { error } = await getSupabase().from("teachers").delete().eq("id", teacherId);
+    if (error) throw error;
+    await loadData();
+    renderTeachers();
+  } catch (error) {
+    console.error("Erreur suppression enseignant :", error);
+    window.alert(error.message || "Impossible de supprimer cet enseignant.");
+  }
 }
 
 /* =========================================================
