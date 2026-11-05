@@ -2404,77 +2404,170 @@ async function deleteClass(classId) {
    MATIÈRES
    ========================================================= */
 
+function canManageSubjects() {
+  return isAdmin() || isDirection() || isSecretariat();
+}
+
+function canDeleteSubjects() {
+  return isAdmin() || isDirection();
+}
+
 function renderSubjects() {
-  const subjects =
-    filterBySchool(
-      state.subjects
-    );
+  const subjects = filterBySchool(state.subjects);
+  const canManage = canManageSubjects();
 
   setContent(`
     ${pageHeader(
       "Matières",
-      "Matières enseignées dans l'établissement."
+      "Gestion des matières enseignées dans l'établissement."
     )}
 
-    <div class="cards-grid">
+    ${canManage ? `
+      <div style="display:flex;justify-content:flex-end;margin:0 0 16px">
+        <button class="btn btn-primary" id="add-subject-btn" type="button">
+          <i class="fa-solid fa-plus"></i> Ajouter une matière
+        </button>
+      </div>
+    ` : ""}
 
+    <div class="cards-grid">
       ${
         subjects.length
-          ? subjects
-              .map(subject => `
-                <div class="card">
-
-                  <div class="stat-icon">
-                    <i class="fa-solid fa-book"></i>
+          ? subjects.map(subject => `
+              <div class="card">
+                <div class="stat-icon"><i class="fa-solid fa-book"></i></div>
+                <h3 style="font-family:'Space Grotesk',sans-serif;font-size:17px">
+                  ${escapeHTML(subject.name || subject.title || "Matière")}
+                </h3>
+                ${subject.description ? `
+                  <p style="color:var(--muted);font-size:12px;line-height:1.5;margin-top:7px">
+                    ${escapeHTML(subject.description)}
+                  </p>
+                ` : ""}
+                ${canManage ? `
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+                    <button class="btn btn-secondary" type="button" data-edit-subject="${escapeHTML(subject.id)}">
+                      <i class="fa-solid fa-pen"></i> Modifier
+                    </button>
+                    ${canDeleteSubjects() ? `
+                      <button class="btn btn-danger" type="button" data-delete-subject="${escapeHTML(subject.id)}">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                      </button>
+                    ` : ""}
                   </div>
-
-                  <h3 style="
-                    font-family:'Space Grotesk',sans-serif;
-                    font-size:17px;
-                  ">
-                    ${escapeHTML(
-                      subject.name ||
-                      subject.title ||
-                      "Matière"
-                    )}
-                  </h3>
-
-                  ${
-                    subject.description
-                      ? `
-                        <p style="
-                          color:var(--muted);
-                          font-size:12px;
-                          line-height:1.5;
-                          margin-top:7px;
-                        ">
-                          ${escapeHTML(
-                            subject.description
-                          )}
-                        </p>
-                      `
-                      : ""
-                  }
-
-                </div>
-              `)
-              .join("")
+                ` : ""}
+              </div>
+            `).join("")
           : `
-            <div
-              class="card"
-              style="grid-column:1/-1"
-            >
-              ${emptyState(
-                "fa-solid fa-book",
-                "Aucune matière",
-                "Aucune matière n'est actuellement disponible."
-              )}
+            <div class="card" style="grid-column:1/-1">
+              ${emptyState("fa-solid fa-book","Aucune matière","Aucune matière n'est actuellement disponible.")}
             </div>
           `
       }
-
     </div>
   `);
+
+  const addButton = getElement("add-subject-btn");
+  if (addButton) addButton.addEventListener("click", () => renderSubjectForm());
+
+  document.querySelectorAll("[data-edit-subject]").forEach(button => {
+    button.addEventListener("click", () => {
+      const subject = state.subjects.find(item => String(item.id) === button.dataset.editSubject);
+      if (subject) renderSubjectForm(subject);
+    });
+  });
+
+  document.querySelectorAll("[data-delete-subject]").forEach(button => {
+    button.addEventListener("click", () => deleteSubject(button.dataset.deleteSubject));
+  });
+}
+
+function renderSubjectForm(existingSubject = null) {
+  if (!canManageSubjects()) return;
+  const subject = existingSubject || {};
+  setContent(`
+    ${pageHeader(existingSubject ? "Modifier une matière" : "Ajouter une matière","Renseigne les informations de la matière.")}
+    <div class="card" style="max-width:620px">
+      <form id="subject-form">
+        <div class="form-group">
+          <label class="form-label" for="subject-name">Nom de la matière</label>
+          <input class="app-input" id="subject-name" name="name" required maxlength="120"
+            value="${escapeHTML(subject.name || subject.title || "")}" placeholder="Ex. Mathématiques">
+        </div>
+        <div class="form-group" style="margin-top:14px">
+          <label class="form-label" for="subject-description">Description (facultatif)</label>
+          <textarea class="app-input" id="subject-description" name="description" rows="3"
+            placeholder="Description de la matière">${escapeHTML(subject.description || "")}</textarea>
+        </div>
+        <p id="subject-form-error" role="alert" style="display:none;color:var(--danger,#dc2626);margin-top:12px"></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Enregistrer</button>
+          <button class="btn btn-secondary" id="cancel-subject" type="button">Annuler</button>
+        </div>
+      </form>
+    </div>
+  `);
+
+  const form = getElement("subject-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    await saveSubject(form, existingSubject);
+  });
+  const cancel = getElement("cancel-subject");
+  if (cancel) cancel.addEventListener("click", renderSubjects);
+}
+
+async function saveSubject(form, existingSubject = null) {
+  if (!canManageSubjects()) return;
+  const supabase = getSupabase();
+  const formData = new FormData(form);
+  const subjectName = String(formData.get("name") || "").trim();
+  const description = String(formData.get("description") || "").trim();
+  const errorBox = getElement("subject-form-error");
+
+  if (!subjectName) {
+    if (errorBox) {
+      errorBox.textContent = "Le nom de la matière est obligatoire.";
+      errorBox.style.display = "block";
+    }
+    return;
+  }
+
+  const sample = state.subjects[0] || {};
+  const nameColumn = Object.prototype.hasOwnProperty.call(sample, "title") &&
+    !Object.prototype.hasOwnProperty.call(sample, "name") ? "title" : "name";
+  const payload = { [nameColumn]: subjectName, description: description || null };
+  const schoolId = getCurrentSchoolId();
+  if (schoolId) payload.school_id = schoolId;
+
+  try {
+    const result = existingSubject
+      ? await supabase.from("subjects").update(payload).eq("id", existingSubject.id)
+      : await supabase.from("subjects").insert(payload);
+    if (result.error) throw result.error;
+    await loadData();
+    renderSubjects();
+  } catch (error) {
+    console.error("Erreur enregistrement matière :", error);
+    if (errorBox) {
+      errorBox.textContent = error.message || "Impossible d'enregistrer la matière.";
+      errorBox.style.display = "block";
+    }
+  }
+}
+
+async function deleteSubject(subjectId) {
+  if (!canDeleteSubjects()) return;
+  if (!window.confirm("Supprimer cette matière ?")) return;
+  try {
+    const { error } = await getSupabase().from("subjects").delete().eq("id", subjectId);
+    if (error) throw error;
+    await loadData();
+    renderSubjects();
+  } catch (error) {
+    console.error("Erreur suppression matière :", error);
+    window.alert(error.message || "Impossible de supprimer cette matière.");
+  }
 }
 
 /* =========================================================
