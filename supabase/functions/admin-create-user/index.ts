@@ -122,6 +122,45 @@ Deno.serve(async (req: Request) => {
       throw new Error("Le compte Auth a été annulé car le profil n’a pas pu être enregistré : " + saveProfileError.message);
     }
 
+    const linkedStudentIds = Array.isArray(body.linked_student_ids)
+      ? body.linked_student_ids.map((value: unknown) => String(value)).filter(Boolean)
+      : [];
+    const linkedTeacherId = String(body.linked_teacher_id || "").trim();
+
+    let linkError: string | null = null;
+    if (role === "student" && linkedStudentIds.length) {
+      if (linkedStudentIds.length !== 1) {
+        linkError = "Un compte élève doit être associé à une seule fiche élève.";
+      } else {
+        const { error } = await adminClient
+          .from("students")
+          .update({ user_id: created.user.id })
+          .eq("id", linkedStudentIds[0])
+          .eq("school_id", adminProfile.school_id);
+        if (error) linkError = error.message;
+      }
+    } else if (role === "parent" && linkedStudentIds.length) {
+      const { error } = await adminClient
+        .from("students")
+        .update({ parent_user_id: created.user.id })
+        .in("id", linkedStudentIds)
+        .eq("school_id", adminProfile.school_id);
+      if (error) linkError = error.message;
+    } else if (role === "teacher" && linkedTeacherId) {
+      const { error } = await adminClient
+        .from("teachers")
+        .update({ user_id: created.user.id })
+        .eq("id", linkedTeacherId)
+        .eq("school_id", adminProfile.school_id);
+      if (error) linkError = error.message;
+    }
+
+    if (linkError) {
+      await adminClient.from("profiles").delete().eq("id", created.user.id);
+      await adminClient.auth.admin.deleteUser(created.user.id);
+      throw new Error("Le compte a été annulé car l’association à la fiche scolaire a échoué : " + linkError);
+    }
+
     return new Response(JSON.stringify({
       success: true,
       user: {
