@@ -97,10 +97,13 @@
       admin: "Administrateur",
       direction: "Direction",
       secretariat: "Secrétariat",
+      secretary: "Secrétariat",
       teacher: "Enseignant",
       student: "Élève",
       parent: "Parent",
-      gestion: "Gestion"
+      gestion: "Comptabilité",
+      finance: "Comptabilité",
+      comptabilite: "Comptabilité"
 
     };
 
