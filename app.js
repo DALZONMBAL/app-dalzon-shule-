@@ -117,10 +117,26 @@ function initialsFromName(name) {
 }
 
 function normalizeRole(role) {
-  return String(role || "")
+  const value = String(role || "")
     .trim()
     .toLowerCase()
-    .replace(/\s+/g, "_");
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s-]+/g, "_");
+
+  const aliases = {
+    secretary: "secretariat",
+    secretaire: "secretariat",
+    secretariat: "secretariat",
+    finance: "gestion",
+    comptabilite: "gestion",
+    accountant: "gestion",
+    accounting: "gestion",
+    principal: "direction",
+    headmaster: "direction"
+  };
+
+  return aliases[value] || value;
 }
 
 function getRole() {
@@ -206,6 +222,14 @@ function hasPermission(route) {
     ],
 
     grades: [
+      "direction",
+      "secretariat",
+      "teacher",
+      "student",
+      "parent"
+    ],
+
+    bulletins: [
       "direction",
       "secretariat",
       "teacher",
@@ -590,6 +614,7 @@ function navigate(route) {
   const titles = {
     dashboard: "Tableau de bord",
     grades: "Notes",
+    bulletins: "Bulletins",
     courses: "Cours",
     attendance: "Présences",
     documents: "Documents",
@@ -614,6 +639,10 @@ function navigate(route) {
 
     case "grades":
       renderGrades();
+      break;
+
+    case "bulletins":
+      renderBulletins();
       break;
 
     case "courses":
@@ -1639,102 +1668,332 @@ async function deleteStudent(
    NOTES
    ========================================================= */
 
-function renderGrades() {
-  const grades =
-    filterBySchool(
-      state.grades
+function canManageGrades() {
+  return isAdmin() || isDirection() || isTeacher();
+}
+
+function getVisibleStudents() {
+  const students = filterBySchool(state.students);
+  const role = getRole();
+  const profile = currentProfile || currentUser?.profile || {};
+  const userId = String(profile.id || currentUser?.id || "");
+  const matricule = String(profile.matricule || currentUser?.matricule || "");
+
+  if (isAdmin() || isDirection() || isSecretariat() || isTeacher() || isGestion()) {
+    return students;
+  }
+
+  if (role === "student") {
+    return students.filter(student =>
+      String(student.user_id || student.profile_id || student.auth_user_id || "") === userId ||
+      (matricule && String(student.matricule || "") === matricule)
     );
+  }
+
+  if (role === "parent") {
+    return students.filter(student =>
+      String(student.parent_profile_id || student.parent_user_id || student.guardian_user_id || "") === userId ||
+      String(student.parent_id || "") === userId
+    );
+  }
+
+  return [];
+}
+
+function getVisibleGrades() {
+  const grades = filterBySchool(state.grades);
+  if (isAdmin() || isDirection() || isSecretariat() || isTeacher() || isGestion()) {
+    return grades;
+  }
+  const ids = new Set(getVisibleStudents().map(student => String(student.id)));
+  return grades.filter(grade => ids.has(String(grade.student_id || "")));
+}
+
+function getStudentLabel(student) {
+  return [
+    student?.first_name,
+    student?.last_name
+  ].filter(Boolean).join(" ") || student?.name || student?.matricule || "Élève";
+}
+
+function getSubjectLabel(subjectId) {
+  const subject = state.subjects.find(item => String(item.id) === String(subjectId));
+  return subject?.name || subject?.title || subjectId || "Matière";
+}
+
+function renderGrades() {
+  const grades = getVisibleGrades();
+  const students = getVisibleStudents();
+  const canManage = canManageGrades();
+  const subjectOptions = filterBySchool(state.subjects).map(subject =>
+    `<option value="${escapeHTML(subject.id)}">${escapeHTML(subject.name || subject.title || "Matière")}</option>`
+  ).join("");
+  const studentOptions = students.map(student =>
+    `<option value="${escapeHTML(student.id)}">${escapeHTML(getStudentLabel(student))}</option>`
+  ).join("");
 
   setContent(`
     ${pageHeader(
       "Notes",
-      "Consultez les résultats scolaires et les évaluations."
+      canManage
+        ? "Saisir et consulter les résultats scolaires."
+        : "Consulter les résultats qui vous concernent.",
+      `<button class="btn btn-secondary" type="button" data-open-bulletins><i class="fa-solid fa-file-pdf"></i> Voir les bulletins</button>`
     )}
 
-    <div class="card">
-
-      ${
-        grades.length
-          ? `
-            <div class="table-container">
-
-              <table>
-
-                <thead>
-                  <tr>
-                    <th>Élève</th>
-                    <th>Matière</th>
-                    <th>Note</th>
-                    <th>Coefficient</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  ${grades
-                    .map(grade => `
-                      <tr>
-
-                        <td>
-                          ${escapeHTML(
-                            grade.student_name ||
-                            grade.student_id ||
-                            "—"
-                          )}
-                        </td>
-
-                        <td>
-                          ${escapeHTML(
-                            grade.subject_name ||
-                            grade.subject_id ||
-                            "—"
-                          )}
-                        </td>
-
-                        <td>
-                          <span class="badge">
-                            ${escapeHTML(
-                              grade.score ??
-                              grade.note ??
-                              "—"
-                            )}
-                          </span>
-                        </td>
-
-                        <td>
-                          ${escapeHTML(
-                            grade.coefficient ||
-                            "—"
-                          )}
-                        </td>
-
-                        <td>
-                          ${formatDate(
-                            grade.created_at ||
-                            grade.date
-                          )}
-                        </td>
-
-                      </tr>
-                    `)
-                    .join("")}
-
-                </tbody>
-
-              </table>
-
+    ${canManage ? `
+      <div class="card" style="margin-bottom:18px">
+        <h3 style="font-family:'Space Grotesk',sans-serif;margin-bottom:14px">Saisir une note</h3>
+        ${students.length && state.subjects.length ? `
+          <form id="grade-form">
+            <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+              <div>
+                <label class="form-label" for="grade-student">Élève</label>
+                <select class="app-input" id="grade-student" name="student_id" required><option value="">Choisir un élève</option>${studentOptions}</select>
+              </div>
+              <div>
+                <label class="form-label" for="grade-subject">Matière</label>
+                <select class="app-input" id="grade-subject" name="subject_id" required><option value="">Choisir une matière</option>${subjectOptions}</select>
+              </div>
+              <div>
+                <label class="form-label" for="grade-score">Note obtenue</label>
+                <input class="app-input" id="grade-score" name="score" type="number" step="0.01" required placeholder="Ex. 14">
+              </div>
+              <div>
+                <label class="form-label" for="grade-coefficient">Coefficient</label>
+                <input class="app-input" id="grade-coefficient" name="coefficient" type="number" min="0.01" step="0.01" value="1" required>
+              </div>
+              <div>
+                <label class="form-label" for="grade-date">Date</label>
+                <input class="app-input" id="grade-date" name="date" type="date" value="${new Date().toISOString().slice(0,10)}" required>
+              </div>
             </div>
-          `
-          : emptyState(
-              "fa-solid fa-graduation-cap",
-              "Aucune note",
-              "Aucune note n'est actuellement disponible."
-            )
-      }
+            <p id="grade-form-error" role="alert" style="display:none;color:#ff91a0;margin-top:10px"></p>
+            <button class="btn btn-primary" type="submit" style="margin-top:14px"><i class="fa-solid fa-floppy-disk"></i> Enregistrer la note</button>
+          </form>
+        ` : `<p style="color:var(--muted)">Ajoutez d'abord au moins un élève et une matière.</p>`}
+      </div>
+    ` : ""}
 
+    <div class="card">
+      ${grades.length ? `
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Élève</th><th>Matière</th><th>Note</th><th>Coefficient</th><th>Date</th></tr></thead>
+            <tbody>
+              ${grades.slice().sort((a,b) => String(b.date || b.created_at || "").localeCompare(String(a.date || a.created_at || ""))).map(grade => {
+                const student = students.find(item => String(item.id) === String(grade.student_id));
+                return `<tr>
+                  <td>${escapeHTML(grade.student_name || (student ? getStudentLabel(student) : "Élève"))}</td>
+                  <td>${escapeHTML(grade.subject_name || getSubjectLabel(grade.subject_id))}</td>
+                  <td><span class="badge">${escapeHTML(grade.score ?? grade.note ?? "—")}</span></td>
+                  <td>${escapeHTML(grade.coefficient ?? "1")}</td>
+                  <td>${formatDate(grade.date || grade.created_at)}</td>
+                </tr>`;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      ` : emptyState("fa-solid fa-graduation-cap","Aucune note disponible","Les notes autorisées pour votre compte apparaîtront ici.")}
     </div>
   `);
+
+  const form = getElement("grade-form");
+  if (form) form.addEventListener("submit", async event => {
+    event.preventDefault();
+    await saveGrade(form);
+  });
+  const bulletinButton = document.querySelector("[data-open-bulletins]");
+  if (bulletinButton) bulletinButton.addEventListener("click", () => navigate("bulletins"));
+}
+
+async function saveGrade(form) {
+  if (!canManageGrades()) return;
+  const data = new FormData(form);
+  const studentId = String(data.get("student_id") || "").trim();
+  const subjectId = String(data.get("subject_id") || "").trim();
+  const score = Number(String(data.get("score") || "").replace(",", "."));
+  const coefficient = Number(String(data.get("coefficient") || "1").replace(",", "."));
+  const date = String(data.get("date") || "").trim();
+  const errorBox = getElement("grade-form-error");
+
+  if (!studentId || !subjectId || !Number.isFinite(score) || !Number.isFinite(coefficient) || coefficient <= 0 || !date) {
+    if (errorBox) {
+      errorBox.textContent = "Vérifiez l'élève, la matière, la note, le coefficient et la date.";
+      errorBox.style.display = "block";
+    }
+    return;
+  }
+
+  const sample = state.grades[0] || {};
+  const scoreColumn = Object.prototype.hasOwnProperty.call(sample, "note") &&
+    !Object.prototype.hasOwnProperty.call(sample, "score") ? "note" : "score";
+  const payload = {
+    student_id: studentId,
+    subject_id: subjectId,
+    [scoreColumn]: score,
+    coefficient,
+    date
+  };
+  const schoolId = getCurrentSchoolId();
+  if (schoolId) payload.school_id = schoolId;
+
+  try {
+    const { error } = await getSupabase().from("grades").insert(payload);
+    if (error) throw error;
+    await loadData();
+    renderGrades();
+  } catch (error) {
+    console.error("Erreur saisie note :", error);
+    if (errorBox) {
+      errorBox.textContent = error.message || "Impossible d'enregistrer la note. Vérifiez les colonnes et les autorisations de la table grades.";
+      errorBox.style.display = "block";
+    }
+  }
+}
+
+function renderBulletins() {
+  const students = getVisibleStudents();
+  const isPersonal = isStudent() || isParent();
+  const canChooseStudent = !isStudent() && !isParent();
+  const studentOptions = students.map(student =>
+    `<option value="${escapeHTML(student.id)}">${escapeHTML(getStudentLabel(student))}</option>`
+  ).join("");
+
+  setContent(`
+    ${pageHeader("Bulletins scolaires","Prévisualiser et imprimer le relevé des résultats.")}
+    <div class="card" style="margin-bottom:18px">
+      <form id="bulletin-filter-form">
+        <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+          <div>
+            <label class="form-label" for="bulletin-student">Élève</label>
+            <select class="app-input" id="bulletin-student" name="student_id" ${canChooseStudent ? "required" : "disabled"}>
+              ${canChooseStudent ? '<option value="">Choisir un élève</option>' : ""}
+              ${studentOptions}
+            </select>
+          </div>
+          <div>
+            <label class="form-label" for="bulletin-from">Du</label>
+            <input class="app-input" id="bulletin-from" name="from_date" type="date">
+          </div>
+          <div>
+            <label class="form-label" for="bulletin-to">Au</label>
+            <input class="app-input" id="bulletin-to" name="to_date" type="date">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-eye"></i> Afficher le bulletin</button>
+          <button class="btn btn-secondary" type="button" id="print-bulletin" disabled><i class="fa-solid fa-file-pdf"></i> Imprimer / PDF</button>
+        </div>
+      </form>
+      ${isPersonal && !students.length ? '<p role="status" style="margin-top:12px;color:#ffb347">Aucun élève n’est encore associé à ce compte. Le secrétariat doit relier ce compte à la fiche de l’élève.</p>' : ""}
+    </div>
+    <div id="bulletin-preview"></div>
+  `);
+
+  const form = getElement("bulletin-filter-form");
+  const printButton = getElement("print-bulletin");
+  let currentBulletin = null;
+
+  const build = () => {
+    const data = new FormData(form);
+    const studentId = String(data.get("student_id") || (isStudent() && students[0] ? students[0].id : "")).trim();
+    const fromDate = String(data.get("from_date") || "");
+    const toDate = String(data.get("to_date") || "");
+    const student = students.find(item => String(item.id) === studentId);
+    if (!student) {
+      getElement("bulletin-preview").innerHTML = emptyState("fa-solid fa-file-circle-exclamation","Élève non sélectionné","Sélectionnez un élève associé à votre compte.");
+      printButton.disabled = true;
+      currentBulletin = null;
+      return;
+    }
+
+    const rows = getVisibleGrades().filter(grade => {
+      if (String(grade.student_id) !== studentId) return false;
+      const day = String(grade.date || grade.created_at || "").slice(0,10);
+      if (fromDate && day && day < fromDate) return false;
+      if (toDate && day && day > toDate) return false;
+      return true;
+    });
+
+    const groups = new Map();
+    rows.forEach(grade => {
+      const key = String(grade.subject_id || grade.subject_name || "other");
+      if (!groups.has(key)) groups.set(key, { name: grade.subject_name || getSubjectLabel(grade.subject_id), weighted: 0, coefficients: 0, count: 0 });
+      const group = groups.get(key);
+      const value = Number(String(grade.score ?? grade.note ?? "").replace(",", "."));
+      const coefficient = Number(grade.coefficient || 1);
+      if (Number.isFinite(value) && Number.isFinite(coefficient) && coefficient > 0) {
+        group.weighted += value * coefficient;
+        group.coefficients += coefficient;
+        group.count += 1;
+      }
+    });
+
+    const subjects = Array.from(groups.values()).map(group => ({
+      ...group,
+      average: group.coefficients ? group.weighted / group.coefficients : null
+    }));
+    const totalWeighted = subjects.reduce((sum, subject) => sum + (subject.average === null ? 0 : subject.average * subject.coefficients), 0);
+    const totalCoefficient = subjects.reduce((sum, subject) => sum + subject.coefficients, 0);
+    const average = totalCoefficient ? totalWeighted / totalCoefficient : null;
+    const fromLabel = fromDate ? formatDate(fromDate) : "Début des enregistrements";
+    const toLabel = toDate ? formatDate(toDate) : "Aujourd’hui";
+
+    currentBulletin = { student, subjects, average, fromLabel, toLabel, rowsCount: rows.length };
+    const subjectRows = subjects.length ? subjects.map(subject => `
+      <tr><td>${escapeHTML(subject.name)}</td><td>${subject.count}</td><td>${subject.coefficients.toLocaleString("fr-FR")}</td><td>${subject.average === null ? "—" : subject.average.toLocaleString("fr-FR",{maximumFractionDigits:2})}</td></tr>
+    `).join("") : '<tr><td colspan="4">Aucune note pour cette période.</td></tr>';
+
+    getElement("bulletin-preview").innerHTML = `
+      <div class="card" id="bulletin-paper">
+        <div style="text-align:center;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px">
+          <div style="font-size:12px;color:var(--muted);letter-spacing:.12em">DOCUMENT SCOLAIRE</div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;margin:7px 0">DALZON SHULE</h2>
+          <h3>Bulletin de résultats</h3>
+          <p style="color:var(--muted);font-size:12px;margin-top:6px">Période : ${escapeHTML(fromLabel)} — ${escapeHTML(toLabel)}</p>
+        </div>
+        <div class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:18px">
+          <div><small>Nom de l’élève</small><strong style="display:block">${escapeHTML(getStudentLabel(student))}</strong></div>
+          <div><small>Matricule</small><strong style="display:block">${escapeHTML(student.matricule || "—")}</strong></div>
+          <div><small>Classe</small><strong style="display:block">${escapeHTML(student.class_name || student.class_id || "—")}</strong></div>
+        </div>
+        <div class="table-container">
+          <table><thead><tr><th>Matière</th><th>Évaluations</th><th>Total coefficients</th><th>Moyenne</th></tr></thead><tbody>${subjectRows}</tbody></table>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:18px">
+          <div style="padding:14px 18px;border:1px solid var(--border);border-radius:12px;text-align:right">
+            <small>Moyenne générale pondérée</small>
+            <div style="font-size:25px;font-weight:800">${average === null ? "—" : average.toLocaleString("fr-FR",{maximumFractionDigits:2})}</div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:20px">Document généré par DALZON SHULE. Les résultats reflètent les notes enregistrées dans la période sélectionnée.</p>
+      </div>
+    `;
+    printButton.disabled = !rows.length;
+  };
+
+  if (form) form.addEventListener("submit", event => {
+    event.preventDefault();
+    build();
+  });
+  if (canChooseStudent && students.length) {
+    const select = getElement("bulletin-student");
+    if (select) select.addEventListener("change", () => { printButton.disabled = true; });
+  }
+  if (isStudent() && students.length) build();
+  if (printButton) printButton.addEventListener("click", () => {
+    if (!currentBulletin) return;
+    const { student, subjects, average, fromLabel, toLabel } = currentBulletin;
+    const popup = window.open("", "_blank");
+    if (!popup) {
+      window.alert("Autorisez les fenêtres contextuelles pour imprimer le bulletin.");
+      return;
+    }
+    const rows = subjects.map(subject => `<tr><td>${escapeHTML(subject.name)}</td><td>${subject.count}</td><td>${subject.coefficients.toLocaleString("fr-FR")}</td><td>${subject.average === null ? "—" : subject.average.toLocaleString("fr-FR",{maximumFractionDigits:2})}</td></tr>`).join("");
+    popup.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bulletin — ${escapeHTML(getStudentLabel(student))}</title><style>body{font-family:Arial,sans-serif;color:#172033;padding:32px}header{text-align:center;border-bottom:2px solid #172033;padding-bottom:18px;margin-bottom:22px}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #cbd5e1;padding:10px;text-align:left}th{background:#eef2f7}.meta{display:flex;gap:30px;flex-wrap:wrap}.average{text-align:right;font-size:20px;font-weight:bold;margin-top:25px}.muted{color:#64748b;font-size:12px}@media print{body{padding:0}}</style></head><body><header><div class="muted">DOCUMENT SCOLAIRE</div><h1>DALZON SHULE</h1><h2>Bulletin de résultats</h2><p>Période : ${escapeHTML(fromLabel)} — ${escapeHTML(toLabel)}</p></header><div class="meta"><div><b>Élève :</b> ${escapeHTML(getStudentLabel(student))}</div><div><b>Matricule :</b> ${escapeHTML(student.matricule || "—")}</div><div><b>Classe :</b> ${escapeHTML(student.class_name || student.class_id || "—")}</div></div><table><thead><tr><th>Matière</th><th>Évaluations</th><th>Coefficients</th><th>Moyenne</th></tr></thead><tbody>${rows || "<tr><td colspan='4'>Aucune note</td></tr>"}</tbody></table><div class="average">Moyenne générale pondérée : ${average === null ? "—" : average.toLocaleString("fr-FR",{maximumFractionDigits:2})}</div><p class="muted">Généré par DALZON SHULE</p><script>window.onload=()=>window.print()<\/script></body></html>`);
+    popup.document.close();
+  });
 }
 
 /* =========================================================
